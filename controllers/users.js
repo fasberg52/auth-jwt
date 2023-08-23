@@ -2,6 +2,7 @@ const Users = require("../model/users");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
+const crypto = require("crypto")
 const { getManager } = require("typeorm");
 
 const jwt = require("jsonwebtoken");
@@ -15,7 +16,10 @@ passport.use(
   new JwtStrategy(jwtOptions, async (jwtPayload, done) => {
     try {
       const userRepository = getManager().getRepository(Users);
-      const user = await userRepository.findOne(jwtPayload.sub);
+      const user = await userRepository
+        .createQueryBuilder("user")
+        .where("user.id = :id", { id: jwtPayload.sub })
+        .getOne();
 
       if (user) {
         return done(null, user);
@@ -27,6 +31,27 @@ passport.use(
     }
   })
 );
+passport.serializeUser((user, done) => {
+  // Serialize user to store in session
+  done(null, user.id);
+  console.log(`user id : ${user.id}`);
+});
+passport.deserializeUser(async (id, done) => {
+  console.log(`Deserializing user with ID: ${id}`);
+  try {
+    const userRepository = getManager().getRepository(Users);
+    const user = await userRepository.findOne({ where: { id : id } });
+
+    if (user) {
+      done(null, user);
+    } else {
+      done(null, false);
+    }
+  } catch (error) {
+    console.error(`Error deserializing user: ${error}`);
+    done(error);
+  }
+});
 // Create a JWT token
 function createToken(user) {
   return jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {
@@ -46,7 +71,7 @@ async function loginUsers(req, res) {
       const token = createToken(verifyUser);
 
       res.json({ token, username: verifyUser.phone });
-      console.log(`req header : ${JSON.stringify(req.headers)}`)
+      console.log(`req header : ${JSON.stringify(req.headers)}`);
     }
   } catch (error) {
     console.error("Error creating user:", error);
@@ -56,7 +81,7 @@ async function loginUsers(req, res) {
   }
 }
 
-async function postUsers(req, res) {
+async function signUpUsers(req, res) {
   try {
     const userRepository = getManager().getRepository(Users);
     const existingUser = await userRepository.findOne({
@@ -172,7 +197,7 @@ module.exports = {
   loginUsers,
   getUsers,
   getUserByPhone,
-  postUsers,
+  signUpUsers,
   updateUsers,
   deleteUsers,
 };

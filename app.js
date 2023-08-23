@@ -4,6 +4,8 @@ const Users = require("./model/users");
 const usersRouter = require("./routes/users");
 const passport = require("passport");
 const session = require("express-session");
+var bodyParser = require("body-parser");
+
 const dotenv = require("dotenv").config();
 const app = express();
 
@@ -24,12 +26,17 @@ setupDatabase().then(() => {
   const userRepository = getManager().getRepository(Users);
   app.use(
     session({
-      secret: process.env.SESSION_SECRET, 
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
     })
   );
+
   app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use(bodyParser.urlencoded({ extended: false }));
+
   app.use(express.json());
   app.use("/auth", usersRouter);
   app.listen(3000, () => {

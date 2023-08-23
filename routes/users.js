@@ -6,7 +6,7 @@ const usersController = require("../controllers/users");
 // const authMiddleware = require("../middleware/authMiddleware");
 router.get(
   "/allusers",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: true }),
   (req, res) => {
     res.json({ message: "You have access to this protected route!" });
   },
@@ -14,8 +14,12 @@ router.get(
 );
 router.get("/user/:phone", usersController.getUserByPhone);
 router.post("/login", usersController.loginUsers);
-router.post("/signup", usersController.postUsers);
+router.post("/signup", usersController.signUpUsers);
 router.put("/update/:phone", usersController.updateUsers);
-router.delete("/delete/:phone", usersController.deleteUsers);
+router.delete(
+  "/delete/:phone",
+  passport.authenticate("jwt", { session: true }),
+  usersController.deleteUsers
+);
 
 module.exports = router;
