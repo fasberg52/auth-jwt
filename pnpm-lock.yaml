@@ -23,6 +23,9 @@ dependencies:
   jsonwebtoken:
     specifier: ^9.0.1
     version: 9.0.1
+  kavenegar:
+    specifier: ^1.1.4
+    version: 1.1.4
   passport:
     specifier: ^0.6.0
     version: 0.6.0
@@ -526,6 +529,10 @@ packages:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
+    dev: false
+
+  /kavenegar@1.1.4:
+    resolution: {integrity: sha512-t7oqXS1zZjlFkeofF2J0qSKQeYAmCYogfqROCl/ZQZ3hvCnq9fBBiZIThGnozQ5mMEAJPI5TwWh9RyQ3bOqH3Q==}
     dev: false
 
   /lodash@4.17.21:
