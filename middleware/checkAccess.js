@@ -1,0 +1,9 @@
+const checkRole = (role) => (req, res, next) => {
+  if (req.user && req.user.roles.includes(role)) {
+    console.log(req.user.roles);
+    return next();
+  }
+  res.status(403).send("Access denied");
+};
+
+module.exports = { checkRole };

@@ -1,7 +1,8 @@
 const express = require("express");
 const { createConnection, getManager } = require("typeorm");
 const Users = require("./model/users");
-const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth/auth");
+const adminRouter = require("./routes/admin/admin");
 const passport = require("passport");
 const session = require("express-session");
 var bodyParser = require("body-parser");
@@ -38,8 +39,13 @@ setupDatabase().then(() => {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use(express.json());
-  app.use("/auth", usersRouter);
-  app.listen(3000, () => {
+
+
+  //routes
+
+  app.use("/auth", authRouter);
+  app.use("/admin", adminRouter);
+  app.listen(process.env.PORT, () => {
     console.log("Server is running on port 3000");
   });
 });

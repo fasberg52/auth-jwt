@@ -21,6 +21,19 @@ const User = new EntitySchema({
     password: {
       type: "text",
     },
+    roles: {
+      type: "enum",
+      enum: ["admin", "user"], // Use the enum-like values
+      default: "user",
+    },
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
+    lastLogin:{
+      type: "timestamp",
+      nullable: true,
+    }
   },
 });
 

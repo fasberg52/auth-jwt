@@ -2,7 +2,7 @@ const Users = require("../model/users");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const crypto = require("crypto")
+const crypto = require("crypto");
 const { getManager } = require("typeorm");
 
 const jwt = require("jsonwebtoken");
@@ -40,7 +40,7 @@ passport.deserializeUser(async (id, done) => {
   console.log(`Deserializing user with ID: ${id}`);
   try {
     const userRepository = getManager().getRepository(Users);
-    const user = await userRepository.findOne({ where: { id : id } });
+    const user = await userRepository.findOne({ where: { id: id } });
 
     if (user) {
       done(null, user);
@@ -68,9 +68,12 @@ async function loginUsers(req, res) {
     if (!verifyUser) {
       res.status(404).json({ error: "phone or password not true" });
     } else {
+      verifyUser.lastLogin = new Date(); // Update last login time
+      await userRepository.save(verifyUser);
+
       const token = createToken(verifyUser);
 
-      res.json({ token, username: verifyUser.phone });
+      res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
       console.log(`req header : ${JSON.stringify(req.headers)}`);
     }
   } catch (error) {
@@ -109,95 +112,8 @@ async function signUpUsers(req, res) {
   }
 }
 
-async function getUsers(req, res) {
-  try {
-    const userRepository = getManager().getRepository(Users);
-    const users = await userRepository.find();
-    res.json(users);
-    console.log("Request Headers:", req.headers);
-  } catch (error) {
-    console.error("Error getting users:", error);
-    res.status(500).json({ error: "An error occurred while getting users." });
-  }
-}
-
-async function getUserByPhone(req, res) {
-  try {
-    const userRepository = getManager().getRepository(Users);
-    const phoneNumber = req.params.phone;
-
-    const existingUser = await userRepository.findOne({
-      where: { phone: phoneNumber },
-    });
-
-    if (existingUser) {
-      res.json(existingUser);
-    } else {
-      res.status(404).json({ error: "User not found." });
-    }
-  } catch (error) {
-    console.error("Error getting user:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while getting the user." });
-  }
-}
-
-async function updateUsers(req, res) {
-  try {
-    const userRepository = getManager().getRepository(Users);
-    const phoneNumber = req.params.phone;
-
-    const existingUser = await userRepository.findOne({
-      where: { phone: phoneNumber },
-    });
-
-    if (existingUser) {
-      existingUser.firstName = req.body.firstName;
-      existingUser.lastName = req.body.lastName;
-      existingUser.password = req.body.password;
-
-      const savedUser = await userRepository.save(existingUser);
-      res.json(savedUser);
-    } else {
-      res.status(404).json({ error: "User not found." });
-    }
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the user." });
-  }
-}
-
-async function deleteUsers(req, res) {
-  try {
-    const userRepository = getManager().getRepository(Users);
-    const phoneNumber = req.params.phone;
-
-    const existingUser = await userRepository.findOne({
-      where: { phone: phoneNumber },
-    });
-
-    if (existingUser) {
-      await userRepository.remove(existingUser);
-      res.json({ message: "User deleted successfully." });
-    } else {
-      res.status(404).json({ error: "User not found." });
-    }
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while deleting the user." });
-  }
-}
-
 module.exports = {
   loginUsers,
-  getUsers,
-  getUserByPhone,
+
   signUpUsers,
-  updateUsers,
-  deleteUsers,
 };
