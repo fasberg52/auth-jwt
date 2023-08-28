@@ -18,10 +18,16 @@ router.get(
   usersController.getUserByPhone
 );
 
-router.put("/update/:phone", usersController.updateUsers);
+router.put(
+  "/update/:phone",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  usersController.updateUsers
+);
 router.delete(
   "/delete/:phone",
   jwtAuthMiddleware,
+  checkRole("admin"),
   usersController.deleteUsers
 );
 

@@ -54,9 +54,13 @@ passport.deserializeUser(async (id, done) => {
 });
 // Create a JWT token
 function createToken(user) {
-  return jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "24h", // Set token expiration as needed
-  });
+  return jwt.sign(
+    { sub: user.id, lastLogin: user.lastLogin },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h", // Set token expiration as needed
+    }
+  );
 }
 
 async function loginUsers(req, res) {
@@ -69,7 +73,9 @@ async function loginUsers(req, res) {
       res.status(404).json({ error: "phone or password not true" });
     } else {
       verifyUser.lastLogin = new Date(); // Update last login time
+
       await userRepository.save(verifyUser);
+
 
       const token = createToken(verifyUser);
 
