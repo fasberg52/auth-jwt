@@ -1,12 +1,35 @@
-var Kavenegar = require('kavenegar');
-var api = Kavenegar.KavenegarApi({
-    apikey: '467033554A54724376674566726738614741623744546462536A32377A6D78525A793942736678624A62343D'
-});
-api.VerifyLookup({
-    receptor: "09218913541",
-    token: "852596",
-    template: "verify"
-}, function(response, status) {
-    console.log(response);
-    console.log(status);
-});
+const Kavenegar = require("kavenegar");
+const Users = require("../model/users");
+const { getManager } = require("typeorm");
+async function sendOtp(req,res){
+    try{
+         
+        const userRepository = getManager().getRepository(Users);
+        const phoneNumber = req.params.phone;
+        const existingUser = await userRepository.findOne({
+        where: { phone: phoneNumber },
+        });
+        const OtpApi = Kavenegar.KavenegarApi({
+        apikey: process.env.KAVENEGAR_API_KEY,
+        });
+        OtpApi.VerifyLookup(
+        {
+            receptor: existingUser,
+            token: "852596",
+            template: "verify",
+        },
+        function (response, status) {
+            console.log(response);
+            console.log(status);
+        }
+        );
+    }catch(error){
+        console.error("Error sending otp:", error);
+        res
+        .status(500)
+        .json({ error: "An error occurred while sending otp." });
+    }
+}
+
+
+module.exports = { sendOtp };
