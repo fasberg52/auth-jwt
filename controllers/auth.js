@@ -1,12 +1,23 @@
 const Users = require("../model/users");
+const OTP = require("../model/otp");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
+const otpGenerator = require("otp-generator");
+const Kavenegar = require("kavenegar");
 const { getManager } = require("typeorm");
 
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+
+// This function generates an OTP
+function generateOTP() {
+  return otpGenerator.generate(6, {
+    digits: true,
+  });
+}
+
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET, // Set your JWT secret here
@@ -65,6 +76,8 @@ function createToken(user) {
 
 async function loginUsers(req, res) {
   try {
+    const otp = generateNumericOTP(6);
+
     const userRepository = getManager().getRepository(Users);
     const verifyUser = await userRepository.findOne({
       where: { phone: req.body.phone, password: req.body.password },
@@ -73,9 +86,22 @@ async function loginUsers(req, res) {
       res.status(404).json({ error: "phone or password not true" });
     } else {
       verifyUser.lastLogin = new Date(); // Update last login time
+      const OtpApi = Kavenegar.KavenegarApi({
+        apikey: process.env.KAVENEGAR_API_KEY,
+      });
+      OtpApi.VerifyLookup(
+        {
+          receptor: req.body.phone,
+          token: otp,
+          template: "verifyotp",
+        },
+        function (response, status) {
+          console.log(response);
+          console.log(status);
+        }
+      );
 
       await userRepository.save(verifyUser);
-
 
       const token = createToken(verifyUser);
 
@@ -100,12 +126,30 @@ async function signUpUsers(req, res) {
     if (existingUser) {
       res.status(400).json({ error: "User already exists." });
     } else {
+      const otp = generateNumericOTP(6);
       const newUser = userRepository.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phone: req.body.phone,
         password: req.body.password,
+        otp: otp,
       });
+
+      // Send OTP via SMS
+      const OtpApi = Kavenegar.KavenegarApi({
+        apikey: process.env.KAVENEGAR_API_KEY,
+      });
+      OtpApi.VerifyLookup(
+        {
+          receptor: req.body.phone,
+          token: otp,
+          template: "verifyotp",
+        },
+        function (response, status) {
+          console.log(response);
+          console.log(status);
+        }
+      );
 
       const savedUser = await userRepository.save(newUser);
       res.json(savedUser);
@@ -116,6 +160,11 @@ async function signUpUsers(req, res) {
       .status(500)
       .json({ error: "An error occurred while creating the user." });
   }
+}
+function generateNumericOTP(length) {
+  const min = Math.pow(10, length - 1);
+  const max = Math.pow(10, length) - 1;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = {
