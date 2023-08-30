@@ -29,6 +29,10 @@ const OTP = new EntitySchema({
         },
       },
     },
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
   },
 });
 
