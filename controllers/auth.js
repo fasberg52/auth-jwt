@@ -4,19 +4,13 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
-const otpGenerator = require("otp-generator");
+
 const Kavenegar = require("kavenegar");
 const { getManager } = require("typeorm");
-
+const { generateNumericOTP } = require("../utils/otpUtils");
+const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
-// This function generates an OTP
-function generateOTP() {
-  return otpGenerator.generate(6, {
-    digits: true,
-  });
-}
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -64,15 +58,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 // Create a JWT token
-function createToken(user) {
-  return jwt.sign(
-    { sub: user.id, lastLogin: user.lastLogin },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "24h", // Set token expiration as needed
-    }
-  );
-}
 
 async function loginUsers(req, res) {
   try {
@@ -160,11 +145,6 @@ async function signUpUsers(req, res) {
       .status(500)
       .json({ error: "An error occurred while creating the user." });
   }
-}
-function generateNumericOTP(length) {
-  const min = Math.pow(10, length - 1);
-  const max = Math.pow(10, length) - 1;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = {
