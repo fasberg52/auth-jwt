@@ -4,12 +4,13 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
-
-const Kavenegar = require("kavenegar");
+const bcrypt = require("bcryptjs");
 const { getManager } = require("typeorm");
 const { generateNumericOTP } = require("../utils/otpUtils");
 const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
+const { sendOTPSMS } = require("../utils/authUtils");
+
 require("dotenv").config();
 
 const jwtOptions = {
@@ -65,26 +66,24 @@ async function loginUsers(req, res) {
 
     const userRepository = getManager().getRepository(Users);
     const verifyUser = await userRepository.findOne({
-      where: { phone: req.body.phone, password: req.body.password },
+      where: { phone: req.body.phone },
     });
+
     if (!verifyUser) {
-      res.status(404).json({ error: "phone or password not true" });
+      res.status(404).json({ error: "Phone number not found" });
     } else {
-      verifyUser.lastLogin = new Date(); // Update last login time
-      const OtpApi = Kavenegar.KavenegarApi({
-        apikey: process.env.KAVENEGAR_API_KEY,
-      });
-      OtpApi.VerifyLookup(
-        {
-          receptor: req.body.phone,
-          token: otp,
-          template: "verifyotp",
-        },
-        function (response, status) {
-          console.log(response);
-          console.log(status);
-        }
+      const passwordMatch = await bcrypt.compare(
+        req.body.password,
+        verifyUser.password
       );
+
+      if (!passwordMatch) {
+        res.status(401).json({ error: "Invalid password" });
+        return;
+      }
+
+      verifyUser.lastLogin = new Date(); // Update last login time
+      sendOTPSMS(req.body.phone, otp); // Send OTP via SMS
 
       await userRepository.save(verifyUser);
 
@@ -94,10 +93,8 @@ async function loginUsers(req, res) {
       console.log(`req header : ${JSON.stringify(req.headers)}`);
     }
   } catch (error) {
-    console.error("Error creating user:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the user." });
+    console.error("Error logging in:", error);
+    res.status(500).json({ error: "An error occurred while logging in." });
   }
 }
 
@@ -112,29 +109,18 @@ async function signUpUsers(req, res) {
       res.status(400).json({ error: "User already exists." });
     } else {
       const otp = generateNumericOTP(6);
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
       const newUser = userRepository.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         phone: req.body.phone,
-        password: req.body.password,
+        password: hashedPassword,
         otp: otp,
       });
 
       // Send OTP via SMS
-      const OtpApi = Kavenegar.KavenegarApi({
-        apikey: process.env.KAVENEGAR_API_KEY,
-      });
-      OtpApi.VerifyLookup(
-        {
-          receptor: req.body.phone,
-          token: otp,
-          template: "verifyotp",
-        },
-        function (response, status) {
-          console.log(response);
-          console.log(status);
-        }
-      );
+      sendOTPSMS(req.body.phone, otp);
 
       const savedUser = await userRepository.save(newUser);
       res.json(savedUser);
