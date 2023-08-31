@@ -1,15 +1,17 @@
 const Users = require("../model/users");
-const OTP = require("../model/otp");
+const OTP = require("../model/OTP");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
+const otpService = require("../services/otpService");
 const { getManager } = require("typeorm");
 const { generateNumericOTP } = require("../utils/otpUtils");
 const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
 const { sendOTPSMS } = require("../utils/authUtils");
+
 
 require("dotenv").config();
 
@@ -97,7 +99,35 @@ async function loginUsers(req, res) {
     res.status(500).json({ error: "An error occurred while logging in." });
   }
 }
+async function loginWithOTP(req, res) {
+  try {
+    const { phone, otp } = req.body;
+    const userRepository = getManager().getRepository(Users);
 
+    const isValidOTP = await otpService.verifyOTP(phone, otp);
+    if (!isValidOTP) {
+      res.status(401).json({ error: "Invalid OTP" });
+      return;
+    }
+
+    const existingUser = await userRepository.findOne({
+      where: { phone: phone },
+    });
+    if (!existingUser) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    existingUser.lastLogin = new Date(); // Update last login time
+    await userRepository.save(existingUser);
+
+    const token = createToken(existingUser);
+    res.json({ token, phone });
+  } catch (error) {
+    console.error("Error logging in OTP:", error);
+    res.status(500).json({ error: "An error occurred while logging in." });
+  }
+}
 async function signUpUsers(req, res) {
   try {
     const userRepository = getManager().getRepository(Users);
@@ -135,6 +165,6 @@ async function signUpUsers(req, res) {
 
 module.exports = {
   loginUsers,
-
+  loginWithOTP,
   signUpUsers,
 };

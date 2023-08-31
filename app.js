@@ -1,6 +1,7 @@
 const express = require("express");
 const { createConnection, getManager } = require("typeorm");
 const Users = require("./model/users");
+const OTP = require("./model/OTP");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 const passport = require("passport");
@@ -11,41 +12,57 @@ const dotenv = require("dotenv").config();
 const app = express();
 
 async function setupDatabase() {
-  await createConnection({
-    type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "postgres",
-    password: "2434127reza",
-    database: "postgres",
-    entities: [Users],
-    synchronize: true,
-  });
+  try {
+    await createConnection({
+      type: "postgres",
+      host: "localhost",
+      port: 5432,
+      username: "postgres",
+      password: "2434127reza",
+      database: "postgres",
+      entities: [Users, OTP],
+      synchronize: true,
+    });
+
+    console.log("Database connection established");
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    throw error;
+  }
 }
 
-setupDatabase().then(() => {
-  const userRepository = getManager().getRepository(Users);
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
+async function main() {
+  try {
+    await setupDatabase();
 
-  app.use(passport.initialize());
-  app.use(passport.session());
+    const userRepository = getManager().getRepository(Users);
+    const otpRepository = getManager().getRepository(OTP);
+    
+    app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
 
-  app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-  app.use(express.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(express.json());
 
+    // Routes
+    app.use("/auth", authRouter);
+    app.use("/admin", adminRouter);
 
-  //routes
+    // Start the server
+    app.listen(process.env.PORT, () => {
+      console.log("Server is running on port 3000");
+    });
+  } catch (error) {
+    console.error("Error setting up the application:", error);
+  }
+}
 
-  app.use("/auth", authRouter);
-  app.use("/admin", adminRouter);
-  app.listen(process.env.PORT, () => {
-    console.log("Server is running on port 3000");
-  });
-});
+main();

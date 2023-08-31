@@ -1,5 +1,6 @@
 const { EntitySchema } = require("typeorm");
 const User = require("./users");
+
 const OTP = new EntitySchema({
   name: "OTP",
   tableName: "otp",
@@ -12,26 +13,26 @@ const OTP = new EntitySchema({
     phone: {
       type: "text",
     },
-    otpCode: {
+    otp: {
       type: "varchar",
     },
     isVerified: {
       type: "boolean",
       default: false,
     },
-    relations: {
-      user: {
-        type: "many-to-one",
-        target: "User",
-        joinColumn: {
-          name: "phone",
-          referencedColumnName: "phone",
-        },
-      },
-    },
     createdAt: {
       type: "timestamp",
       createDate: true,
+    },
+  },
+  relations: {
+    user: {
+      type: "many-to-one",
+      target: "User",
+      joinColumn: {
+        name: "phone",
+        referencedColumnName: "phone",
+      },
     },
   },
 });
