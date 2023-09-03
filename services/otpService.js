@@ -2,8 +2,10 @@
 const { generateNumericOTP } = require("../utils/otpUtils");
 const { sendOTPSMS } = require("../utils/authUtils");
 const { getManager } = require("typeorm");
-const OTP = require("../model/OTP");
+const bcrypt = require("bcryptjs");
 
+const OTP = require("../model/OTP");
+const User = require("../model/users");
 exports.sendOTP = async (phone) => {
   try {
     const otp = generateNumericOTP(6);
@@ -19,14 +21,48 @@ exports.sendOTP = async (phone) => {
     throw error;
   }
 };
-
 exports.verifyOTP = async (phone, otp) => {
-    try {
-      const otpRepository = getManager().getRepository(OTP); // Use the name property
-      const existingOTP = await otpRepository.findOne({ where: { phone, otp } });
-      return existingOTP !== null;
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
-      throw error;
+  try {
+    const otpRepository = getManager().getRepository(OTP);
+
+    // Retrieve the OTP record from the database
+    const otpRecord = await otpRepository.findOne({ where: { phone } });
+
+    if (!otpRecord) {
+      return false; // No record found for the phone
     }
-  };
+
+    // Check if the OTP has already been verified
+    if (otpRecord.isVerified) {
+      return false; // OTP has already been used and verified
+    }
+
+    // Use bcrypt.compare to verify the hashed OTP
+    const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
+
+    if (isValidOTP) {
+      // Mark the OTP as verified
+      otpRecord.isVerified = true;
+      await otpRepository.save(otpRecord);
+    }
+
+    return isValidOTP;
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    throw error;
+  }
+};
+// exports.verifyOTP = async (phone, otp) => {
+//   try {
+//     const otpRepository = getManager().getRepository(OTP); // Use the name property
+//     console.log("Verifying OTP for phone:", phone, "and otp:", otp);
+
+//     const existingOTP = await otpRepository.findOne({ where: { phone, otp } });
+//     console.log("Existing OTP record:", existingOTP);
+
+//     return existingOTP !== null;
+//   } catch (error) {
+//     console.error("Error verifying OTP:", error);
+//     throw error;
+//   }
+// };

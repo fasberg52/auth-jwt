@@ -6,7 +6,7 @@ const usersController = require("../../controllers/auth");
 
 router.post("/login", usersController.loginUsers);
 router.post("/signup", usersController.signUpUsers);
-router.post("/login/verify/otp", usersController.loginWithOTP);
+router.post("/login/verify/otp", usersController.verifyWithOTP);
 router.post("/login/otp", usersController.loginWithOTP);
 router.post("/signup/otp");
 

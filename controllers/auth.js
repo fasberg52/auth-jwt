@@ -12,7 +12,6 @@ const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
 const { sendOTPSMS } = require("../utils/authUtils");
 
-
 require("dotenv").config();
 
 const jwtOptions = {
@@ -101,6 +100,29 @@ async function loginUsers(req, res) {
 }
 async function loginWithOTP(req, res) {
   try {
+    const { phone } = req.body;
+    const userRepository = getManager().getRepository(Users);
+    const existingUser = await userRepository.findOne({
+      where: { phone: phone },
+    });
+    if (!existingUser) {
+      res.status(404).json({ error: "Phone number not found" });
+    }
+    const otp = generateNumericOTP(6).toString();
+    console.log(otp);
+    const hashedPassword = await bcrypt.hash(otp, 10);
+    const otpRepository = getManager().getRepository(OTP);
+    const newOTP = otpRepository.create({ phone, otp: hashedPassword });
+    await otpRepository.save(newOTP);
+    sendOTPSMS(phone, otp); // Send OTP via SMS
+    res.json({ message: "otp send youre phone successfully" });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).json({ error: "An error occurred while logging in." });
+  }
+}
+async function verifyWithOTP(req, res) {
+  try {
     const { phone, otp } = req.body;
     const userRepository = getManager().getRepository(Users);
 
@@ -166,5 +188,6 @@ async function signUpUsers(req, res) {
 module.exports = {
   loginUsers,
   loginWithOTP,
+  verifyWithOTP,
   signUpUsers,
 };

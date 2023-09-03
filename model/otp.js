@@ -1,3 +1,4 @@
+//OTP.js
 const { EntitySchema } = require("typeorm");
 const User = require("./users");
 
