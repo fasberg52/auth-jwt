@@ -25,7 +25,11 @@ const OTP = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
+    // expirationTime: {
+    //   type: "timestamp",
+    // },
   },
+
   relations: {
     user: {
       type: "many-to-one",

@@ -63,7 +63,7 @@ passport.deserializeUser(async (id, done) => {
 
 async function loginUsers(req, res) {
   try {
-    const otp = generateNumericOTP(6);
+    // const otp = generateNumericOTP(6);
 
     const userRepository = getManager().getRepository(Users);
     const verifyUser = await userRepository.findOne({
@@ -84,7 +84,7 @@ async function loginUsers(req, res) {
       }
 
       verifyUser.lastLogin = new Date(); // Update last login time
-      sendOTPSMS(req.body.phone, otp); // Send OTP via SMS
+      //sendOTPSMS(req.body.phone, otp); // Send OTP via SMS
 
       await userRepository.save(verifyUser);
 
@@ -110,9 +110,14 @@ async function loginWithOTP(req, res) {
     }
     const otp = generateNumericOTP(6).toString();
     console.log(otp);
-    const hashedPassword = await bcrypt.hash(otp, 10);
     const otpRepository = getManager().getRepository(OTP);
-    const newOTP = otpRepository.create({ phone, otp: hashedPassword });
+    const hashedPassword = await bcrypt.hash(otp, 10);
+    //const expirationTime = new Date(Date.now() + 30000); // 30 seconds from now
+    const newOTP = otpRepository.create({
+      phone,
+      otp: hashedPassword,
+      // expirationTime,
+    });
     await otpRepository.save(newOTP);
     sendOTPSMS(phone, otp); // Send OTP via SMS
     res.json({ message: "otp send youre phone successfully" });
@@ -131,6 +136,7 @@ async function verifyWithOTP(req, res) {
       res.status(401).json({ error: "Invalid OTP" });
       return;
     }
+    
 
     const existingUser = await userRepository.findOne({
       where: { phone: phone },

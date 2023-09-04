@@ -32,21 +32,17 @@ exports.verifyOTP = async (phone, otp) => {
       return false; // No record found for the phone
     }
 
-    // Check if the OTP has already been verified
-    if (otpRecord.isVerified) {
-      return false; // OTP has already been used and verified
+    // Check if the OTP has expired
+    if (!otpRecord || otpRecord.isVerified) {
+      return false; // Invalid OTP
     }
-
-    // Use bcrypt.compare to verify the hashed OTP
-    const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
-
-    if (isValidOTP) {
-      // Mark the OTP as verified
+    if (otp === otpRecord.otp) {
       otpRecord.isVerified = true;
       await otpRepository.save(otpRecord);
+      return true; // Valid OTP
     }
 
-    return isValidOTP;
+    return false; //invalid otp
   } catch (error) {
     console.error("Error verifying OTP:", error);
     throw error;
