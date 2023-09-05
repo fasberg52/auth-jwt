@@ -5,7 +5,7 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const otpService = require("../services/otpService");
+const {sendOTP , verifyOTP} = require("../services/otpService");
 const { getManager } = require("typeorm");
 const { generateNumericOTP } = require("../utils/otpUtils");
 const { createToken } = require("../utils/jwtUtils");
@@ -41,10 +41,8 @@ passport.use(
 passport.serializeUser((user, done) => {
   // Serialize user to store in session
   done(null, user.id);
-  console.log(`user id : ${user.id}`);
 });
 passport.deserializeUser(async (id, done) => {
-  console.log(`Deserializing user with ID: ${id}`);
   try {
     const userRepository = getManager().getRepository(Users);
     const user = await userRepository.findOne({ where: { id: id } });
@@ -55,7 +53,6 @@ passport.deserializeUser(async (id, done) => {
       done(null, false);
     }
   } catch (error) {
-    console.error(`Error deserializing user: ${error}`);
     done(error);
   }
 });
@@ -91,10 +88,8 @@ async function loginUsers(req, res) {
       const token = createToken(verifyUser);
 
       res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
-      console.log(`req header : ${JSON.stringify(req.headers)}`);
     }
   } catch (error) {
-    console.error("Error logging in:", error);
     res.status(500).json({ error: "An error occurred while logging in." });
   }
 }
@@ -108,22 +103,24 @@ async function loginWithOTP(req, res) {
     if (!existingUser) {
       res.status(404).json({ error: "Phone number not found" });
     }
-    const otp = generateNumericOTP(6).toString();
-    console.log(otp);
-    const otpRepository = getManager().getRepository(OTP);
-    const hashedPassword = await bcrypt.hash(otp, 10);
+    //const otp = generateNumericOTP(6).toString();
+    //console.log(otp);
+    //const otpRepository = getManager().getRepository(OTP);
+   // const hashedPassword = await bcrypt.hash(otp, 10);
     //const expirationTime = new Date(Date.now() + 30000); // 30 seconds from now
-    const newOTP = otpRepository.create({
-      phone,
-      otp: hashedPassword,
-      // expirationTime,
-    });
-    await otpRepository.save(newOTP);
-    sendOTPSMS(phone, otp); // Send OTP via SMS
+    // const newOTP = otpRepository.create({
+    //   phone,
+    //   otp: hashedPassword,
+    //   // expirationTime,
+    // });
+    
+
+    //await otpRepository.save(newOTP);
+    sendOTP(phone); // Send OTP via SMS
     res.json({ message: "otp send youre phone successfully" });
   } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(500).json({ error: "An error occurred while logging in." });
+    console.log(`>>>error: ${error}`)
+    res.status(500).json({ error: "An error occurred while loginWithOTP in." });
   }
 }
 async function verifyWithOTP(req, res) {
@@ -131,12 +128,11 @@ async function verifyWithOTP(req, res) {
     const { phone, otp } = req.body;
     const userRepository = getManager().getRepository(Users);
 
-    const isValidOTP = await otpService.verifyOTP(phone, otp);
+    const isValidOTP = await verifyOTP(phone, otp);
     if (!isValidOTP) {
       res.status(401).json({ error: "Invalid OTP" });
       return;
     }
-    
 
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
@@ -150,10 +146,10 @@ async function verifyWithOTP(req, res) {
     await userRepository.save(existingUser);
 
     const token = createToken(existingUser);
-    res.json({ token, phone });
+    res.json({ token, username: existingUser.phone });
   } catch (error) {
-    console.error("Error logging in OTP:", error);
-    res.status(500).json({ error: "An error occurred while logging in." });
+    console.log(`>>>error: ${error}`)
+    res.status(500).json({ error: "An error occurred while verifyWithOTP in." });
   }
 }
 async function signUpUsers(req, res) {
@@ -178,13 +174,12 @@ async function signUpUsers(req, res) {
       });
 
       // Send OTP via SMS
-      sendOTPSMS(req.body.phone, otp);
+      otpService.sendOTP(req.body.phone, otp);
 
       const savedUser = await userRepository.save(newUser);
       res.json(savedUser);
     }
   } catch (error) {
-    console.error("Error creating user:", error);
     res
       .status(500)
       .json({ error: "An error occurred while creating the user." });
