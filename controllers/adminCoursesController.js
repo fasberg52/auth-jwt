@@ -22,7 +22,14 @@ async function addCourse(req, res) {
   }
 }
 
+async function editCourse(req, res) {
+  const { title, description, price, imageUrl, videoUrl } = req.body;
 
+  const courseRepository =  getManager().getRepository(Courses);
+
+  
+
+}
 
 module.exports = {
   addCourse,
