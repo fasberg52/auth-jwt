@@ -56,20 +56,27 @@ async function editCourse(req, res) {
 }
 
 async function deleteCourse(req, res) {
-  const courseRepository = getManager().getRepository(Courses);
-  const idCourse = req.params.id;
-  const existingCourse = await courseRepository.findOne({
-    where: { id: idCourse },
-  });
-  if (!editCourse) {
-    res.status(404).json({ error: "Course not found." });
+  try {
+    const courseRepository = getManager().getRepository(Courses);
+    const idCourse = req.params.id;
+    const existingCourse = await courseRepository.findOne({
+      where: { id: idCourse },
+    });
+    if (existingCourse) {
+      await courseRepository.remove(existingCourse);
+      res.json({ message: "course deleted successfully." });
+    } else {
+      res.status(404).json({ error: "course not found." });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while editing the deleteCourse." });
   }
-  const removeCourse = courseRepository.remove(existingCourse);
-  res.json(removeCourse);
 }
 
 module.exports = {
   addCourse,
   editCourse,
-  deleteCourse
+  deleteCourse,
 };
