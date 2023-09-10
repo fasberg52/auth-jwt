@@ -32,7 +32,13 @@ router.delete(
   usersController.deleteUsers
 );
 // admin route course
-router.post("/add/newcourse",jwtAuthMiddleware,
-checkRole("admin"),courseController.addCourse)
+router.post(
+  "/add/newcourse",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  courseController.addCourse
+);
+
+
 
 module.exports = router;

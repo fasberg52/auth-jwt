@@ -5,7 +5,7 @@ const OTP = require("./model/OTP");
 const Course = require("./model/Course");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
-
+const courseRouter = require("./routes/shop/course")
 const passport = require("passport");
 const session = require("express-session");
 var bodyParser = require("body-parser");
@@ -57,7 +57,7 @@ async function main() {
     // Routes
     app.use("/auth", authRouter);
     app.use("/admin", adminRouter);
-
+      app.use("/course", courseRouter)
     // Start the server
     app.listen(process.env.PORT, () => {
       console.log("Server is running on port 3000");
