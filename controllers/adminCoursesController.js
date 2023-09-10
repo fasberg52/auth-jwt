@@ -23,14 +23,36 @@ async function addCourse(req, res) {
 }
 
 async function editCourse(req, res) {
-  const { title, description, price, imageUrl, videoUrl } = req.body;
+  try {
+    const { title, description, price, imageUrl, videoUrl } = req.body;
+    const courseRepository = getManager().getRepository(Courses);
+    const idCourse = req.params.id;
 
-  const courseRepository =  getManager().getRepository(Courses);
+    const existingCourse = await courseRepository.findOne({
+      where: { id: idCourse },
+    });
 
-  
+    if (existingCourse) {
+      existingCourse.title = title;
+      existingCourse.description = description;
+      existingCourse.price = price;
+      existingCourse.imageUrl = imageUrl;
+      existingCourse.videoUrl = videoUrl;
+    }
+    const editCourse = await courseRepository.save(existingCourse);
 
+    res.json(editCourse);
+  } catch (error) {
+    console.log(`Error editCourse :${error}`);
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the editCourse." });
+  }
 }
+
+
 
 module.exports = {
   addCourse,
+  editCourse,
 };

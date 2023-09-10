@@ -38,6 +38,12 @@ router.post(
   checkRole("admin"),
   courseController.addCourse
 );
+router.put(
+  "/editcourse/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  courseController.editCourse
+);
 
 
 
