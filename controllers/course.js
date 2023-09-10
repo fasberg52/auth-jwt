@@ -8,7 +8,7 @@ async function getAllCourse(req, res) {
     const allCourses = await courseRepository.find();
     res.json(allCourses);
   } catch (error) {
-    console.log(`>>> Error getAllCourse : ${error}`);
+ 
     res
       .status(500)
       .json({ error: "An error occurred while creating the getAllCourse." });

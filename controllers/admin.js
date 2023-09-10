@@ -7,7 +7,7 @@ async function getUsers(req, res) {
     const users = await userRepository.find();
     res.json(users);
   } catch (error) {
-    console.error("Error getting users:", error);
+    
     res.status(500).json({ error: "An error occurred while getting users." });
   }
 }
@@ -27,7 +27,7 @@ async function getUserByPhone(req, res) {
       res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    console.error("Error getting user:", error);
+    
     res
       .status(500)
       .json({ error: "An error occurred while getting the user." });
@@ -54,7 +54,7 @@ async function updateUsers(req, res) {
       res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    console.error("Error updating user:", error);
+    
     res
       .status(500)
       .json({ error: "An error occurred while updating the user." });
@@ -77,7 +77,7 @@ async function deleteUsers(req, res) {
       res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    console.error("Error deleting user:", error);
+ 
     res
       .status(500)
       .json({ error: "An error occurred while deleting the user." });

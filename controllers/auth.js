@@ -119,7 +119,7 @@ async function loginWithOTP(req, res) {
     sendOTP(phone); // Send OTP via SMS
     res.json({ message: "otp send youre phone successfully" });
   } catch (error) {
-    console.log(`>>>error: ${error}`)
+   
     res.status(500).json({ error: "An error occurred while loginWithOTP in." });
   }
 }
@@ -148,7 +148,7 @@ async function verifyWithOTP(req, res) {
     const token = createToken(existingUser);
     res.json({ token, username: existingUser.phone });
   } catch (error) {
-    console.log(`>>>error: ${error}`)
+
     res.status(500).json({ error: "An error occurred while verifyWithOTP in." });
   }
 }
