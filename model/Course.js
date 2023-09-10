@@ -24,13 +24,13 @@ const Course = new EntitySchema({
     createDate: true,
   },
   relations: {
-    courses: {
+    users: {
       type: "many-to-many",
-      target: "Course", // Reference the Course entity
+      target: "User", // Reference the User entity
       joinTable: {
         name: "user_courses", // The name of the intermediary table
-        joinColumn: { name: "userId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "courseId", referencedColumnName: "id" },
+        joinColumn: { name: "courseId", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "userId", referencedColumnName: "id" },
       },
     },
   },
