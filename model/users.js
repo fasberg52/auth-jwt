@@ -30,11 +30,12 @@ const User = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
-    lastLogin:{
+    lastLogin: {
       type: "timestamp",
       nullable: true,
-    }
+    },
   },
+ 
 });
 
 module.exports = User;
