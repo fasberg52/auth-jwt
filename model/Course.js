@@ -30,7 +30,7 @@ const Course = new EntitySchema({
       joinTable: {
         name: "user_courses", // The name of the intermediary table
         joinColumn: { name: "courseId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "userId", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "userId", referencedColumnName: "phone" },
       },
     },
   },
