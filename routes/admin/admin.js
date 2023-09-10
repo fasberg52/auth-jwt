@@ -44,7 +44,11 @@ router.put(
   checkRole("admin"),
   courseController.editCourse
 );
-
-
+router.delete(
+  "/deletecourse/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  courseController.deleteCourse
+);
 
 module.exports = router;
