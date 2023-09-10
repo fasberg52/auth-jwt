@@ -1,27 +1,34 @@
+// Course Entity
 const { EntitySchema } = require("typeorm");
+
 const Course = new EntitySchema({
-  id: {
-    type: "int",
-    generated: true,
-  },
-  title: {
-    type: "varchar",
-  },
-  description: {
-    type: "varchar",
-  },
-  price: {
-    type: "number",
-  },
-  imageUrl: {
-    type: "string",
-  },
-  videoUrl: {
-    type: "string",
-  },
-  createdAt: {
-    type: "timestamp",
-    createDate: true,
+  name: "Course",
+  tableName: "courses",
+  columns: {
+    id: {
+      type: "int",
+      generated: true,
+      primary: true,
+    },
+    title: {
+      type: "varchar",
+    },
+    description: {
+      type: "varchar",
+    },
+    price: {
+      type: "decimal", // Assuming the price is a decimal type
+    },
+    imageUrl: {
+      type: "text",
+    },
+    videoUrl: {
+      type: "text",
+    },
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
   },
   relations: {
     users: {
@@ -30,7 +37,7 @@ const Course = new EntitySchema({
       joinTable: {
         name: "user_courses", // The name of the intermediary table
         joinColumn: { name: "courseId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "userId", referencedColumnName: "phone" },
+        inverseJoinColumn: { name: "userId", referencedColumnName: "phone" }, // Reference the "id" column
       },
     },
   },

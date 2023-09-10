@@ -5,6 +5,7 @@ const OTP = require("./model/OTP");
 const Course = require("./model/Course");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
+
 const passport = require("passport");
 const session = require("express-session");
 var bodyParser = require("body-parser");

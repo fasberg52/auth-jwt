@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const usersController = require("../../controllers/admin");
+const courseController = require("../../controllers/adminCoursesController");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 router.get(
@@ -30,5 +31,8 @@ router.delete(
   checkRole("admin"),
   usersController.deleteUsers
 );
+// admin route course
+router.post("/add/newcourse",jwtAuthMiddleware,
+checkRole("admin"),courseController.addCourse)
 
 module.exports = router;
