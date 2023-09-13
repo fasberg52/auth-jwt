@@ -7,6 +7,7 @@ const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 const courseRouter = require("./routes/shop/course");
 const passport = require("passport");
+const multer = require("multer");
 const session = require("express-session");
 var bodyParser = require("body-parser");
 
@@ -52,7 +53,10 @@ async function main() {
     app.use(passport.session());
 
     app.use(bodyParser.urlencoded({ extended: false }));
+
     app.use(express.json());
+
+    app.use(multer().single("image"));
 
     // Routes
     app.use("/auth", authRouter);

@@ -5,7 +5,7 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const {sendOTP , verifyOTP} = require("../services/otpService");
+const { sendOTP, verifyOTP } = require("../services/otpService");
 const { getManager } = require("typeorm");
 const { generateNumericOTP } = require("../utils/otpUtils");
 const { createToken } = require("../utils/jwtUtils");
@@ -101,28 +101,19 @@ async function loginWithOTP(req, res) {
       where: { phone: phone },
     });
     if (!existingUser) {
-      res.status(404).json({ error: "Phone number not found" });
+      return res.status(404).json({ error: "Phone number not found" }); // Add 'return' here
     }
-    //const otp = generateNumericOTP(6).toString();
-    //console.log(otp);
-    //const otpRepository = getManager().getRepository(OTP);
-   // const hashedPassword = await bcrypt.hash(otp, 10);
-    //const expirationTime = new Date(Date.now() + 30000); // 30 seconds from now
-    // const newOTP = otpRepository.create({
-    //   phone,
-    //   otp: hashedPassword,
-    //   // expirationTime,
-    // });
-    
 
-    //await otpRepository.save(newOTP);
+    // The rest of your code
     sendOTP(phone); // Send OTP via SMS
-    res.json({ message: "otp send youre phone successfully" });
+    res.json({ message: "OTP sent to your phone successfully" });
   } catch (error) {
-   
-    res.status(500).json({ error: "An error occurred while loginWithOTP in." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while logging in with OTP." });
   }
 }
+
 async function verifyWithOTP(req, res) {
   try {
     const { phone, otp } = req.body;
@@ -148,8 +139,9 @@ async function verifyWithOTP(req, res) {
     const token = createToken(existingUser);
     res.json({ token, username: existingUser.phone });
   } catch (error) {
-
-    res.status(500).json({ error: "An error occurred while verifyWithOTP in." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while verifyWithOTP in." });
   }
 }
 async function signUpUsers(req, res) {

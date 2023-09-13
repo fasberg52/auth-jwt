@@ -51,4 +51,6 @@ router.delete(
   courseController.deleteCourse
 );
 
+router.post("/uploads", )
+
 module.exports = router;

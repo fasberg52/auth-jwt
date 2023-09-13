@@ -1,3 +1,4 @@
+//adminCourseController.js
 const Courses = require("../model/Course");
 const { getManager } = require("typeorm");
 
