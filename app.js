@@ -56,7 +56,7 @@ async function main() {
 
     app.use(express.json());
 
-    app.use(multer().single("image"));
+ 
 
     // Routes
     app.use("/auth", authRouter);

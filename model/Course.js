@@ -21,6 +21,7 @@ const Course = new EntitySchema({
     },
     imageUrl: {
       type: "text",
+      nullable: true,
     },
     videoUrl: {
       type: "text",

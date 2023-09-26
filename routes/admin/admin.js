@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const upload = require("../../utils/multerUtils");
+
 const usersController = require("../../controllers/admin");
 const courseController = require("../../controllers/adminCoursesController");
+
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 router.get(
@@ -36,6 +39,7 @@ router.post(
   "/add/newcourse",
   jwtAuthMiddleware,
   checkRole("admin"),
+  upload.single("courseImage"),
   courseController.addCourse
 );
 router.put(
@@ -51,6 +55,10 @@ router.delete(
   courseController.deleteCourse
 );
 
-router.post("/uploads", )
+// router.post(
+//   "/uploads",
+//   upload.single("courseImage"),
+//   courseController.addCourse
+// );
 
 module.exports = router;

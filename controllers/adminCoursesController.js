@@ -1,10 +1,11 @@
 //adminCourseController.js
 const Courses = require("../model/Course");
 const { getManager } = require("typeorm");
-
+const upload = require("../utils/multerUtils");
 async function addCourse(req, res) {
   try {
-    const { title, description, price, imageUrl, videoUrl } = req.body;
+    const { title, description, price, videoUrl } = req.body;
+    const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
 
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
@@ -15,17 +16,40 @@ async function addCourse(req, res) {
       videoUrl,
     });
     const saveCourse = await courseRepository.save(newCourse);
-    res.json(saveCourse);
+
+    // Prepare a response object
+    const response = {};
+
+    if (imageUrl) {
+      // Send a success message for image upload
+      response.imageMessage = "Image uploaded successfully";
+      response.imageUrl = imageUrl;
+    } else {
+      // Send a failure message for image upload
+      response.imageMessage = "Image upload failed";
+    }
+
+    if (saveCourse) {
+      // Send a success message for course creation
+      response.courseMessage = "Course created successfully";
+      response.course = saveCourse;
+    } else {
+      // Send a failure message for course creation
+      response.courseMessage = "Course creation failed";
+    }
+
+    res.status(201).json(response);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the Course." });
+    console.error(`Error adding course: ${error}`);
+    res.status(500).json({ error: "An error occurred while creating the Course." });
   }
 }
 
+
+
 async function editCourse(req, res) {
   try {
-    const { title, description, price, imageUrl, videoUrl } = req.body;
+    const { title, description, price, videoUrl } = req.body;
     const courseRepository = getManager().getRepository(Courses);
     const idCourse = req.params.id;
 
@@ -33,11 +57,22 @@ async function editCourse(req, res) {
       where: { id: idCourse },
     });
 
+      //  // Handle image upload
+      //  if (req.file) {
+      //   // Delete the previous image if it exists
+      //   if (existingCourse.imageUrl) {
+      //     fs.unlinkSync(existingCourse.imageUrl);
+      //   }
+  
+      //   // Set the new image URL
+      //   existingCourse.imageUrl = "/uploads/" + req.file.filename;
+      // }
+
     if (existingCourse) {
       existingCourse.title = title;
       existingCourse.description = description;
       existingCourse.price = price;
-      existingCourse.imageUrl = imageUrl;
+     
       existingCourse.videoUrl = videoUrl;
 
       // Save the updated course
@@ -81,3 +116,8 @@ module.exports = {
   editCourse,
   deleteCourse,
 };
+
+
+
+
+
