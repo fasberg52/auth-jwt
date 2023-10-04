@@ -4,7 +4,15 @@ const { getManager } = require("typeorm");
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
-    const allCourses = await courseRepository.find();
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const pageSize = parseInt(req.query.pageSize) || 10; // Default page size to 10 if not provided
+
+    // Calculate the offset for pagination
+    const offset = (page - 1) * pageSize;
+    const allCourses = await courseRepository.find({
+      skip: offset,
+      take: pageSize,
+    });
     res.json(allCourses);
   } catch (error) {
     res
