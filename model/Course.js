@@ -1,5 +1,5 @@
 // Course Entity
-const { EntitySchema } = require("typeorm");
+const { EntitySchema, Timestamp } = require("typeorm");
 
 const Course = new EntitySchema({
   name: "Course",
@@ -30,6 +30,16 @@ const Course = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
+    lastModified: {
+      type: "timestamp",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: true // deleted this row when production
+    },
+    expireAt:{
+      type:"timestamp",
+      nullable:true
+    }
+  
   },
   relations: {
     users: {
