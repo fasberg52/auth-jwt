@@ -1,3 +1,4 @@
+//orders Entity
 const { EntitySchema } = require('typeorm');
 const OrderItem = require('./OrderItem');
 const User = require('./User'); // Assuming you have a User model

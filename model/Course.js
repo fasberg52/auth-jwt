@@ -17,7 +17,8 @@ const Course = new EntitySchema({
       type: "varchar",
     },
     price: {
-      type: "decimal", // Assuming the price is a decimal type
+      type: "int",
+      nullable: true,
     },
     imageUrl: {
       type: "text",
@@ -33,13 +34,12 @@ const Course = new EntitySchema({
     lastModified: {
       type: "timestamp",
       onUpdate: "CURRENT_TIMESTAMP",
-      nullable: true // deleted this row when production
+      nullable: true, // deleted this row when production
     },
-    expireAt:{
-      type:"timestamp",
-      nullable:true
-    }
-  
+    expireAt: {
+      type: "timestamp",
+      nullable: true,
+    },
   },
   relations: {
     users: {

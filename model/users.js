@@ -1,3 +1,5 @@
+// users Entity
+
 const { EntitySchema } = require("typeorm");
 
 const User = new EntitySchema({

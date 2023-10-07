@@ -1,6 +1,7 @@
 // OrderItem.js
 
-const { EntitySchema } = require("typeorm");
+//orderItems Entity
+const { EntitySchema, Entity } = require("typeorm");
 const Product = require("./Product");
 const Order = require("./Order");
 
