@@ -3,9 +3,13 @@ const { createConnection, getManager } = require("typeorm");
 const Users = require("./model/users");
 const OTP = require("./model/OTP");
 const Course = require("./model/Course");
+const Order = require("./model/Orders");
+const OrderItem =require("./model/OrderItems")
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
+
 const courseRouter = require("./routes/shop/course");
+
 const passport = require("passport");
 const multer = require("multer");
 const session = require("express-session");
@@ -23,7 +27,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course],
+      entities: [Users, OTP, Course, Order,OrderItem],
       synchronize: true,
     });
 
@@ -41,6 +45,9 @@ async function main() {
     const userRepository = getManager().getRepository(Users);
     const otpRepository = getManager().getRepository(OTP);
     const courseRepository = getManager().getRepository(Course);
+    const orderRepository = getManager().getRepository(Order);
+    const orderItemRepository = getManager().getRepository(OrderItem);
+
     app.use(
       session({
         secret: process.env.SESSION_SECRET,
@@ -55,8 +62,6 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
-
- 
 
     // Routes
     app.use("/auth", authRouter);

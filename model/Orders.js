@@ -1,9 +1,7 @@
-//orders Entity
 const { EntitySchema } = require('typeorm');
-const OrderItem = require('./OrderItem');
-const User = require('./User'); // Assuming you have a User model
+const User = require('./users'); // Assuming you have a User model
 
-const OrderSchema = new EntitySchema({
+const Order = new EntitySchema({
   name: 'Order',
   tableName: 'orders',
   columns: {
@@ -18,11 +16,11 @@ const OrderSchema = new EntitySchema({
     },
     orderStatus: {
       type: 'enum',
-      enum:["pending", "cancelled", "succsess"]
+      enum: ["pending", "cancelled", "success"]
     },
     totalPrice: {
-        type: "int",
-      },
+      type: 'int',
+    },
   },
   relations: {
     user: {
@@ -31,11 +29,11 @@ const OrderSchema = new EntitySchema({
       inverseSide: 'orders',
     },
     orderItems: {
-      target: OrderItem,
+      target: 'OrderItem',
       type: 'one-to-many',
       inverseSide: 'order',
     },
   },
 });
 
-module.exports = OrderSchema;
+module.exports = Order;

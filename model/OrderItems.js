@@ -1,49 +1,46 @@
-// OrderItem.js
+const { EntitySchema } = require('typeorm');
+const Course = require('./Course');
+const Order = require('./Orders');
 
-//orderItems Entity
-const { EntitySchema, Entity } = require("typeorm");
-const Product = require("./Product");
-const Order = require("./Order");
-
-const OrderItemSchema = new EntitySchema({
-  name: "OrderItem",
-  tableName: "order_items",
+const OrderItem = new EntitySchema({
+  name: 'OrderItem',
+  tableName: 'orderItems',
   columns: {
     id: {
       primary: true,
-      type: "int",
+      type: 'int',
       generated: true,
     },
     quantity: {
-      type: "int",
+      type: 'int',
     },
     pricePerUnit: {
-      type: "int",
+      type: 'int',
     },
     totalPrice: {
-      type: "int",
+      type: 'int',
     },
     createdAt: {
-      type: "timestamp",
-      default: () => "CURRENT_TIMESTAMP",
+      type: 'timestamp',
+      default: () => 'CURRENT_TIMESTAMP',
     },
     lastModified: {
-      type: "timestamp",
-      onUpdate: "CURRENT_TIMESTAMP",
+      type: 'timestamp',
+      onUpdate: 'CURRENT_TIMESTAMP',
     },
-      },
+  },
   relations: {
     product: {
-      target: Product,
-      type: "many-to-one",
-      inverseSide: "orderItems",
+      target: Course,
+      type: 'many-to-one',
+      inverseSide: 'orderItems',
     },
     order: {
       target: Order,
-      type: "many-to-one",
-      inverseSide: "orderItems",
+      type: 'many-to-one',
+      inverseSide: 'orderItems',
     },
   },
 });
 
-module.exports = OrderItemSchema;
+module.exports = OrderItem;

@@ -1,4 +1,6 @@
 const courseController = require("../../controllers/course");
+const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
+const { checkRole } = require("../../middleware/checkAccess");
 
 const express = require("express");
 const router = express.Router();
@@ -15,6 +17,12 @@ router.delete("/cart/remove/:courseId", courseController.removeCart);
 // Get the current cart contents
 router.get("/cart", courseController.getCart);
 
-// ...other routes...
+router.post(
+  "/orders",
+  jwtAuthMiddleware,
 
+  checkRole("user"),
+  courseController.placeOrder
+);
+router.get("orders", courseController.getUserOrders);
 module.exports = router;

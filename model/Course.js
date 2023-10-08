@@ -36,10 +36,7 @@ const Course = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true, // deleted this row when production
     },
-    expireAt: {
-      type: "timestamp",
-      nullable: true,
-    },
+  
   },
   relations: {
     users: {
