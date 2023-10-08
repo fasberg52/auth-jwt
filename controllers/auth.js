@@ -166,12 +166,13 @@ async function signUpUsers(req, res) {
       });
 
       // Send OTP via SMS
-      otpService.sendOTP(req.body.phone, otp);
+      //otpService.sendOTP(req.body.phone, otp);
 
       const savedUser = await userRepository.save(newUser);
       res.json(savedUser);
     }
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while creating the user." });

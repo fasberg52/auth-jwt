@@ -6,7 +6,7 @@ async function addCourse(req, res) {
   try {
     const { title, description, price, videoUrl } = req.body;
     const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
-
+    
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
