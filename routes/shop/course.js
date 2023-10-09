@@ -24,5 +24,14 @@ router.post(
   checkRole("user"),
   courseController.placeOrder
 );
-router.get("orders", courseController.getUserOrders);
+router.get(
+  "/orders",
+  jwtAuthMiddleware,
+
+  checkRole("user"),
+  courseController.getUserOrders
+);
+router.get("/checkout", courseController.getCheckout);
+router.get("/payment-request", courseController.getPayment);
+router.get("/check-payment")
 module.exports = router;

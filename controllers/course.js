@@ -1,7 +1,13 @@
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
+const ZarinpalCheckout = require("zarinpal-checkout");
 
+
+var zarinpal = ZarinpalCheckout.create(
+  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  true
+);
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
@@ -161,13 +167,21 @@ async function placeOrder(req, res) {
   }
 }
 
-
 async function getUserOrders(req, res) {
   try {
-    const userId = req.user.id; // Assuming user is authenticated
+    if (!req.user) {
+      // User is not authenticated, return an error or appropriate response
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-    // Find all orders for the user
-    const orders = await Order.find({ where: { user: userId } });
+    const userPhone = req.user.phone;
+
+    // Now you can safely access req.user.phone
+
+    // Find all orders for the authenticated user
+    const orderRepository = getManager().getRepository(Order);
+
+    const orders = await orderRepository.find({ where: { userPhone } }); // Use the correct property name
 
     res.status(200).json(orders);
   } catch (error) {
@@ -178,6 +192,87 @@ async function getUserOrders(req, res) {
   }
 }
 
+async function getCheckout(req, res) {
+  try {
+    // Retrieve the cart data from the session
+    const cart = req.session.cart || [];
+
+    if (!cart.length) {
+      return res
+        .status(400)
+        .json({ error: "Cart is empty. Cannot proceed to checkout." });
+    }
+
+    // Calculate the total price of the items in the cart
+    let totalPrice = 0;
+
+    for (const cartItem of cart) {
+      const courseRepository = getManager().getRepository(Courses);
+
+      // Specify the selection condition using the `where` option
+      const course = await courseRepository.findOne({
+        where: { id: cartItem.courseId },
+      });
+
+      if (course) {
+        totalPrice += course.price * cartItem.quantity;
+      }
+    }
+
+    // Return the total price and the cart items to the client for checkout
+    res.status(200).json({ totalPrice, cart });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while preparing the checkout." });
+  }
+}
+async function getPayment(req, res){
+  try {
+    // Retrieve the cart data from the session
+    const cart = req.session.cart || [];
+
+    if (!cart.length) {
+      return res
+        .status(400)
+        .json({ error: "Cart is empty. Cannot proceed to checkout." });
+    }
+
+    // Calculate the total price of the items in the cart
+    let totalPrice = 0;
+
+    for (const cartItem of cart) {
+      const courseRepository = getManager().getRepository(Courses);
+
+      // Specify the selection condition using the `where` option
+      const course = await courseRepository.findOne({
+        where: { id: cartItem.courseId },
+      });
+
+      if (course) {
+        totalPrice += course.price * cartItem.quantity;
+      }
+      await zarinpal
+      .PaymentRequest({
+        Amount: totalPrice,
+        CallbackURL: "http://localhost:3000/checkPayment",
+        Description: "تست اتصال به درگاه پرداخت",
+        Email: "test@gmail.com",
+        Mobile: "0912000000",
+      })
+
+    }
+
+    // Return the total price and the cart items to the client for checkout
+    res.status(200).json({ totalPrice, cart });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while preparing the checkout." });
+  }
+}
 module.exports = {
   getAllCourse,
   getProductById,
@@ -186,4 +281,6 @@ module.exports = {
   getCart,
   placeOrder,
   getUserOrders,
+  getCheckout,
+  getPayment
 };

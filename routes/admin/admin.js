@@ -37,9 +37,9 @@ router.delete(
 // admin route course
 router.post(
   "/add/newcourse",
-  //jwtAuthMiddleware,
-  //checkRole("admin"),
-  //upload.single("courseImage"),
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  upload.single("courseImage"),
   courseController.addCourse
 );
 router.put(
