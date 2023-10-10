@@ -1,12 +1,13 @@
+const { response } = require("express");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
 const ZarinpalCheckout = require("zarinpal-checkout");
-
+const { json } = require("body-parser");
 
 var zarinpal = ZarinpalCheckout.create(
-  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  true
+  "247e3e33-b38f-4e27-968c-1ee3e0881283",
+  false
 );
 async function getAllCourse(req, res) {
   try {
@@ -51,7 +52,10 @@ async function getProductById(req, res) {
 async function addToCart(req, res) {
   try {
     const courseId = req.params.courseId;
+    console.log("Session Data Before Adding to Cart:", req.session);
+
     const cart = req.session.cart || [];
+    console.log("Session Data After Adding to Cart:", req.session);
 
     // Check if the course is already in the cart
     const existingItem = cart.find((item) => item.courseId === courseId);
@@ -78,6 +82,7 @@ async function addToCart(req, res) {
 async function removeCart(req, res) {
   try {
     const courseId = req.params.courseId;
+    
     const cart = req.session.cart || [];
 
     // Find the index of the course in the cart
@@ -195,7 +200,11 @@ async function getUserOrders(req, res) {
 async function getCheckout(req, res) {
   try {
     // Retrieve the cart data from the session
+    console.log("Session Data Before getCheckout:", req.session);
+
     const cart = req.session.cart || [];
+    console.log("Session Data After getCheckout:", req.session);
+
 
     if (!cart.length) {
       return res
@@ -228,10 +237,13 @@ async function getCheckout(req, res) {
       .json({ error: "An error occurred while preparing the checkout." });
   }
 }
-async function getPayment(req, res){
+async function getPayment(req, res) {
   try {
     // Retrieve the cart data from the session
+    console.log("Session Data Before getPayment:", req.session);
+
     const cart = req.session.cart || [];
+    console.log("Session Data After getPayment:", req.session);
 
     if (!cart.length) {
       return res
@@ -253,19 +265,17 @@ async function getPayment(req, res){
       if (course) {
         totalPrice += course.price * cartItem.quantity;
       }
-      await zarinpal
-      .PaymentRequest({
-        Amount: totalPrice,
-        CallbackURL: "http://localhost:3000/checkPayment",
-        Description: "تست اتصال به درگاه پرداخت",
-        Email: "test@gmail.com",
-        Mobile: "0912000000",
-      })
-
     }
+    const responose = await zarinpal.PaymentRequest({
+      Amount: totalPrice,
+      CallbackURL: "http://localhost:3000/course/check-payment",
+      Description: "تست اتصال به درگاه پرداخت",
+      Email: "test@gmail.com",
+      Mobile: "0912000000",
+    });
 
     // Return the total price and the cart items to the client for checkout
-    res.status(200).json({ totalPrice, cart });
+    res.status(200).json(responose);
   } catch (error) {
     console.error(error);
     res
@@ -273,6 +283,100 @@ async function getPayment(req, res){
       .json({ error: "An error occurred while preparing the checkout." });
   }
 }
+
+async function checkPayment(req, res) {
+  try {
+    console.log("Session Data Before checkPayment to Cart:", req.session);
+
+    const cart = req.session.cart || [];
+    console.log("Session Data After checkPayment to Cart:", req.session);
+
+    console.log("Contents of Cart:", cart); // Debugging statement
+
+    if (!cart.length) {
+      return res
+        .status(400)
+        .json({ error: "Cart is empty. Cannot proceed to checkout." });
+    }
+
+    // Calculate the total price of the items in the cart
+    let totalPrice = 0;
+
+    for (const cartItem of cart) {
+      const courseRepository = getManager().getRepository(Courses);
+
+      const course = await courseRepository.findOne({
+        where: { id: cartItem.courseId },
+      });
+
+      if (course) {
+        totalPrice += course.price * cartItem.quantity;
+      }
+    }
+
+    const authority = req.query.Authority;
+    console.log("Authority:", authority);
+
+    const status = req.query.Status; // Access query parameter 'Status' like this
+    console.log("Status:", status);
+
+    if (status === "OK") {
+      const response = await zarinpal.PaymentVerification({
+        Amount: totalPrice,
+        Authority: authority,
+      });
+      console.log(JSON.stringify(response));
+      if (response.status === 100) {
+        // Payment is successful, create an order and clear the cart
+        const userId = req.user.phone;
+        const orderRepository = getManager().getRepository(Order);
+
+        const newOrder = orderRepository.create({
+          user: userId,
+          totalPrice: totalPrice,
+          orderStatus: "success", // You can set an initial status
+        });
+
+        const savedOrder = await orderRepository.save(newOrder);
+
+        // Clear the user's shopping cart after a successful order
+        req.session.cart = [];
+
+        console.log("Order placed successfully. Order ID: " + savedOrder.id);
+
+        // Redirect to a success page or return a success response
+        return res.status(200).json({ message: "Payment successful" });
+      } else {
+        // Payment verification failed, handle the error
+        console.error(
+          "Payment Verification Failed. Status code: " + response.status
+        );
+
+        // You might want to return an error response or redirect the user to a failure page
+        return res.status(400).json({ error: "Payment verification failed" });
+      }
+    } else if (status === "NOK") {
+      // Payment was not successful, create a canceled order and return an appropriate response
+      const userId = req.user.phone;
+      const orderRepository = getManager().getRepository(Order);
+
+      const newOrder = orderRepository.create({
+        user: userId,
+        totalPrice: totalPrice,
+        orderStatus: "cancelled", // You can set an initial status
+      });
+
+      const savedOrder = await orderRepository.save(newOrder);
+      return res.status(400).json({ error: "Payment was not successful" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while processing the payment." });
+  }
+}
+
 module.exports = {
   getAllCourse,
   getProductById,
@@ -282,5 +386,6 @@ module.exports = {
   placeOrder,
   getUserOrders,
   getCheckout,
-  getPayment
+  getPayment,
+  checkPayment,
 };

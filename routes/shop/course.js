@@ -33,5 +33,5 @@ router.get(
 );
 router.get("/checkout", courseController.getCheckout);
 router.get("/payment-request", courseController.getPayment);
-router.get("/check-payment")
+router.get("/check-payment", courseController.checkPayment)
 module.exports = router;
