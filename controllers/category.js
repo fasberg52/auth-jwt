@@ -13,7 +13,9 @@ async function getAllCategories(req, res) {
     const categories = await categoryRepository.find();
     res.json(categories);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching categories." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching categories." });
   }
 }
 
@@ -27,7 +29,9 @@ async function createCategory(req, res) {
     const savedCategory = await categoryRepository.save(newCategory);
     res.status(201).json(savedCategory);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while creating the category." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the category." });
   }
 }
 
@@ -36,9 +40,10 @@ async function updateCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;
     const { name, description } = req.body;
-    const icon = req.file ? req.file.filename : null; // Check if a file was uploaded
     const categoryRepository = getManager().getRepository(Category);
-    const existingCategory = await categoryRepository.findOne(categoryId);
+    const existingCategory = await categoryRepository.findOne({
+      where: { id: categoryId },
+    });
 
     if (!existingCategory) {
       return res.status(404).json({ error: "Category not found." });
@@ -46,12 +51,20 @@ async function updateCategory(req, res) {
 
     existingCategory.name = name;
     existingCategory.description = description;
-    existingCategory.icon = icon; // Update the icon field
+
+    if (req.file) {
+      existingCategory.icon = req.file.filename;
+    }
+
+    existingCategory.lastModified = new Date();
 
     const updatedCategory = await categoryRepository.save(existingCategory);
     res.json(updatedCategory);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while updating the category." });
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the category." });
   }
 }
 
@@ -77,7 +90,9 @@ async function deleteCategory(req, res) {
     await categoryRepository.remove(existingCategory);
     res.json({ message: "Category deleted successfully." });
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while deleting the category." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while deleting the category." });
   }
 }
 

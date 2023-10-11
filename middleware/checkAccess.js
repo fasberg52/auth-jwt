@@ -8,3 +8,4 @@ const checkRole = (role) => (req, res, next) => {
 };
 
 module.exports = { checkRole };
+

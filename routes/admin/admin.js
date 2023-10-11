@@ -5,7 +5,7 @@ const upload = require("../../utils/multerUtils");
 
 const usersController = require("../../controllers/admin");
 const courseController = require("../../controllers/adminCoursesController");
-
+const categoryController = require("../../controllers/category");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 router.get(
@@ -55,6 +55,23 @@ router.delete(
   courseController.deleteCourse
 );
 
+//category
+
+router.post(
+  "/create-category",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  upload.single("icon"),
+  categoryController.createCategory
+);
+router.put(
+  "/update-category/:categoryId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  upload.single("icon"),
+  categoryController.updateCategory
+);
+
 // router.post(
 //   "/uploads",
 //   upload.single("courseImage"),
@@ -62,5 +79,3 @@ router.delete(
 // );
 
 module.exports = router;
-
-
