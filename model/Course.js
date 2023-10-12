@@ -36,9 +36,13 @@ const Course = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true, // deleted this row when production
     },
-  
   },
   relations: {
+    category: {
+      // Many-to-One relationship to Category
+      type: "many-to-one",
+      target: "Category", // Reference the Category entity
+    },
     users: {
       type: "many-to-many",
       target: "User", // Reference the User entity

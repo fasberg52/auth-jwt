@@ -3,6 +3,7 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { checkRole } = require("../../middleware/checkAccess");
 
 const express = require("express");
+const categoryController = require("../../controllers/category");
 const router = express.Router();
 
 router.get("/allcourses", courseController.getAllCourse);
@@ -31,7 +32,11 @@ router.get(
   checkRole("user"),
   courseController.getUserOrders
 );
+
 router.get("/checkout", courseController.getCheckout);
 router.get("/payment-request", courseController.getPayment);
-router.get("/check-payment", courseController.checkPayment)
+router.get("/check-payment", courseController.checkPayment);
+
+
+router.get("/all-category", categoryController.getAllCategories)
 module.exports = router;

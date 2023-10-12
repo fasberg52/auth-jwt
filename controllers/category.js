@@ -73,7 +73,9 @@ async function deleteCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;
     const categoryRepository = getManager().getRepository(Category);
-    const existingCategory = await categoryRepository.findOne(categoryId);
+    const existingCategory = await categoryRepository.findOne({
+      where: { id : categoryId },
+    });
 
     if (!existingCategory) {
       return res.status(404).json({ error: "Category not found." });
@@ -90,6 +92,7 @@ async function deleteCategory(req, res) {
     await categoryRepository.remove(existingCategory);
     res.json({ message: "Category deleted successfully." });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while deleting the category." });

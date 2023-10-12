@@ -71,6 +71,13 @@ router.put(
   upload.single("icon"),
   categoryController.updateCategory
 );
+router.delete(
+  "/delete-category/:categoryId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+
+  categoryController.deleteCategory
+);
 
 // router.post(
 //   "/uploads",
