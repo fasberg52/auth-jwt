@@ -1,3 +1,4 @@
+//app.js
 const express = require("express");
 const { createConnection, getManager } = require("typeorm");
 const Users = require("./model/users");
@@ -10,15 +11,17 @@ const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 
 const courseRouter = require("./routes/shop/course");
+const swaggerSpec = require("./utils/swagger");
 
 const passport = require("passport");
 const multer = require("multer");
 const session = require("express-session");
 var bodyParser = require("body-parser");
+const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
 const dotenv = require("dotenv").config();
 const app = express();
-
+  
 async function setupDatabase() {
   try {
     await createConnection({
@@ -64,6 +67,11 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
+    
+    
+    
+    //swagger api
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
     // Routes
     app.use("/auth", authRouter);
