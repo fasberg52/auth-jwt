@@ -9,7 +9,14 @@ const User = require("../model/users");
 const OTP_EXPIRATION_TIME_MS = 30 * 1000; // 30 seconds
 
 async function sendOTP(phone) {
-  try {
+   try {
+  //   const userRepository = getManager().getRepository(User); // Assuming User is the correct entity name
+  //   const existingUser = await userRepository.findOne({ where: { phone } });
+
+  //   if (!existingUser) {
+  //     console.error(`User with phone number ${phone} does not exist.`);
+  //     return;
+  //   }
     const otp = generateNumericOTP(6).toString();
     console.log(`>>>otp: ${otp}`);
     await sendOTPSMS(phone, otp);
@@ -63,8 +70,6 @@ async function verifyOTP(phone, otp) {
       await otpRepository.save(otpRecord);
     }
 
-
-    
     return isValidOTP; // Invalid OTP
   } catch (error) {
     console.error("Error verifying OTP:", error);

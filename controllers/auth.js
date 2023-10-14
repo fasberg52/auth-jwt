@@ -144,19 +144,20 @@ async function verifyWithOTP(req, res) {
       .json({ error: "An error occurred while verifyWithOTP in." });
   }
 }
+async function verifySignup(req, res) {}
 async function signUpUsers(req, res) {
   try {
+    const { phone } = req.body;
     const userRepository = getManager().getRepository(Users);
     const existingUser = await userRepository.findOne({
-      where: { phone: req.body.phone },
+      where: { phone },
     });
 
     if (existingUser) {
       res.status(400).json({ error: "User already exists." });
     } else {
-      const otp = generateNumericOTP(6);
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
+      // Send OTP via SMS
+      sendOTP(phone);
       const newUser = userRepository.create({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -164,9 +165,6 @@ async function signUpUsers(req, res) {
         password: hashedPassword,
         otp: otp,
       });
-
-      // Send OTP via SMS
-      //otpService.sendOTP(req.body.phone, otp);
 
       const savedUser = await userRepository.save(newUser);
       res.json(savedUser);
@@ -184,4 +182,5 @@ module.exports = {
   loginWithOTP,
   verifyWithOTP,
   signUpUsers,
+  verifySignup,
 };

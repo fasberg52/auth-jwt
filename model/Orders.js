@@ -1,37 +1,37 @@
-const { EntitySchema } = require('typeorm');
-const User = require('./users'); // Assuming you have a User model
+const { EntitySchema } = require("typeorm");
+const User = require("./users"); // Assuming you have a User model
 
 const Order = new EntitySchema({
-  name: 'Order',
-  tableName: 'orders',
+  name: "Order",
+  tableName: "orders",
   columns: {
     id: {
       primary: true,
-      type: 'int',
+      type: "int",
       generated: true,
     },
     orderDate: {
-      type: 'timestamp',
-      default: () => 'CURRENT_TIMESTAMP',
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
     },
     orderStatus: {
-      type: 'enum',
-      enum: ["pending", "cancelled", "success"]
+      type: "enum",
+      enum: ["pending", "cancelled", "success"],
     },
     totalPrice: {
-      type: 'int',
+      type: "int",
     },
   },
   relations: {
     user: {
       target: User,
-      type: 'many-to-one',
-      inverseSide: 'orders',
+      type: "many-to-one",
+      inverseSide: "orders",
     },
     orderItems: {
-      target: 'OrderItem',
-      type: 'one-to-many',
-      inverseSide: 'order',
+      target: "OrderItem",
+      type: "one-to-many",
+      inverseSide: "order",
     },
   },
 });
