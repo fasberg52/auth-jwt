@@ -10,9 +10,11 @@ const Category = new EntitySchema({
       type: "int",
       generated: true,
       primary: true,
+     
     },
     name: {
       type: "varchar",
+
     },
     description: {
       type: "varchar",
@@ -32,12 +34,5 @@ const Category = new EntitySchema({
       nullable: true,
     },
   },
-  relations: {
-    category: {
-      type: "many-to-one",
-      target: "Category",
-      joinColumn: { name: "categoryId" },
-    },  },
 });
-
 module.exports = Category;

@@ -22,7 +22,7 @@ async function addCourse(req, res) {
       price,
       imageUrl,
       videoUrl,
-      categoryId,
+      category,
     });
     const saveCourse = await courseRepository.save(newCourse);
 
