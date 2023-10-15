@@ -1,12 +1,20 @@
 //adminCourseController.js
 const Courses = require("../model/Course");
+const Category = require("../model/Category");
 const { getManager } = require("typeorm");
 const upload = require("../utils/multerUtils");
 async function addCourse(req, res) {
   try {
-    const { title, description, price, videoUrl } = req.body;
+    console.log("Request Body:", req.body);
+    const { title, description, price, videoUrl, categoryId } = req.body;
+
     const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
-    
+    const category = await getManager()
+      .getRepository(Category)
+      .findOne({ where: { id: categoryId } });
+    if (!category) {
+      return res.status(400).json({ error: "Category not found" });
+    }
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
@@ -14,6 +22,7 @@ async function addCourse(req, res) {
       price,
       imageUrl,
       videoUrl,
+      categoryId,
     });
     const saveCourse = await courseRepository.save(newCourse);
 
@@ -41,11 +50,11 @@ async function addCourse(req, res) {
     res.status(201).json(response);
   } catch (error) {
     console.error(`Error adding course: ${error}`);
-    res.status(500).json({ error: "An error occurred while creating the Course." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the Course." });
   }
 }
-
-
 
 async function editCourse(req, res) {
   try {
@@ -57,25 +66,26 @@ async function editCourse(req, res) {
       where: { id: idCourse },
     });
 
-      //  // Handle image upload
-      //  if (req.file) {
-      //   // Delete the previous image if it exists
-      //   if (existingCourse.imageUrl) {
-      //     fs.unlinkSync(existingCourse.imageUrl);
-      //   }
-  
-      //   // Set the new image URL
-      //   existingCourse.imageUrl = "/uploads/" + req.file.filename;
-      // }
+    //  // Handle image upload
+    //  if (req.file) {
+    //   // Delete the previous image if it exists
+    //   if (existingCourse.imageUrl) {
+    //     fs.unlinkSync(existingCourse.imageUrl);
+    //   }
+
+    //   // Set the new image URL
+    //   existingCourse.imageUrl = "/uploads/" + req.file.filename;
+    // }
 
     if (existingCourse) {
       existingCourse.title = title;
       existingCourse.description = description;
       existingCourse.price = price;
-     
+
       existingCourse.videoUrl = videoUrl;
 
       // Save the updated course
+      existingCourse.lastModified = new Date();
       const editCourse = await courseRepository.save(existingCourse);
 
       res.json(editCourse);
@@ -116,8 +126,3 @@ module.exports = {
   editCourse,
   deleteCourse,
 };
-
-
-
-
-

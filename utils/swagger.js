@@ -3,14 +3,13 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const options = {
   swaggerDefinition: {
     info: {
-      title: "Your API Title",
+      title: "Baclass Online",
       version: "1.0.0",
-      description: "Your API Description",
+      description: "State One Project",
     },
   },
   apis: ["./routes/admin/admin.js","./routes/auth/auth.js"], // Make the path absolute
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-console.log(swaggerSpec);
 module.exports = swaggerSpec;

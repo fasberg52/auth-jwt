@@ -33,8 +33,11 @@ const Category = new EntitySchema({
     },
   },
   relations: {
-    // Define any relations here if needed
-  },
+    category: {
+      type: "many-to-one",
+      target: "Category",
+      joinColumn: { name: "categoryId" },
+    },  },
 });
 
 module.exports = Category;

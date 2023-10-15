@@ -41,7 +41,7 @@ const Course = new EntitySchema({
     category: {
       // Many-to-One relationship to Category
       type: "many-to-one",
-      target: "Category", // Reference the Category entity
+      target: "Category",
     },
     users: {
       type: "many-to-many",
