@@ -6,8 +6,8 @@ const ZarinpalCheckout = require("zarinpal-checkout");
 const { json } = require("body-parser");
 
 var zarinpal = ZarinpalCheckout.create(
-  "247e3e33-b38f-4e27-968c-1ee3e0881283",
-  false
+  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  true
 );
 async function getAllCourse(req, res) {
   try {

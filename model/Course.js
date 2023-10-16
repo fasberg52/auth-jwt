@@ -42,7 +42,7 @@ const Course = new EntitySchema({
       // Many-to-One relationship to Category
       type: "many-to-one",
       target: "Category",
-      //   joinColumn: { name: " " },
+
     },
     users: {
       type: "many-to-many",

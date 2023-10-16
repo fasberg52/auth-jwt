@@ -28,11 +28,6 @@ const Order = new EntitySchema({
       type: "many-to-one",
       inverseSide: "orders",
     },
-    orderItems: {
-      target: "OrderItem",
-      type: "one-to-many",
-      inverseSide: "order",
-    },
   },
 });
 
