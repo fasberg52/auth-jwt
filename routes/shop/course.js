@@ -10,13 +10,21 @@ router.get("/allcourses", courseController.getAllCourse);
 router.get("/onecourse/:courseId", courseController.getProductById);
 
 // Add an item to the cart
-router.post("/cart/add/:courseId", courseController.addToCart);
+router.post(
+  "/cart/add/:courseId",
+  jwtAuthMiddleware,
+  courseController.addToCart
+);
 
 // Remove an item from the cart
-router.delete("/cart/remove/:courseId", courseController.removeCart);
+router.delete(
+  "/cart/remove/:courseId",
+  jwtAuthMiddleware,
+  courseController.removeCart
+);
 
 // Get the current cart contents
-router.get("/cart", courseController.getCart);
+router.get("/cart", jwtAuthMiddleware, courseController.getCart);
 
 router.post(
   "/orders",
@@ -33,10 +41,9 @@ router.get(
   courseController.getUserOrders
 );
 
-router.get("/checkout", courseController.getCheckout);
-router.get("/payment-request", courseController.getPayment);
-router.get("/check-payment", courseController.checkPayment);
+router.get("/checkout", jwtAuthMiddleware,courseController.getCheckout);
+router.get("/payment-request", jwtAuthMiddleware,courseController.getPayment);
+router.get("/check-payment", jwtAuthMiddleware,courseController.checkPayment);
 
-
-router.get("/all-category", categoryController.getAllCategories)
+router.get("/all-category", categoryController.getAllCategories);
 module.exports = router;

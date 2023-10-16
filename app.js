@@ -5,7 +5,6 @@ const Users = require("./model/users");
 const OTP = require("./model/OTP");
 const Course = require("./model/Course");
 const Order = require("./model/Orders");
-const OrderItem = require("./model/OrderItems");
 const Category = require("./model/Category");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
@@ -31,7 +30,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course, Order, OrderItem, Category],
+      entities: [Users, OTP, Course, Order, Category],
       synchronize: true,
     });
 
@@ -50,7 +49,6 @@ async function main() {
     const otpRepository = getManager().getRepository(OTP);
     const courseRepository = getManager().getRepository(Course);
     const orderRepository = getManager().getRepository(Order);
-    const orderItemRepository = getManager().getRepository(OrderItem);
     const categoryItemRepository = getManager().getRepository(Category);
 
     app.use(

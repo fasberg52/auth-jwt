@@ -82,7 +82,7 @@ async function addToCart(req, res) {
 async function removeCart(req, res) {
   try {
     const courseId = req.params.courseId;
-    
+
     const cart = req.session.cart || [];
 
     // Find the index of the course in the cart
@@ -179,15 +179,19 @@ async function getUserOrders(req, res) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const userPhone = req.user.phone;
+    const user = req.user;
 
     // Now you can safely access req.user.phone
 
     // Find all orders for the authenticated user
     const orderRepository = getManager().getRepository(Order);
 
-    const orders = await orderRepository.find({ where: { userPhone } }); // Use the correct property name
-
+    const orders = await orderRepository
+    .createQueryBuilder("order")
+    .leftJoinAndSelect("order.user", "user")
+    .select(["order.id", "order.orderDate", "order.orderStatus", "order.totalPrice", "user.phone"])
+    .where("user.id = :userId", { userId: req.user.id }) // Assuming user has an 'id' property
+    .getMany();
     res.status(200).json(orders);
   } catch (error) {
     console.error(error);
@@ -204,7 +208,6 @@ async function getCheckout(req, res) {
 
     const cart = req.session.cart || [];
     console.log("Session Data After getCheckout:", req.session);
-
 
     if (!cart.length) {
       return res
