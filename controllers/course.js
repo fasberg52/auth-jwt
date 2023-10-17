@@ -55,10 +55,13 @@ async function addToCart(req, res) {
     console.log("Session Data Before Adding to Cart:", req.session);
 
     const cart = req.session.cart || [];
+
     console.log("Session Data After Adding to Cart:", req.session);
 
     // Check if the course is already in the cart
     const existingItem = cart.find((item) => item.courseId === courseId);
+
+    console.log("Cart:", cart); // Log the cart to see its content
 
     if (existingItem) {
       // Increase the quantity if the course is already in the cart
@@ -73,12 +76,13 @@ async function addToCart(req, res) {
 
     res.status(200).json({ message: "Item added to the cart." });
   } catch (error) {
-    console.log(`>>>>${error}`);
+    console.log(`Error in addToCart: ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while creating the addToCart." });
   }
 }
+
 async function removeCart(req, res) {
   try {
     const courseId = req.params.courseId;
@@ -121,10 +125,8 @@ async function placeOrder(req, res) {
   try {
     console.log("Request Body:", req.body);
 
-    // Assuming user is authenticated
     const userId = req.user.phone;
 
-    // Retrieve the cart data from the session
     const cart = req.session.cart || [];
 
     if (!cart.length) {
@@ -133,13 +135,11 @@ async function placeOrder(req, res) {
         .json({ error: "Cart is empty. Cannot place an order." });
     }
 
-    // Calculate the total price of the order based on cart items
     let totalPrice = 0;
 
     for (const cartItem of cart) {
       const courseRepository = getManager().getRepository(Courses);
 
-      // Specify the selection condition using the `where` option
       const course = await courseRepository.findOne({
         where: { id: cartItem.courseId },
       });
@@ -148,12 +148,15 @@ async function placeOrder(req, res) {
         totalPrice += course.price * cartItem.quantity;
       }
     }
+    if (totalPrice <= 0) {
+      return res
+        .status(400)
+        .json({ error: "Cart total price is zero. Cannot place an order." });
+    }
 
-    // Create an order with the selected courses
-    const orderRepository = getManager().getRepository(Order); // Adjust the import path
-
+    const orderRepository = getManager().getRepository(Order);
     const newOrder = orderRepository.create({
-      user: userId, // Assuming `user` is the correct foreign key reference
+      user: userId,
       totalPrice: totalPrice,
       orderStatus: "pending",
     });
@@ -161,7 +164,7 @@ async function placeOrder(req, res) {
     const savedOrder = await orderRepository.save(newOrder);
 
     // Clear the user's shopping cart after a successful order
-    req.session.cart = [];
+    // req.session.cart = [];
 
     res.status(201).json({ message: "Order placed successfully." });
   } catch (error) {
@@ -175,23 +178,25 @@ async function placeOrder(req, res) {
 async function getUserOrders(req, res) {
   try {
     if (!req.user) {
-      // User is not authenticated, return an error or appropriate response
       return res.status(401).json({ error: "Unauthorized" });
     }
 
     const user = req.user;
 
-    // Now you can safely access req.user.phone
-
-    // Find all orders for the authenticated user
     const orderRepository = getManager().getRepository(Order);
 
     const orders = await orderRepository
-    .createQueryBuilder("order")
-    .leftJoinAndSelect("order.user", "user")
-    .select(["order.id", "order.orderDate", "order.orderStatus", "order.totalPrice", "user.phone"])
-    .where("user.id = :userId", { userId: req.user.id }) // Assuming user has an 'id' property
-    .getMany();
+      .createQueryBuilder("order")
+      .leftJoinAndSelect("order.user", "user")
+      .select([
+        "order.id",
+        "order.orderDate",
+        "order.orderStatus",
+        "order.totalPrice",
+        "user.phone",
+      ])
+      .where("user.id = :userId", { userId: req.user.id }) // Assuming user has an 'id' property
+      .getMany();
     res.status(200).json(orders);
   } catch (error) {
     console.error(error);
@@ -203,11 +208,13 @@ async function getUserOrders(req, res) {
 
 async function getCheckout(req, res) {
   try {
-    // Retrieve the cart data from the session
+    // Log session data
     console.log("Session Data Before getCheckout:", req.session);
 
     const cart = req.session.cart || [];
-    console.log("Session Data After getCheckout:", req.session);
+
+    // Log cart data
+    console.log("Cart Data:", cart);
 
     if (!cart.length) {
       return res
@@ -240,18 +247,21 @@ async function getCheckout(req, res) {
       .json({ error: "An error occurred while preparing the checkout." });
   }
 }
+
 async function getPayment(req, res) {
   try {
-    // Retrieve the cart data from the session
+    // Log session data
     console.log("Session Data Before getPayment:", req.session);
 
     const cart = req.session.cart || [];
-    console.log("Session Data After getPayment:", req.session);
+
+    // Log cart data
+    console.log("Cart Data:", cart);
 
     if (!cart.length) {
       return res
         .status(400)
-        .json({ error: "Cart is empty. Cannot proceed to checkout." });
+        .json({ error: "Cart is empty. Cannot proceed to getPayment." });
     }
 
     // Calculate the total price of the items in the cart
@@ -269,7 +279,7 @@ async function getPayment(req, res) {
         totalPrice += course.price * cartItem.quantity;
       }
     }
-    const responose = await zarinpal.PaymentRequest({
+    const response = await zarinpal.PaymentRequest({
       Amount: totalPrice,
       CallbackURL: "http://localhost:3000/course/check-payment",
       Description: "تست اتصال به درگاه پرداخت",
@@ -278,7 +288,7 @@ async function getPayment(req, res) {
     });
 
     // Return the total price and the cart items to the client for checkout
-    res.status(200).json(responose);
+    res.status(200).json(response);
   } catch (error) {
     console.error(error);
     res
@@ -287,20 +297,19 @@ async function getPayment(req, res) {
   }
 }
 
+
 async function checkPayment(req, res) {
   try {
     console.log("Session Data Before checkPayment to Cart:", req.session);
-
     const cart = req.session.cart || [];
     console.log("Session Data After checkPayment to Cart:", req.session);
-
     console.log("Contents of Cart:", cart); // Debugging statement
 
-    if (!cart.length) {
-      return res
-        .status(400)
-        .json({ error: "Cart is empty. Cannot proceed to checkout." });
-    }
+    // if (!cart.length) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Cart is empty. Cannot proceed to checkPayment." });
+    // }
 
     // Calculate the total price of the items in the cart
     let totalPrice = 0;
@@ -322,13 +331,14 @@ async function checkPayment(req, res) {
 
     const status = req.query.Status; // Access query parameter 'Status' like this
     console.log("Status:", status);
+    console.log("Request Query Parameters:", req.query); // Debugging statement
 
     if (status === "OK") {
       const response = await zarinpal.PaymentVerification({
         Amount: totalPrice,
         Authority: authority,
       });
-      console.log(JSON.stringify(response));
+      console.log(`>>>>>>>>>>CHECK PAYMENT : ${JSON.stringify(response)}}`);
       if (response.status === 100) {
         // Payment is successful, create an order and clear the cart
         const userId = req.user.phone;
@@ -343,23 +353,19 @@ async function checkPayment(req, res) {
         const savedOrder = await orderRepository.save(newOrder);
 
         // Clear the user's shopping cart after a successful order
-        req.session.cart = [];
+        //req.session.cart = [];
 
         console.log("Order placed successfully. Order ID: " + savedOrder.id);
 
-        // Redirect to a success page or return a success response
         return res.status(200).json({ message: "Payment successful" });
       } else {
-        // Payment verification failed, handle the error
         console.error(
-          "Payment Verification Failed. Status code: " + response.status
+          "Payment Verification Failed. Status code: " + response.status + response.message
         );
 
-        // You might want to return an error response or redirect the user to a failure page
-        return res.status(400).json({ error: "Payment verification failed" });
+        return res.status(400).json(error);
       }
     } else if (status === "NOK") {
-      // Payment was not successful, create a canceled order and return an appropriate response
       const userId = req.user.phone;
       const orderRepository = getManager().getRepository(Order);
 
@@ -373,7 +379,9 @@ async function checkPayment(req, res) {
       return res.status(400).json({ error: "Payment was not successful" });
     }
   } catch (error) {
-    console.error(error);
+    console.error(`payment have error${error}`);
+    console.error("Payment Verification Failed. Status code: " + response.status);
+
     return res
       .status(500)
       .json({ error: "An error occurred while processing the payment." });

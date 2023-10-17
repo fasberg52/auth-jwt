@@ -43,7 +43,7 @@ router.get(
 
 router.get("/checkout", jwtAuthMiddleware,courseController.getCheckout);
 router.get("/payment-request", jwtAuthMiddleware,courseController.getPayment);
-router.get("/check-payment", jwtAuthMiddleware,courseController.checkPayment);
+router.get("/check-payment",courseController.checkPayment);
 
 router.get("/all-category", categoryController.getAllCategories);
 module.exports = router;

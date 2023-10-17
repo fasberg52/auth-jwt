@@ -6,21 +6,27 @@ const OTP = require("./model/OTP");
 const Course = require("./model/Course");
 const Order = require("./model/Orders");
 const Category = require("./model/Category");
+const Session = require("./model/Session");
+
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 
 const courseRouter = require("./routes/shop/course");
 const swaggerSpec = require("./utils/swagger");
-
+const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const multer = require("multer");
 const session = require("express-session");
 var bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
+
+const PgSession = require('connect-pg-simple')(session);
+
+
 const dotenv = require("dotenv").config();
 const app = express();
-  
+
 async function setupDatabase() {
   try {
     await createConnection({
@@ -30,7 +36,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course, Order, Category],
+      entities: [Users, OTP, Course, Order, Category,Session],
       synchronize: true,
     });
 
@@ -50,14 +56,32 @@ async function main() {
     const courseRepository = getManager().getRepository(Course);
     const orderRepository = getManager().getRepository(Order);
     const categoryItemRepository = getManager().getRepository(Category);
-
+    app.use(cookieParser());
     app.use(
       session({
+        store: new PgSession({
+          conObject: {
+            // Use your PostgreSQL connection settings here
+            user: "postgres",
+            host: "localhost",
+            database: "postgres",
+            password: "2434127reza",
+            port: 5432,
+          },
+          tableName: "session",
+        }),
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
       })
     );
+    // app.use(
+    //   session({
+    //     secret: process.env.SESSION_SECRET,
+    //     resave: false,
+    //     saveUninitialized: false,
+    //   })
+    // );
 
     app.use(passport.initialize());
     app.use(passport.session());
@@ -65,9 +89,7 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
-    
-    
-    
+
     //swagger api
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
