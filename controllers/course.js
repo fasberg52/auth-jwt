@@ -237,9 +237,10 @@ async function getCheckout(req, res) {
         totalPrice += course.price * cartItem.quantity;
       }
     }
+    const user = req.user;
 
     // Return the total price and the cart items to the client for checkout
-    res.status(200).json({ totalPrice, cart });
+    res.status(200).json({ user, totalPrice, cart });
   } catch (error) {
     console.error(error);
     res
@@ -279,12 +280,13 @@ async function getPayment(req, res) {
         totalPrice += course.price * cartItem.quantity;
       }
     }
+    const user = req.user;
     const response = await zarinpal.PaymentRequest({
       Amount: totalPrice,
       CallbackURL: "http://localhost:3000/course/check-payment",
       Description: "تست اتصال به درگاه پرداخت",
       Email: "test@gmail.com",
-      Mobile: "0912000000",
+      Mobile: user.phone,
     });
 
     // Return the total price and the cart items to the client for checkout
@@ -296,7 +298,6 @@ async function getPayment(req, res) {
       .json({ error: "An error occurred while preparing the checkout." });
   }
 }
-
 
 async function checkPayment(req, res) {
   try {
@@ -360,7 +361,9 @@ async function checkPayment(req, res) {
         return res.status(200).json({ message: "Payment successful" });
       } else {
         console.error(
-          "Payment Verification Failed. Status code: " + response.status + response.message
+          "Payment Verification Failed. Status code: " +
+            response.status +
+            response.message
         );
 
         return res.status(400).json(error);
@@ -380,7 +383,9 @@ async function checkPayment(req, res) {
     }
   } catch (error) {
     console.error(`payment have error${error}`);
-    console.error("Payment Verification Failed. Status code: " + response.status);
+    console.error(
+      "Payment Verification Failed. Status code: " + response.status
+    );
 
     return res
       .status(500)
