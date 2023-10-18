@@ -301,16 +301,14 @@ async function getPayment(req, res) {
 
 async function checkPayment(req, res) {
   try {
+    const user = req.user;
+    // if (!user) {
+    //   return res.status(401).json({ error: "Unauthorized" });
+    // }
     console.log("Session Data Before checkPayment to Cart:", req.session);
     const cart = req.session.cart || [];
     console.log("Session Data After checkPayment to Cart:", req.session);
     console.log("Contents of Cart:", cart); // Debugging statement
-
-    // if (!cart.length) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Cart is empty. Cannot proceed to checkPayment." });
-    // }
 
     // Calculate the total price of the items in the cart
     let totalPrice = 0;
@@ -339,10 +337,11 @@ async function checkPayment(req, res) {
         Amount: totalPrice,
         Authority: authority,
       });
-      console.log(`>>>>>>>>>>CHECK PAYMENT : ${JSON.stringify(response)}}`);
+console.log(JSON.stringify(response));
       if (response.status === 100) {
+        console.log("Verified :" + response.RefID);
         // Payment is successful, create an order and clear the cart
-        const userId = req.user.phone;
+        const userId = user.phone; // Extract user information
         const orderRepository = getManager().getRepository(Order);
 
         const newOrder = orderRepository.create({
@@ -353,12 +352,11 @@ async function checkPayment(req, res) {
 
         const savedOrder = await orderRepository.save(newOrder);
 
-        // Clear the user's shopping cart after a successful order
-        //req.session.cart = [];
-
-        console.log("Order placed successfully. Order ID: " + savedOrder.id);
-
-        return res.status(200).json({ message: "Payment successful" });
+        console.log("Order placed successfully by user: " + user.email); // Log user information
+        return res.status(200).json({
+          message: "Payment successful",
+          user: user, // Include user information in the response
+        });
       } else {
         console.error(
           "Payment Verification Failed. Status code: " +
@@ -366,10 +364,10 @@ async function checkPayment(req, res) {
             response.message
         );
 
-        return res.status(400).json(error);
+        return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (status === "NOK") {
-      const userId = req.user.phone;
+      const userId = user.phone; // Extract user information
       const orderRepository = getManager().getRepository(Order);
 
       const newOrder = orderRepository.create({
@@ -379,19 +377,17 @@ async function checkPayment(req, res) {
       });
 
       const savedOrder = await orderRepository.save(newOrder);
+      
       return res.status(400).json({ error: "Payment was not successful" });
     }
   } catch (error) {
-    console.error(`payment have error${error}`);
-    console.error(
-      "Payment Verification Failed. Status code: " + response.status
-    );
-
+    console.error(`Payment error: ${error}`);
     return res
       .status(500)
       .json({ error: "An error occurred while processing the payment." });
   }
 }
+
 
 module.exports = {
   getAllCourse,
