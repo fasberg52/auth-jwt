@@ -1,2 +1,0 @@
-const { getManager } = require("typeorm");
- 
