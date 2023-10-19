@@ -7,7 +7,7 @@ const Course = require("./model/Course");
 const Order = require("./model/Orders");
 const Category = require("./model/Category");
 const Session = require("./model/Session");
-
+const Cart = require("./model/Cart");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 
@@ -34,7 +34,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course, Order, Category, Session],
+      entities: [Users, OTP, Course, Order, Category, Session, Cart],
       synchronize: true,
     });
 
@@ -54,6 +54,8 @@ async function main() {
     const courseRepository = getManager().getRepository(Course);
     const orderRepository = getManager().getRepository(Order);
     const categoryItemRepository = getManager().getRepository(Category);
+    const cartRepository = getManager().getRepository(Cart);
+    const sessionRepository = getManager().getRepository(Session);
     app.use(cookieParser());
     app.use(
       session({
@@ -71,6 +73,10 @@ async function main() {
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
+        cookie: {
+          secure: false,
+          maxAge: 24 * 60 * 60 * 1000,
+        },
       })
     );
     // app.use(

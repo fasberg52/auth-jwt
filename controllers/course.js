@@ -1,9 +1,9 @@
-const { response } = require("express");
+const { json } = require("express");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
+const Session = require("../model/Session");
 const { getManager } = require("typeorm");
 const ZarinpalCheckout = require("zarinpal-checkout");
-const { json } = require("body-parser");
 
 var zarinpal = ZarinpalCheckout.create(
   "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -12,8 +12,8 @@ var zarinpal = ZarinpalCheckout.create(
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
-    const page = parseInt(req.query.page) || 1; 
-    const pageSize = parseInt(req.query.pageSize) || 10; 
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
 
     const offset = (page - 1) * pageSize;
     const allCourses = await courseRepository.find({
@@ -58,8 +58,6 @@ async function addToCart(req, res) {
     console.log("Session Data After Adding to Cart:", req.session);
 
     const existingItem = cart.find((item) => item.courseId === courseId);
-
-    console.log("Cart:", cart); 
 
     if (existingItem) {
       existingItem.quantity++;
@@ -186,7 +184,7 @@ async function getUserOrders(req, res) {
         "order.totalPrice",
         "user.phone",
       ])
-      .where("user.id = :userId", { userId: req.user.id }) 
+      .where("user.id = :userId", { userId: req.user.id })
       .getMany();
     res.status(200).json(orders);
   } catch (error) {
@@ -203,7 +201,7 @@ async function getCheckout(req, res) {
 
     const cart = req.session.cart || [];
 
-    console.log("Cart Data:", cart);
+    console.log("Session Data after getCheckout:", req.session);
 
     if (!cart.length) {
       return res
@@ -224,7 +222,11 @@ async function getCheckout(req, res) {
         totalPrice += course.price * cartItem.quantity;
       }
     }
+    req.session.totalPrice = totalPrice;
 
+    const user = req.user;
+
+    // Return the total price and the cart items to the client for checkout
     res.status(200).json({ totalPrice, cart });
   } catch (error) {
     console.error(error);
@@ -236,38 +238,21 @@ async function getCheckout(req, res) {
 
 async function getPayment(req, res) {
   try {
-    console.log("Session Data Before getPayment:", req.session);
+    const sid = req.params.sid;
+    const sessionRepository = getManager().getRepository(Session);
+    const session = await sessionRepository.findOne({ where: { sid: sid } });
 
-    const cart = req.session.cart || [];
-
-    console.log("Cart Data:", cart);
-
-    if (!cart.length) {
-      return res
-        .status(400)
-        .json({ error: "Cart is empty. Cannot proceed to getPayment." });
-    }
-
-    let totalPrice = 0;
-
-    for (const cartItem of cart) {
-      const courseRepository = getManager().getRepository(Courses);
-
-      const course = await courseRepository.findOne({
-        where: { id: cartItem.courseId },
-      });
-
-      if (course) {
-        totalPrice += course.price * cartItem.quantity;
-      }
-    }
+    const totalPrice = session.sess.totalPrice;
+    console.log(`Total Price: ${totalPrice}`);
+    const userPhone = req.user.phone;
     const response = await zarinpal.PaymentRequest({
       Amount: totalPrice,
       CallbackURL: "http://localhost:3000/course/check-payment",
       Description: "تست اتصال به درگاه پرداخت",
-      Email: "test@gmail.com",
-      Mobile: "0912000000",
+      metadata: { mobile: userPhone },
+      Mobile: userPhone,
     });
+    console.log(`>>>>>${JSON.stringify(response)}`);
 
     res.status(200).json(response);
   } catch (error) {
@@ -278,90 +263,75 @@ async function getPayment(req, res) {
   }
 }
 
-
 async function checkPayment(req, res) {
   try {
-    console.log("Session Data Before checkPayment to Cart:", req.session);
-    const cart = req.session.cart || [];
-    console.log("Session Data After checkPayment to Cart:", req.session);
-    console.log("Contents of Cart:", cart); // Debugging statement
-
     // if (!cart.length) {
     //   return res
     //     .status(400)
-    //     .json({ error: "Cart is empty. Cannot proceed to checkPayment." });
+    //     .json({ error: "Cart is empty. Cannot proceed to checkout." });
     // }
 
-    let totalPrice = 0;
+   
 
-    for (const cartItem of cart) {
-      const courseRepository = getManager().getRepository(Courses);
-
-      const course = await courseRepository.findOne({
-        where: { id: cartItem.courseId },
-      });
-
-      if (course) {
-        totalPrice += course.price * cartItem.quantity;
-      }
-    }
+     req.session.totalPrice = totalPrice 
+    console.log(totalPrice);
+    const user = req.user;
 
     const authority = req.query.Authority;
-    console.log("Authority:", authority);
 
-    const status = req.query.Status; 
-    console.log("Status:", status);
-    console.log("Request Query Parameters:", req.query); 
+    const status = req.query.Status;
 
     if (status === "OK") {
       const response = await zarinpal.PaymentVerification({
         Amount: totalPrice,
         Authority: authority,
       });
-      console.log(`>>>>>>>>>>CHECK PAYMENT : ${JSON.stringify(response)}}`);
+      console.log(JSON.stringify(response));
       if (response.status === 100) {
-        
+        // Payment is successful, create an order and clear the cart
         const userId = req.user.phone;
         const orderRepository = getManager().getRepository(Order);
 
         const newOrder = orderRepository.create({
           user: userId,
-          totalPrice: totalPrice,
-          orderStatus: "success", 
+          totalPrice: totalPrice || 0,
+          orderStatus: "success",
         });
 
         const savedOrder = await orderRepository.save(newOrder);
 
-        // Clear the user
-        //req.session.cart = [];
+        // Clear the user's shopping cart after a successful order
+        req.session.cart = [];
+        console.log("totalPrice : " + totalPrice);
 
         console.log("Order placed successfully. Order ID: " + savedOrder.id);
 
         return res.status(200).json({ message: "Payment successful" });
       } else {
         console.error(
-          "Payment Verification Failed. Status code: " + response.status + response.message
+          "Payment Verification Failed. Status code: " +
+            response.status +
+            response.message
         );
 
-        return res.status(400).json(error);
+        return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (status === "NOK") {
-      const userId = req.user.phone;
+      const userId = req.user.phone; // Extract user information
       const orderRepository = getManager().getRepository(Order);
 
       const newOrder = orderRepository.create({
         user: userId,
         totalPrice: totalPrice,
-        orderStatus: "cancelled", 
+        orderStatus: "cancelled",
       });
 
       const savedOrder = await orderRepository.save(newOrder);
+
       return res.status(400).json({ error: "Payment was not successful" });
     }
   } catch (error) {
-    console.error(`payment have error${error}`);
-    console.error("Payment Verification Failed. Status code: " + response.status);
-
+    console.error(`Payment error: ${error}`);
     return res
       .status(500)
       .json({ error: "An error occurred while processing the payment." });

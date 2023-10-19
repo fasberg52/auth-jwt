@@ -41,8 +41,8 @@ const Course = new EntitySchema({
     category: {
       type: "many-to-one",
       target: "Category",
-
     },
+   
     users: {
       type: "many-to-many",
       target: "User", 
