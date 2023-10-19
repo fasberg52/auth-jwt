@@ -20,9 +20,7 @@ const session = require("express-session");
 var bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
-
-const PgSession = require('connect-pg-simple')(session);
-
+const PgSession = require("connect-pg-simple")(session);
 
 const dotenv = require("dotenv").config();
 const app = express();
@@ -36,7 +34,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course, Order, Category,Session],
+      entities: [Users, OTP, Course, Order, Category, Session],
       synchronize: true,
     });
 
@@ -56,6 +54,7 @@ async function main() {
     const courseRepository = getManager().getRepository(Course);
     const orderRepository = getManager().getRepository(Order);
     const categoryItemRepository = getManager().getRepository(Category);
+    const sessionItemRepository = getManager().getRepository(Session);
     app.use(cookieParser());
     app.use(
       session({
@@ -73,6 +72,10 @@ async function main() {
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true,
+        cookie: {
+          secure: false,
+          maxAge: 24 * 60 * 60 * 1000,
+        },
       })
     );
     // app.use(

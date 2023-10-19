@@ -40,7 +40,7 @@ router.get(
 );
 
 router.get("/checkout", jwtAuthMiddleware, courseController.getCheckout);
-router.get("/payment-request", jwtAuthMiddleware, courseController.getPayment);
+router.get("/payment-request/:sid", jwtAuthMiddleware, courseController.getPayment);
 router.get("/check-payment", courseController.checkPayment);
 
 router.get("/all-category", categoryController.getAllCategories);
