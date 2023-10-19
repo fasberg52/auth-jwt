@@ -15,6 +15,11 @@ const Cart = new EntitySchema({
       type: "many-to-one",
       inverseSide: "cart",
     },
+    course:{
+        target:"Course",
+        type:"many-to-one",
+        inverseSide:"cart"
+    }
   },
 });
 

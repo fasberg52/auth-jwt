@@ -270,11 +270,10 @@ async function checkPayment(req, res) {
     //     .status(400)
     //     .json({ error: "Cart is empty. Cannot proceed to checkout." });
     // }
-    const sid = req.params.sid;
-    const sessionRepository = getManager().getRepository(Session);
-    const session = await sessionRepository.findOne({ where: { sid: sid } });
 
-    const totalPrice = session.sess.totalPrice;
+   
+
+     req.session.totalPrice = totalPrice 
     console.log(totalPrice);
     const user = req.user;
 
@@ -283,7 +282,6 @@ async function checkPayment(req, res) {
     const status = req.query.Status;
 
     if (status === "OK") {
-     
       const response = await zarinpal.PaymentVerification({
         Amount: totalPrice,
         Authority: authority,
