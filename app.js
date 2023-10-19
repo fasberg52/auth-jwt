@@ -31,9 +31,9 @@ async function setupDatabase() {
       type: "postgres",
       host: "localhost",
       port: 5432,
-      username: "postgres",
-      password: "2434127reza",
-      database: "postgres",
+      username: process.env.USERNAME_PG_DB,
+      password: process.env.PASSWORD_PG_DB,
+      database: process.env.DATABASE_PG_DB,
       entities: [Users, OTP, Course, Order, Category, Session, Cart],
       synchronize: true,
     });
