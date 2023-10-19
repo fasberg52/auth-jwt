@@ -1,12 +1,11 @@
 // category.js
 
 const { getManager } = require("typeorm");
-const Category = require("../model/Category"); // Assuming you have a Category model
+const Category = require("../model/Category");
 const fs = require("fs");
-const multer = require("multer"); // For file uploads
-const upload = multer({ dest: "uploads/" }); // Define your upload directory
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
-// Function to get all categories
 async function getAllCategories(req, res) {
   try {
     const categoryRepository = getManager().getRepository(Category);
@@ -19,11 +18,10 @@ async function getAllCategories(req, res) {
   }
 }
 
-// Function to create a new category with an icon
 async function createCategory(req, res) {
   try {
     const { name, description } = req.body;
-    const icon = req.file ? req.file.filename : null; // Check if a file was uploaded
+    const icon = req.file ? req.file.filename : null; 
     const categoryRepository = getManager().getRepository(Category);
     const newCategory = categoryRepository.create({ name, description, icon });
     const savedCategory = await categoryRepository.save(newCategory);
@@ -35,7 +33,6 @@ async function createCategory(req, res) {
   }
 }
 
-// Function to update a category by ID (including updating the icon)
 async function updateCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;
@@ -68,7 +65,6 @@ async function updateCategory(req, res) {
   }
 }
 
-// Function to delete a category by ID
 async function deleteCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;
@@ -81,7 +77,6 @@ async function deleteCategory(req, res) {
       return res.status(404).json({ error: "Category not found." });
     }
 
-    // Remove the associated icon file if it exists
     if (existingCategory.icon) {
       const iconFilePath = `uploads/${existingCategory.icon}`;
       if (fs.existsSync(iconFilePath)) {

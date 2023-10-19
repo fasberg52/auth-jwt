@@ -4,11 +4,10 @@ const { EntitySchema } = require('typeorm');
 const Product = require('./Product');
 const Order = require('./Order');
 
-// Discount Types Enum
 const DiscountType = {
-  PRODUCT: 'product', // Discount applied to a product
-  FIXED_AMOUNT: 'fixed_amount', // Fixed amount discount code
-  ORDER: 'order', // Discount applied to the entire order
+  PRODUCT: 'product', 
+  FIXED_AMOUNT: 'fixed_amount', 
+  ORDER: 'order', 
 };
 
 const DiscountSchema = new EntitySchema({
@@ -28,13 +27,13 @@ const DiscountSchema = new EntitySchema({
       type: 'decimal',
       precision: 5,
       scale: 2,
-      nullable: true, // For product-level discounts and order-level discounts
+      nullable: true, 
     },
     discountAmount: {
       type: 'decimal',
       precision: 10,
       scale: 2,
-      nullable: true, // For fixed amount discounts
+      nullable: true, 
     },
     startDate: {
       type: 'timestamp',

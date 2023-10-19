@@ -25,7 +25,7 @@ const User = new EntitySchema({
     },
     roles: {
       type: "enum",
-      enum: ["admin", "user"], // Use the enum-like values
+      enum: ["admin", "user"], 
       default: "user",
     },
     createdAt: {

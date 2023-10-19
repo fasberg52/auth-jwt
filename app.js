@@ -20,9 +20,7 @@ const session = require("express-session");
 var bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
-
-const PgSession = require('connect-pg-simple')(session);
-
+const PgSession = require("connect-pg-simple")(session);
 
 const dotenv = require("dotenv").config();
 const app = express();
@@ -36,7 +34,7 @@ async function setupDatabase() {
       username: "postgres",
       password: "2434127reza",
       database: "postgres",
-      entities: [Users, OTP, Course, Order, Category,Session],
+      entities: [Users, OTP, Course, Order, Category, Session],
       synchronize: true,
     });
 

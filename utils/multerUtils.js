@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra"); // Import fs-extra
 
-// Define the createSubdirectory function
 const createSubdirectory = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -15,7 +14,6 @@ const storage = multer.diskStorage({
     const subdirectory = createSubdirectory();
     const uploadDir = path.join(__dirname, "../uploads", subdirectory);
 
-    // Create the subdirectory if it doesn't exist
     fs.ensureDir(uploadDir)
       .then(() => {
         cb(null, uploadDir);

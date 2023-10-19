@@ -21,7 +21,7 @@ const Category = new EntitySchema({
       nullable: true,
     },
     icon: {
-      type: "varchar", // You can change the data type to match your storage requirements (e.g., text, blob)
+      type: "varchar", 
       nullable: true,
     },
     createdAt: {

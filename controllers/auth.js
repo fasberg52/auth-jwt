@@ -16,7 +16,7 @@ require("dotenv").config();
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET, // Set your JWT secret here
+  secretOrKey: process.env.JWT_SECRET, 
 };
 
 passport.use(
@@ -39,7 +39,6 @@ passport.use(
   })
 );
 passport.serializeUser((user, done) => {
-  // Serialize user to store in session
   done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
@@ -56,7 +55,6 @@ passport.deserializeUser(async (id, done) => {
     done(error);
   }
 });
-// Create a JWT token
 
 async function loginUsers(req, res) {
   try {
@@ -101,10 +99,9 @@ async function loginWithOTP(req, res) {
       where: { phone: phone },
     });
     if (!existingUser) {
-      return res.status(404).json({ error: "Phone number not found" }); // Add 'return' here
+      return res.status(404).json({ error: "Phone number not found" }); 
     }
 
-    // The rest of your code
     sendOTP(phone); // Send OTP via SMS
     res.json({ message: "OTP sent to your phone successfully" });
   } catch (error) {
@@ -133,7 +130,7 @@ async function verifyWithOTP(req, res) {
       return;
     }
 
-    existingUser.lastLogin = new Date(); // Update last login time
+    existingUser.lastLogin = new Date(); 
     await userRepository.save(existingUser);
 
     const token = createToken(existingUser);

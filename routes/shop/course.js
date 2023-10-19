@@ -9,21 +9,18 @@ const router = express.Router();
 router.get("/allcourses", courseController.getAllCourse);
 router.get("/onecourse/:courseId", courseController.getProductById);
 
-// Add an item to the cart
 router.post(
   "/cart/add/:courseId",
   jwtAuthMiddleware,
   courseController.addToCart
 );
 
-// Remove an item from the cart
 router.delete(
   "/cart/remove/:courseId",
   jwtAuthMiddleware,
   courseController.removeCart
 );
 
-// Get the current cart contents
 router.get("/cart", jwtAuthMiddleware, courseController.getCart);
 
 router.post(
@@ -41,9 +38,9 @@ router.get(
   courseController.getUserOrders
 );
 
-router.get("/checkout", jwtAuthMiddleware,courseController.getCheckout);
-router.get("/payment-request", jwtAuthMiddleware,courseController.getPayment);
-router.get("/check-payment",courseController.checkPayment);
+router.get("/checkout", jwtAuthMiddleware, courseController.getCheckout);
+router.get("/payment-request", jwtAuthMiddleware, courseController.getPayment);
+router.get("/check-payment", courseController.checkPayment);
 
 router.get("/all-category", categoryController.getAllCategories);
 module.exports = router;

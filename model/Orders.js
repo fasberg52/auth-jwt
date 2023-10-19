@@ -1,6 +1,6 @@
 //model/Orders.js
 const { EntitySchema } = require("typeorm");
-const User = require("./users"); // Assuming you have a User model
+const User = require("./users"); 
 
 const Order = new EntitySchema({
   name: "Order",
