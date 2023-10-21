@@ -6,8 +6,8 @@ const { getManager } = require("typeorm");
 const ZarinpalCheckout = require("zarinpal-checkout");
 
 var zarinpal = ZarinpalCheckout.create(
-  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  true
+  "247e3e33-b38f-4e27-968c-1ee3e0881283",
+  false
 );
 async function getAllCourse(req, res) {
   try {
@@ -270,10 +270,9 @@ async function checkPayment(req, res) {
     //     .status(400)
     //     .json({ error: "Cart is empty. Cannot proceed to checkout." });
     // }
+    console.log(`session :  ${JSON.stringify(req.session)}`);
+   const totalPrice = req.session.totalPrice;
 
-   
-
-     req.session.totalPrice = totalPrice 
     console.log(totalPrice);
     const user = req.user;
 
@@ -294,7 +293,7 @@ async function checkPayment(req, res) {
 
         const newOrder = orderRepository.create({
           user: userId,
-          totalPrice: totalPrice || 0,
+          totalPrice: totalPrice,
           orderStatus: "success",
         });
 
