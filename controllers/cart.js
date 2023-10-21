@@ -11,49 +11,43 @@ var zarinpal = ZarinpalCheckout.create(
   true
 );
 async function createCartItem(req, res) {
+    const { courseId } = req.body; // Get user ID and course ID from the request
+    const userPhone = req.user.phone;
     try {
-      const { courseId } = req.body;
-      const cartRepository = getManager().getRepository(Cart);
-      const courseRepository = getManager().getRepository(Courses);
-  
-      // Extract the user information from the request (assuming it's added by the authentication middleware)
-      const user = req.user;
-  
-      const course = await courseRepository.findOne({ where: { id: courseId } });
-  
-      if (!user || !course) {
-        res.status(404).json({ error: "user or courseId not found" });
+      // Check if the product already exists in the cart
+      const userRepository = getManager().getRepository(User);
+      const user = await userRepository.findOne({ where: { phone: userPhone } });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
       }
   
-      // Check if the cart item already exists for the user and course
+      const cartRepository = getManager().getRepository(Cart);
       const existingCartItem = await cartRepository.findOne({
-        where: { user: user, course: course },
+        where: { user: user, course: courseId },
       });
   
       if (existingCartItem) {
-        // If the cart item already exists, increase its quantity and update the price
+        // If it exists, increment the quantity
         existingCartItem.quantity += 1;
-        existingCartItem.price = existingCartItem.course.price * existingCartItem.quantity;
-        await cartRepository.save(existingCartItem);
+        await cartRepository.save(existingCartItem); // Save the existingCartItem
       } else {
-        // If the cart item does not exist, create a new cart item
-        const cartItem = cartRepository.create({
+        // If it doesn't exist, create a new cart item
+        const newCartItem = cartRepository.create({
           user: user,
-          course: course,
+          course: courseId,
           quantity: 1,
-          price: course.price,
         });
-  
-        await cartRepository.save(cartItem);
+        await cartRepository.save(newCartItem); // Save the newCartItem
       }
   
-      res.status(200).json({ message: "add to cart ok" });
+      res.status(200).json({ message: "Product added to the cart" });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "An error occurred while adding to the cart" });
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error from createCart" });
     }
   }
   
+
 async function updateCartItemQuantity(cartItemId, newQuantity) {
   try {
     const cartRepository = getManager().getRepository(Cart);
