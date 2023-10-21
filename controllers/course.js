@@ -1,14 +1,14 @@
 const { json } = require("express");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const Session = require("../model/Session");
+// const Session = require("../model/Session");
 const { getManager } = require("typeorm");
-const ZarinpalCheckout = require("zarinpal-checkout");
+// const ZarinpalCheckout = require("zarinpal-checkout");
 
-var zarinpal = ZarinpalCheckout.create(
-  "247e3e33-b38f-4e27-968c-1ee3e0881283",
-  false
-);
+// var zarinpal = ZarinpalCheckout.create(
+//   "247e3e33-b38f-4e27-968c-1ee3e0881283",
+//   false
+// );
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
