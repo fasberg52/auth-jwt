@@ -1,3 +1,5 @@
+// model/Cart.js
+
 const { EntitySchema } = require("typeorm");
 const Cart = new EntitySchema({
   name: "Cart",
@@ -8,6 +10,10 @@ const Cart = new EntitySchema({
       primary: true,
       generated: true,
     },
+    quantity: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     user: {
@@ -15,11 +21,11 @@ const Cart = new EntitySchema({
       type: "many-to-one",
       inverseSide: "cart",
     },
-    course:{
-        target:"Course",
-        type:"many-to-one",
-        inverseSide:"cart"
-    }
+    course: {
+      target: "Course",
+      type: "many-to-one",
+      inverseSide: "cart",
+    },
   },
 });
 

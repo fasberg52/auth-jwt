@@ -10,7 +10,7 @@ const Session = require("./model/Session");
 const Cart = require("./model/Cart");
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
-
+const cartRouter = require("./routes/shop/cart");
 const courseRouter = require("./routes/shop/course");
 const swaggerSpec = require("./utils/swagger");
 const cookieParser = require("cookie-parser");
@@ -101,6 +101,7 @@ async function main() {
     app.use("/auth", authRouter);
     app.use("/admin", adminRouter);
     app.use("/course", courseRouter);
+    app.use("/", cartRouter);
     // Start the server
     app.listen(process.env.PORT, () => {
       console.log("Server is running on port 3000");
