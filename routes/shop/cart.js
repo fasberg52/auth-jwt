@@ -5,17 +5,9 @@ const { checkRole } = require("../../middleware/checkAccess");
 const express = require("express");
 
 const router = express.Router();
-router.post(
-    "/cart/add",
-    jwtAuthMiddleware,
-    cartController.createCartItem
-  );
-  
-  router.delete(
-    "/cart/remove",
-    jwtAuthMiddleware,
-    cartController.removeCartItem
-  );
+router.post("/cart/add", jwtAuthMiddleware, cartController.createCartItem);
+router.post("/cart/caclulate-price", jwtAuthMiddleware, cartController.calculatePrice);
+router.delete("/cart/remove", jwtAuthMiddleware, cartController.removeCartItem);
 router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
 
 router.post(
@@ -38,6 +30,5 @@ router.get(
   cartController.getPayment
 );
 router.get("/check-payment", cartController.checkPayment);
-
 
 module.exports = router;
