@@ -32,9 +32,16 @@ async function createCartItem(req, res) {
       await cartRepository.save(existingCartItem); // Save the existingCartItem
     } else {
       // If it doesn't exist, create a new cart item
+      const courseRepository = getManager().getRepository(Courses);
+      const course = await courseRepository.findOne({ where: { id: courseId } });
+
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+
       const newCartItem = cartRepository.create({
         user: user,
-        course: courseId,
+        course: course,
         quantity: 1,
       });
       await cartRepository.save(newCartItem); // Save the newCartItem
