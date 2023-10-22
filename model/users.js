@@ -15,6 +15,7 @@ const User = new EntitySchema({
     },
     lastName: {
       type: "varchar",
+     
     },
     phone: {
       type: "text",
@@ -22,6 +23,7 @@ const User = new EntitySchema({
     },
     password: {
       type: "text",
+     
     },
     roles: {
       type: "enum",

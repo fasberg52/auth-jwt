@@ -16,7 +16,7 @@ require("dotenv").config();
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET, 
+  secretOrKey: process.env.JWT_SECRET,
 };
 
 passport.use(
@@ -66,29 +66,65 @@ async function loginUsers(req, res) {
     });
 
     if (!verifyUser) {
-      res.status(404).json({ error: "Phone number not found" });
-    } else {
-      const passwordMatch = await bcrypt.compare(
-        req.body.password,
-        verifyUser.password
-      );
+      sendOTP(req.body.phone);
+      const newUser = userRepository.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        password: req.body.password,
+      });
+      const savedUser = await userRepository.save(newUser);
 
-      if (!passwordMatch) {
-        res.status(401).json({ error: "Invalid password" });
-        return;
-      }
-
-      verifyUser.lastLogin = new Date(); // Update last login time
-      //sendOTPSMS(req.body.phone, otp); // Send OTP via SMS
-
-      await userRepository.save(verifyUser);
-
-      const token = createToken(verifyUser);
-
-      res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
+      return res.json({ message: "User registered successfully" });
     }
+    const passwordMatch = await bcrypt.compare(
+      req.body.password,
+      verifyUser.password
+    );
+
+    if (!passwordMatch) {
+      res.status(401).json({ error: "Invalid password" });
+      return;
+    }
+
+    verifyUser.lastLogin = new Date(); // Update last login time
+    //sendOTPSMS(req.body.phone, otp); // Send OTP via SMS
+
+    await userRepository.save(verifyUser);
+
+    const token = createToken(verifyUser);
+
+    res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
   } catch (error) {
     res.status(500).json({ error: "An error occurred while logging in." });
+  }
+}
+async function signUpUsers(req, res) {
+  try {
+    const { phone, firstName, lastName, password } = req.body;
+    const userRepository = getManager().getRepository(Users);
+    const existingUser = await userRepository.findOne({ where: { phone } });
+
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists." });
+    }
+
+    sendOTP(phone); // Send OTP via SMS
+
+    const newUser = userRepository.create({
+      firstName,
+      lastName,
+      phone,
+      password: await bcrypt.hash(password, 10),
+    });
+
+    const savedUser = await userRepository.save(newUser);
+    res.json(savedUser);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the user." });
   }
 }
 async function loginWithOTP(req, res) {
@@ -98,13 +134,23 @@ async function loginWithOTP(req, res) {
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
-    if (!existingUser) {
-      return res.status(404).json({ error: "Phone number not found" }); 
+    if (existingUser) {
+      await sendOTP(phone); // Send OTP via SMS
+    }
+    else {
+      await sendOTP(phone);
+      const newUser = userRepository.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        password: req.body.password,
+      });
+      const savedUser = await userRepository.save(newUser);
     }
 
-    sendOTP(phone); // Send OTP via SMS
     res.json({ message: "OTP sent to your phone successfully" });
   } catch (error) {
+    console.log(error.message);
     res
       .status(500)
       .json({ error: "An error occurred while logging in with OTP." });
@@ -130,7 +176,7 @@ async function verifyWithOTP(req, res) {
       return;
     }
 
-    existingUser.lastLogin = new Date(); 
+    existingUser.lastLogin = new Date();
     await userRepository.save(existingUser);
 
     const token = createToken(existingUser);
@@ -142,37 +188,6 @@ async function verifyWithOTP(req, res) {
   }
 }
 async function verifySignup(req, res) {}
-async function signUpUsers(req, res) {
-  try {
-    const { phone } = req.body;
-    const userRepository = getManager().getRepository(Users);
-    const existingUser = await userRepository.findOne({
-      where: { phone },
-    });
-
-    if (existingUser) {
-      res.status(400).json({ error: "User already exists." });
-    } else {
-      // Send OTP via SMS
-      sendOTP(phone);
-      const newUser = userRepository.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phone: req.body.phone,
-        password: hashedPassword,
-        otp: otp,
-      });
-
-      const savedUser = await userRepository.save(newUser);
-      res.json(savedUser);
-    }
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the user." });
-  }
-}
 
 module.exports = {
   loginUsers,
