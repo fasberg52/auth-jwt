@@ -10,7 +10,10 @@ const Cart = new EntitySchema({
       primary: true,
       generated: true,
     },
-    
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
   },
   relations: {
     user: {
@@ -18,7 +21,6 @@ const Cart = new EntitySchema({
       type: "many-to-one",
       inverseSide: "cart",
     },
-
   },
 });
 

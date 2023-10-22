@@ -126,7 +126,7 @@ async function verifyWithOTP(req, res) {
       where: { phone: phone },
     });
     if (!existingUser) {
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: false });
       return;
     }
 

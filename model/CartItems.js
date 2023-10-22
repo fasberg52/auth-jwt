@@ -1,6 +1,7 @@
+// model/cartItems
 const { EntitySchema } = require("typeorm");
 
-const cartImtes = new EntitySchema({
+const CartItems = new EntitySchema({
   name: "CartItems",
   tableName: "cartItems",
   columns: {
@@ -11,9 +12,10 @@ const cartImtes = new EntitySchema({
     },
     quantity:{
       type:"int"
-    }
+    },
+
   },
-  relationIds: {
+  relations: {
     cart: {
       target: "Cart",
       type: "many-to-one",
@@ -27,4 +29,4 @@ const cartImtes = new EntitySchema({
   },
 });
 
-module.exports = cartImtes;
+module.exports = CartItems;
