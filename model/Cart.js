@@ -10,19 +10,14 @@ const Cart = new EntitySchema({
       primary: true,
       generated: true,
     },
-    quantity: {
-      type: "int",
-      nullable: true,
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
     },
   },
   relations: {
     user: {
       target: "User",
-      type: "many-to-one",
-      inverseSide: "cart",
-    },
-    course: {
-      target: "Course",
       type: "many-to-one",
       inverseSide: "cart",
     },

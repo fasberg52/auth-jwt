@@ -1,60 +1,69 @@
 // controllers/cart.js
 
 const Cart = require("../model/Cart");
+const CartItems = require("../model/CartItems");
 const Order = require("../model/Orders");
 const Courses = require("../model/Course");
 const User = require("../model/users");
+
 const ZarinpalCheckout = require("zarinpal-checkout");
-const { getManager } = require("typeorm");
+const { getManager, getConnection } = require("typeorm");
 var zarinpal = ZarinpalCheckout.create(
   "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
   true
 );
+
 async function createCartItem(req, res) {
-  const { courseId } = req.body; // Get course ID from the request
-  const userPhone = req.user.phone;
-
   try {
-    // Check if the product already exists in the cart
-    const userRepository = getManager().getRepository(User);
-    const user = await userRepository.findOne({ where: { phone: userPhone } });
+    const { courseId, quantity } = req.body;
+    const user = req.user; // Retrieve the user ID from the token
+    const userPhone = req.user.phone;
+    console.log(userPhone);
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const cartRepository = getManager().getRepository(Cart);
-    const existingCartItem = await cartRepository.findOne({
-      where: { user: user, course: courseId },
+    const userCart = await cartRepository.findOne({
+      where: { user: user },
     });
 
-    if (existingCartItem) {
-      // If it exists, update the quantity
-      existingCartItem.quantity += 1;
-      await cartRepository.save(existingCartItem);
-    } else {
-      // If it doesn't exist, create a new cart item
-      const courseRepository = getManager().getRepository(Courses);
-      const course = await courseRepository.findOne({ where: { id :  courseId } });
+    if (!userCart) {
+      const newCart = cartRepository.create({
+        user: userPhone,
+      });
 
-      if (!course) {
-        return res.status(404).json({ error: "Course not found" });
+      // Note: Do not include createdAt in the cart creation
+      await cartRepository.save(newCart);
+
+      const cartItem = cartItemsRepository.create({
+        cart: newCart,
+        course: courseId,
+        quantity: quantity,
+      });
+      await cartItemsRepository.save(cartItem);
+    } else {
+      const existingCartItem = await cartItemsRepository.findOne({
+        where: { cart: userCart, course: courseId },
+      });
+
+      if (existingCartItem) {
+        existingCartItem.quantity += quantity;
+        await cartItemsRepository.save(existingCartItem);
+      } else {
+        const newCartItem = cartItemsRepository.create({
+          cart: userCart,
+          course: courseId,
+          quantity: quantity,
+        });
+
+        await cartItemsRepository.save(newCartItem);
       }
 
-      const newCartItem = cartRepository.create({
-        user: user,
-        course: course,
-        quantity: 1,
-      });
-      await cartRepository.save(newCartItem);
+      res.status(200).json({ message: "Item added to cart successfully" });
     }
-
-    res.status(200).json({ message: "Product added to the cart" });
   } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "Internal Server Error from createCartItem" });
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -116,34 +125,56 @@ async function updateCartItemQuantity(cartItemId, newQuantity) {
 }
 async function getUserCart(req, res) {
   try {
-    const cartRepository = getManager().getRepository(Cart);
     const user = req.user;
+    const userPhone = req.user.phone;
 
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-    // Fetch the user's cart items with product details
-    const cartItems = await cartRepository.find({
-      where: { user: user },
-      relations: ["course"], // Assuming you have a 'course' relation in your Cart entity
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
+
+    const userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
     });
-    // Extract relevant product information (name and price)
-    const cartWithProductInfo = cartItems.map((cartItem) => ({
-      id: cartItem.id,
-      product: {
-        id: cartItem.course.id,
-        name: cartItem.course.title, // Make sure 'name' matches your Course entity property
-        price: cartItem.course.price, // Make sure 'price' matches your Course entity property
-      },
-      quantity: cartItem.quantity,
-    }));
-    res.status(200).json({ cart: cartWithProductInfo });
+
+    if (!userCart) {
+      return res.status(404).json({ error: "Cart not found for the user" });
+    }
+
+    const cartItems = await cartItemsRepository.find({
+      where: { cart: userCart.id },
+    });
+console.log(cartItems);
+    const cartDataPromises = cartItems.map(async (cartItem) => {
+      if (cartItem.course) {
+        try {
+          const course = await courseRepository.findOne(cartItem.course);
+          if (course) {
+            return {
+              courseId: course.id,
+              quantity: cartItem.quantity,
+              price: course.price,
+              title: course.title,
+            };
+          }
+        } catch (error) {
+          console.error("Error fetching course: ", error);
+        }
+      }
+    });
+
+    const cartData = await Promise.all(cartDataPromises);
+
+    res.status(200).json(cartData.filter(Boolean));
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "error on getUserCart" });
+    console.error("Error: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
+
+
+
+
 async function removeCartItem(cartItemId) {
   try {
     const cartRepository = getManager().getRepository(Cart);

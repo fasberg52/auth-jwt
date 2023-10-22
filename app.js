@@ -8,10 +8,13 @@ const Order = require("./model/Orders");
 const Category = require("./model/Category");
 const Session = require("./model/Session");
 const Cart = require("./model/Cart");
+const CartItems = require("./model/CartItems");
+
 const authRouter = require("./routes/auth/auth");
 const adminRouter = require("./routes/admin/admin");
 const cartRouter = require("./routes/shop/cart");
 const courseRouter = require("./routes/shop/course");
+
 const swaggerSpec = require("./utils/swagger");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
@@ -34,7 +37,7 @@ async function setupDatabase() {
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
-      entities: [Users, OTP, Course, Order, Category, Session, Cart],
+      entities: [Users, OTP, Course, Order, Category, Session, Cart,CartItems],
       synchronize: true,
     });
 
@@ -55,6 +58,7 @@ async function main() {
     const orderRepository = getManager().getRepository(Order);
     const categoryItemRepository = getManager().getRepository(Category);
     const cartRepository = getManager().getRepository(Cart);
+    const cartItemsRepository = getManager().getRepository(CartItems);
     const sessionRepository = getManager().getRepository(Session);
     app.use(cookieParser());
     app.use(
