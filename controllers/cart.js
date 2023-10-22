@@ -11,12 +11,14 @@ var zarinpal = ZarinpalCheckout.create(
   true
 );
 async function createCartItem(req, res) {
-  const { courseId } = req.body; // Get user ID and course ID from the request
+  const { courseId } = req.body; // Get course ID from the request
   const userPhone = req.user.phone;
+
   try {
     // Check if the product already exists in the cart
     const userRepository = getManager().getRepository(User);
     const user = await userRepository.findOne({ where: { phone: userPhone } });
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -27,23 +29,32 @@ async function createCartItem(req, res) {
     });
 
     if (existingCartItem) {
-      // If it exists, increment the quantity
+      // If it exists, update the quantity
       existingCartItem.quantity += 1;
-      await cartRepository.save(existingCartItem); // Save the existingCartItem
+      await cartRepository.save(existingCartItem);
     } else {
       // If it doesn't exist, create a new cart item
+      const courseRepository = getManager().getRepository(Courses);
+      const course = await courseRepository.findOne({ where: { id :  courseId } });
+
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+
       const newCartItem = cartRepository.create({
         user: user,
-        course: courseId,
+        course: course,
         quantity: 1,
       });
-      await cartRepository.save(newCartItem); // Save the newCartItem
+      await cartRepository.save(newCartItem);
     }
 
     res.status(200).json({ message: "Product added to the cart" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Internal Server Error from createCart" });
+    res
+      .status(500)
+      .json({ error: "Internal Server Error from createCartItem" });
   }
 }
 
