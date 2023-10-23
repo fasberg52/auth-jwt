@@ -32,12 +32,12 @@ async function setupDatabase() {
   try {
     await createConnection({
       type: "postgres",
-      host: "localhost",
+      host: process.env.DATABASE_URL,
       port: 5432,
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
-      entities: [Users, OTP, Course, Order, Category, Session, Cart,CartItems],
+      entities: [Users, OTP, Course, Order, Category, Session, Cart, CartItems],
       synchronize: true,
     });
 
@@ -67,7 +67,7 @@ async function main() {
           conObject: {
             // Use your PostgreSQL connection settings here
             user: "postgres",
-            host: "localhost",
+            host: process.env.DATABASE_URL,
             database: "postgres",
             password: "2434127reza",
             port: 5432,

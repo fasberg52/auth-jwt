@@ -1,0 +1,11 @@
+{
+  "platform": "node",
+  "port": 3000,
+  "app": "baclassonline",
+  "disks": [
+    {
+      "name": "data",
+      "mountTo": "uploads"
+    }
+  ]
+}
