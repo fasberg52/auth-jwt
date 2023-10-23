@@ -24,8 +24,10 @@ async function createCartItem(req, res) {
     const cartItemsRepository = connection.getRepository(CartItems);
 
     const userCart = await cartRepository.findOne({
-      where: { user: user },
+      where: { user: { phone: userPhone } },
     });
+    console.log(`>> userCart  : ${JSON.stringify(userCart)}`);
+    console.log(userCart.id);
 
     if (!userCart) {
       const newCart = cartRepository.create({
@@ -37,13 +39,13 @@ async function createCartItem(req, res) {
 
       const cartItem = cartItemsRepository.create({
         cart: newCart,
-        course: courseId,
+        courseId: courseId, // Set courseId here
         quantity: quantity,
       });
       await cartItemsRepository.save(cartItem);
     } else {
       const existingCartItem = await cartItemsRepository.findOne({
-        where: { cart: userCart, course: courseId },
+        where: { cart: userCart, courseId: courseId }, // Ensure courseId is set here
       });
 
       if (existingCartItem) {
@@ -52,7 +54,7 @@ async function createCartItem(req, res) {
       } else {
         const newCartItem = cartItemsRepository.create({
           cart: userCart,
-          course: courseId,
+          courseId: courseId, // Set courseId here
           quantity: quantity,
         });
 
@@ -67,67 +69,60 @@ async function createCartItem(req, res) {
   }
 }
 
-async function calculatePrice(req, res) {
-  const userPhone = req.user.phone;
+// async function checkOutCart(req, res) {
+//   try {
+//     const user = req.user; // Retrieve user information from the request
 
-  try {
-    // Find the user based on their phone number
-    const userRepository = getManager().getRepository(User);
-    const user = await userRepository.findOne({ where: { phone: userPhone } });
+//     const connection = getConnection();
+//     const cartRepository = connection.getRepository(Cart);
+//     const cartItemsRepository = connection.getRepository(CartItems);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+//     // Find the user's shopping cart
+//     const userCart = await cartRepository.findOne({
+//       where: { user: user },
+//     });
 
-    // Find the cart items for the user
-    const cartRepository = getManager().getRepository(Cart);
-    const cartItems = await cartRepository.find({
-      where: { user: user },
-      relations: ["course"], // Ensure you load the 'course' relation
-    });
+//     if (!userCart) {
+//       return res.status(404).json({ error: "Cart not found for the user" });
+//     }
 
-    let totalPrice = 0;
+//     // Find cart items
+//     const cartItems = await cartItemsRepository.find({
+//       where: { cart: userCart },
+//     });
 
-    for (const cartItem of cartItems) {
-      // Calculate price for products added 2 or more times
-      if (cartItem.quantity >= 2) {
-        totalPrice += cartItem.quantity * cartItem.course.price;
-      }
-    }
+//     let totalPrice = 0;
 
-    res.status(200).json({ totalPrice });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .json({ error: "Internal Server Error from calculatePrice" });
-  }
-}
+//     // Create purchase history records and calculate total price
+//     for (const cartItem of cartItems) {
+//       // const purchaseHistoryItem = purchaseHistoryRepository.create({
+//       //   user: user,
+//       //   courseId: cartItem.courseId,
+//       //   quantity: cartItem.quantity,
+//       // });
 
-async function updateCartItemQuantity(cartItemId, newQuantity) {
-  try {
-    const cartRepository = getManager().getRepository(Cart);
+//       // Calculate and accumulate the total price
+//       totalPrice += cartItem.price * cartItem.quantity;
 
-    const cartItem = await cartRepository.findOne(cartItemId);
+//       // await purchaseHistoryRepository.save(purchaseHistoryItem);
+//     }
 
-    if (!cartItem) {
-      throw new Error("Cart item not found");
-    }
+//     // Clear the shopping cart
+//     await cartItemsRepository.remove(cartItems);
 
-    cartItem.quantity = newQuantity;
-    await cartRepository.save(cartItem);
+//     res
+//       .status(200)
+//       .json({ message: "Checkout completed successfully", totalPrice });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// }
 
-    return { message: "Cart item quantity updated" };
-  } catch (error) {
-    console.error(error);
-    throw new Error("An error occurred while updating cart item quantity");
-  }
-}
-async function getUserCart(req, res) {
+async function checkOutCart(req, res) {
   try {
     const user = req.user;
     const userPhone = req.user.phone;
-
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
@@ -144,11 +139,72 @@ async function getUserCart(req, res) {
     const cartItems = await cartItemsRepository.find({
       where: { cart: userCart.id },
     });
-console.log(cartItems);
+
+    let totalPrice = 0;
+
+    for (const cartItem of cartItems) {
+      if (cartItem.courseId) {
+        const course = await courseRepository.findOne({ where: { id: cartItem.courseId } });
+
+        if (course) {
+          totalPrice += course.price * cartItem.quantity;
+        }
+      }
+    }
+
+    // Here, you can update the user's purchase history or perform any other actions
+    // related to completing the purchase.
+
+    res.status(200).json({ message: "Checkout successful", totalPrice });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+async function saveOrder(req,res)
+{
+
+}
+
+async function orderDetails(req,res){
+
+}
+
+
+
+async function getUserCart(req, res) {
+  try {
+    const user = req.user;
+    const userPhone = req.user.phone;
+    console.log("userPhone: " + userPhone);
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
+
+    const userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
+    });
+    console.log(`>>> userCart: ${JSON.stringify(userCart)}`);
+    if (!userCart) {
+      return res.status(404).json({ error: "Cart not found for the user" });
+    }
+
+    const cartItems = await cartItemsRepository.find({
+      where: { cart: userCart.id },
+    });
+    console.log(`>>> cartItems: ${JSON.stringify(cartItems)}`);
+
     const cartDataPromises = cartItems.map(async (cartItem) => {
-      if (cartItem.course) {
+      console.log("Processing cartItem: ", cartItem);
+      if (cartItem.courseId) {
+        console.log("Course data exists for cartItem: ", cartItem.courseId);
         try {
-          const course = await courseRepository.findOne(cartItem.course);
+          const course = await courseRepository.findOne({
+            where: { id: cartItem.courseId },
+          });
+          console.log("Fetched course data: ", course);
           if (course) {
             return {
               courseId: course.id,
@@ -164,16 +220,13 @@ console.log(cartItems);
     });
 
     const cartData = await Promise.all(cartDataPromises);
-
-    res.status(200).json(cartData.filter(Boolean));
+    console.log("Final cartData: ", cartData);
+    res.status(200).json(cartData);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-
-
 
 async function removeCartItem(cartItemId) {
   try {
@@ -347,8 +400,7 @@ async function checkPayment(req, res) {
 }
 module.exports = {
   createCartItem,
-  updateCartItemQuantity,
-  calculatePrice,
+  checkOutCart,
   getUserCart,
   removeCartItem,
   placeOrder,

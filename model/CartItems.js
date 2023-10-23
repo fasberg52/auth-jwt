@@ -10,21 +10,26 @@ const CartItems = new EntitySchema({
       primary: true,
       generated: true,
     },
-    quantity:{
-      type:"int"
+    quantity: {
+      type: "int",
     },
-
+    courseId: { // Add this field to store the course ID
+      type: "int",
+    },
+ 
   },
   relations: {
     cart: {
       target: "Cart",
       type: "many-to-one",
       inverseSide: "cartItems",
+ 
     },
     course: {
       target: "Course",
       type: "many-to-one",
       inverseSide: "cartItems",
+      joinColumn: true, // Define a join column to link to the course
     },
   },
 });
