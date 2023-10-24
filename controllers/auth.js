@@ -1,5 +1,4 @@
 const Users = require("../model/users");
-const OTP = require("../model/OTP");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;

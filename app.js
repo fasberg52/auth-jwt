@@ -2,7 +2,7 @@
 const express = require("express");
 const { createConnection, getManager } = require("typeorm");
 const Users = require("./model/users");
-const OTP = require("./model/otp");
+const OTP = require("./model/OTP");
 const Course = require("./model/Course");
 const Order = require("./model/Orders");
 const Category = require("./model/Category");
@@ -66,10 +66,10 @@ async function main() {
         store: new PgSession({
           conObject: {
             // Use your PostgreSQL connection settings here
-            user: "postgres",
+            user: process.env.USERNAME_PG_DB,
             host: process.env.DATABASE_URL,
-            database: "postgres",
-            password: "2434127reza",
+            database: process.env.DATABASE_PG_DB,
+            password: process.env.PASSWORD_PG_DB,
             port: 5432,
           },
           tableName: "session",
