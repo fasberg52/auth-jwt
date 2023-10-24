@@ -136,7 +136,6 @@ async function verifyWithOTP(req, res) {
       res.status(401).json({ error: "Invalid OTP" });
       return;
     }
-    
 
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
@@ -150,7 +149,7 @@ async function verifyWithOTP(req, res) {
     await userRepository.save(existingUser);
 
     const token = createToken(existingUser);
-    res.json({ token, phone });
+    res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
   } catch (error) {
     console.error("Error logging in OTP:", error);
     res.status(500).json({ error: "An error occurred while logging in." });
