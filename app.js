@@ -70,7 +70,7 @@ async function main() {
             host: process.env.DATABASE_URL,
             database: process.env.DATABASE_PG_DB,
             password: process.env.PASSWORD_PG_DB,
-            port: 5432,
+            port: process.env.PORT_PG_DB,
           },
           tableName: "session",
         }),
@@ -108,7 +108,7 @@ async function main() {
     app.use("/", cartRouter);
     // Start the server
     app.listen(process.env.PORT, () => {
-      console.log("Server is running on port 3000");
+      console.log(`Server is running on port ${process.env.PORT}`);
     });
   } catch (error) {
     console.error("Error setting up the application:", error);
