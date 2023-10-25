@@ -33,7 +33,7 @@ async function setupDatabase() {
     await createConnection({
       type: "postgres",
       host: process.env.DATABASE_URL,
-      port: 5432,
+      port: process.env.PORT_PG_DB,
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
