@@ -6,8 +6,10 @@ const Order = require("../model/Orders");
 const Courses = require("../model/Course");
 const User = require("../model/users");
 
+const axios = require("axios");
 const ZarinpalCheckout = require("zarinpal-checkout");
 const { getManager, getConnection } = require("typeorm");
+
 var zarinpal = ZarinpalCheckout.create(
   "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
   true
@@ -144,7 +146,9 @@ async function checkOutCart(req, res) {
 
     for (const cartItem of cartItems) {
       if (cartItem.courseId) {
-        const course = await courseRepository.findOne({ where: { id: cartItem.courseId } });
+        const course = await courseRepository.findOne({
+          where: { id: cartItem.courseId },
+        });
 
         if (course) {
           totalPrice += course.price * cartItem.quantity;
@@ -162,16 +166,58 @@ async function checkOutCart(req, res) {
   }
 }
 
-async function saveOrder(req,res)
-{
+async function saveOrder(req, res) {
+  try {
+    const userPhone = req.user.phone;
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
 
+    const userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
+    });
+
+    if (!userCart) {
+      return res.status(404).json({ error: "Cart not found for the user" });
+    }
+
+    const cartItems = await cartItemsRepository.find({
+      where: { cart: userCart.id },
+    });
+
+    let totalPrice = 0;
+
+    for (const cartItem of cartItems) {
+      if (cartItem.courseId) {
+        const course = await courseRepository.findOne({
+          where: { id: cartItem.courseId },
+        });
+
+        if (course) {
+          totalPrice += course.price * cartItem.quantity;
+        }
+      }
+    }
+
+    const orderRepository = getManager().getRepository(Order);
+    const newOrder = orderRepository.create({
+      user: userPhone,
+      totalPrice: totalPriceString,
+      orderStatus: "pending",
+    });
+    await orderRepository.save(newOrder);
+
+    res.status(201).json({ message: "Order placed successfully." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while placing the order." });
+  }
 }
 
-async function orderDetails(req,res){
-
-}
-
-
+async function orderDetails(req, res) {}
 
 async function getUserCart(req, res) {
   try {
@@ -290,34 +336,58 @@ async function removeCartItem(cartItemId) {
 //     }
 //   }
 
-async function placeOrder(req, res) {
-  try {
-  } catch (error) {}
-}
-
-async function getUserOrders(req, res) {
-  try {
-  } catch (error) {}
-}
-
-async function getCheckout(req, res) {
-  try {
-  } catch (error) {}
-}
-
 async function getPayment(req, res) {
   try {
     const userPhone = req.user.phone;
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
+
+    const userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
+    });
+
+    if (!userCart) {
+      return res.status(404).json({ error: "Cart not found for the user" });
+    }
+
+    let totalPrice = 0;
+
+    // Calculate the total price
+    const cartItems = await cartItemsRepository.find({
+      where: { cart: userCart.id },
+    });
+
+    for (const cartItem of cartItems) {
+      if (cartItem.courseId) {
+        const course = await courseRepository.findOne({
+          where: { id: cartItem.courseId },
+        });
+
+        if (course) {
+          totalPrice += course.price * cartItem.quantity;
+        }
+      }
+    }
+    const totalPriceString = totalPrice.toString(); // Convert totalPrice to a string
+
+    console.log(totalPriceString);
+
     const response = await zarinpal.PaymentRequest({
-      Amount: totalPrice,
-      CallbackURL: "http://localhost:3000/course/check-payment",
+      Amount: totalPriceString,
+      CallbackURL: "http://localhost:3000/check-payment",
       Description: "تست اتصال به درگاه پرداخت",
       metadata: { mobile: userPhone },
       Mobile: userPhone,
     });
+
     console.log(`>>>>>${JSON.stringify(response)}`);
 
-    res.status(200).json(response, totalPrice);
+    console.log(">>>>>" + totalPrice);
+
+    // Pass totalPrice along with the response
+    res.status(200).json({ response, totalPrice });
   } catch (error) {
     console.error(error);
     res
@@ -326,44 +396,42 @@ async function getPayment(req, res) {
   }
 }
 
-async function checkPayment(req, res) {
+async function checkPayment(req, res, totalPriceString) {
   try {
-    // if (!cart.length) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Cart is empty. Cannot proceed to checkout." });
-    // }
+    const { Status, Authority } = req.query;
 
-    const user = req.user;
+    if (Status === "OK") {
+      // Payment was successful
 
-    const authority = req.query.Authority;
-
-    const status = req.query.Status;
-
-    if (status === "OK") {
       const response = await zarinpal.PaymentVerification({
-        Amount: totalPrice,
-        Authority: authority,
+        Amount: totalPriceString,
+        Authority: Authority,
       });
-      console.log(JSON.stringify(response));
-      if (response.status === 100) {
-        // Payment is successful, create an order and clear the cart
-        const userId = req.user.phone;
-        const orderRepository = getManager().getRepository(Order);
 
+      console.log(JSON.stringify(response));
+
+      if (response.status === 100) {
+        // Payment verification succeeded
+        // You can create an order and perform any other necessary actions here
+
+        const userPhone = req.user.phone; // Extract user information
+        const orderRepository = getManager().getRepository(Order);
+        console.log(`refID is : ${response.RefID}`);
+
+        // Create a new order with the user's phone number and total price
         const newOrder = orderRepository.create({
-          user: userId,
-          totalPrice: parseFloat(totalPrice),
+          user: userPhone,
+          totalPrice: totalPriceString, // Use the calculated total price
           orderStatus: "success",
         });
 
+        // Save the order to your database
         const savedOrder = await orderRepository.save(newOrder);
 
-        // Clear the user's shopping cart after a successful order
+        // Clear the user's shopping cart (You can implement this function)
+        await clearUserCart(userPhone);
 
-        console.log("totalPrice : " + totalPrice);
-
-        console.log("Order placed successfully. Order ID: " + savedOrder.id);
+        console.log(`Order placed successfully. Order ID: ${savedOrder.id}`);
 
         return res
           .status(200)
@@ -372,40 +440,75 @@ async function checkPayment(req, res) {
         console.error(
           "Payment Verification Failed. Status code: " +
             response.status +
+            " - " +
             response.message
         );
 
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
-    } else if (status === "NOK") {
-      const userId = req.user.phone; // Extract user information
+    } else if (Status === "NOK") {
+      // Payment was not successful
+
+      const userPhone = req.user.phone; // Extract user information
       const orderRepository = getManager().getRepository(Order);
 
+      // Create a new order with the user's phone number and the total price
       const newOrder = orderRepository.create({
-        user: userId,
-        totalPrice: totalPrice,
+        user: userPhone,
+        totalPrice: totalPriceString, // Use the calculated total price
         orderStatus: "cancelled",
       });
 
+      // Save the order to your database
       const savedOrder = await orderRepository.save(newOrder);
 
+      // Clear the user's shopping cart (You can implement this function)
+      await clearUserCart(userPhone);
+
       return res.status(400).json({ error: "Payment was not successful" });
+    } else {
+      // Handle other Status values if needed
+      return res.status(400).json({ error: "Invalid payment status" });
     }
   } catch (error) {
-    console.error(`Payment error: ${error}`);
+    console.error(`checkPayment error: ${error}`);
     return res
       .status(500)
       .json({ error: "An error occurred while processing the payment." });
   }
 }
+
+async function clearUserCart(userPhone) {
+  const connection = getConnection();
+  const cartRepository = connection.getRepository(Cart);
+  const cartItemsRepository = connection.getRepository(CartItems);
+
+  const userCart = await cartRepository.findOne({
+    where: { user: { phone: userPhone } },
+  });
+
+  if (userCart) {
+    // Remove the cart items associated with the user's cart
+    const cartItems = await cartItemsRepository.find({
+      where: { cart: userCart.id },
+    });
+
+    if (cartItems.length > 0) {
+      await cartItemsRepository.remove(cartItems);
+    }
+
+    // Optionally, you can delete the user's cart as well
+    await cartRepository.remove(userCart);
+  }
+}
+
 module.exports = {
   createCartItem,
   checkOutCart,
   getUserCart,
   removeCartItem,
-  placeOrder,
-  getUserOrders,
-  getCheckout,
+  saveOrder,
+  orderDetails,
   getPayment,
   checkPayment,
 };

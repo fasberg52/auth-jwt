@@ -14,18 +14,17 @@ router.post(
   "/orders",
 
   checkRole("user"),
-  cartController.placeOrder
+  cartController.saveOrder
 );
 router.get(
   "/orders",
 
   checkRole("user"),
-  cartController.getUserOrders
+  cartController.orderDetails
 );
 
-router.get("/checkout", jwtAuthMiddleware, cartController.getCheckout);
 router.get(
-  "/payment-request/:sid",
+  "/payment-request",
   jwtAuthMiddleware,
   cartController.getPayment
 );
