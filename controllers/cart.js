@@ -10,10 +10,14 @@ const axios = require("axios");
 const ZarinpalCheckout = require("zarinpal-checkout");
 const { getManager, getConnection } = require("typeorm");
 
-var zarinpal = ZarinpalCheckout.create(
-  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  true
-);
+const ZARINPAL_API = "https://api.zarinpal.com/pg/v4/payment/request.json";
+const ZARINPAL_VERIFICATION_API =
+  "https://api.zarinpal.com/pg/v4/payment/verify.json";
+
+// var zarinpal = ZarinpalCheckout.create(
+//   "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+//   true
+// );
 
 async function createCartItem(req, res) {
   try {
@@ -336,6 +340,146 @@ async function removeCartItem(cartItemId) {
 //     }
 //   }
 
+// async function getPayment(req, res) {
+//   try {
+//     const userPhone = req.user.phone;
+//     const connection = getConnection();
+//     const cartRepository = connection.getRepository(Cart);
+//     const cartItemsRepository = connection.getRepository(CartItems);
+//     const courseRepository = connection.getRepository(Courses);
+
+//     const userCart = await cartRepository.findOne({
+//       where: { user: { phone: userPhone } },
+//     });
+
+//     if (!userCart) {
+//       return res.status(404).json({ error: "Cart not found for the user" });
+//     }
+
+//     let totalPrice = 0;
+
+//     // Calculate the total price
+//     const cartItems = await cartItemsRepository.find({
+//       where: { cart: userCart.id },
+//     });
+
+//     for (const cartItem of cartItems) {
+//       if (cartItem.courseId) {
+//         const course = await courseRepository.findOne({
+//           where: { id: cartItem.courseId },
+//         });
+
+//         if (course) {
+//           totalPrice += course.price * cartItem.quantity;
+//         }
+//       }
+//     }
+//     const totalPriceString = totalPrice.toString(); // Convert totalPrice to a string
+
+//     console.log(totalPriceString);
+
+//     const response = await zarinpal.PaymentRequest({
+//       Amount: totalPriceString,
+//       CallbackURL: "http://localhost:3000/check-payment",
+//       Description: "تست اتصال به درگاه پرداخت",
+//       metadata: { mobile: userPhone },
+//       Mobile: userPhone,
+//     });
+
+//     console.log(">>>>>" + totalPriceString);
+
+//     // Pass totalPrice along with the response
+//     res.status(200).json({ response, totalPrice });
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while preparing the checkout." });
+//   }
+// }
+
+// async function checkPayment(req, res) {
+//   try {
+//     const { Status, Authority } = req.query;
+
+//     if (Status === "OK") {
+//       // Payment was successful
+//       const totalPriceString = req.body.totalPrice;
+//       const response = await zarinpal.PaymentVerification({
+//         Amount: totalPriceString,
+//         Authority: Authority,
+//       });
+
+//       console.log(JSON.stringify(response));
+
+//       if (response.status === 100) {
+//         // Payment verification succeeded
+//         // You can create an order and perform any other necessary actions here
+
+//         const userPhone = req.user.phone; // Extract user information
+//         const orderRepository = getManager().getRepository(Order);
+//         console.log(`refID is : ${response.RefID}`);
+
+//         // Create a new order with the user's phone number and total price
+//         const newOrder = orderRepository.create({
+//           user: userPhone,
+//           totalPrice: totalPriceString, // Use the calculated total price
+//           orderStatus: "success",
+//         });
+
+//         // Save the order to your database
+//         const savedOrder = await orderRepository.save(newOrder);
+
+//         // Clear the user's shopping cart (You can implement this function)
+//         await clearUserCart(userPhone);
+
+//         console.log(`Order placed successfully. Order ID: ${savedOrder.id}`);
+
+//         return res
+//           .status(200)
+//           .json({ message: "Payment successful", totalPrice });
+//       } else {
+//         console.error(
+//           "Payment Verification Failed. Status code: " +
+//             response.status +
+//             " - " +
+//             response.message
+//         );
+
+//         return res.status(400).json({ error: "Payment Verification Failed" });
+//       }
+//     } else if (Status === "NOK") {
+//       // Payment was not successful
+
+//       const userPhone = req.user.phone; // Extract user information
+//       const orderRepository = getManager().getRepository(Order);
+
+//       // Create a new order with the user's phone number and the total price
+//       const newOrder = orderRepository.create({
+//         user: userPhone,
+//         totalPrice: totalPriceString, // Use the calculated total price
+//         orderStatus: "cancelled",
+//       });
+
+//       // Save the order to your database
+//       const savedOrder = await orderRepository.save(newOrder);
+
+//       // Clear the user's shopping cart (You can implement this function)
+//       await clearUserCart(userPhone);
+
+//       return res.status(400).json({ error: "Payment was not successful" });
+//     } else {
+//       // Handle other Status values if needed
+//       return res.status(400).json({ error: "Invalid payment status" });
+//     }
+//   } catch (error) {
+//     console.error(`checkPayment error: ${error}`);
+//     return res
+//       .status(500)
+//       .json({ error: "An error occurred while processing the payment." });
+//   }
+// }
+
 async function getPayment(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -352,9 +496,9 @@ async function getPayment(req, res) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
 
+    // Calculate the total price
     let totalPrice = 0;
 
-    // Calculate the total price
     const cartItems = await cartItemsRepository.find({
       where: { cart: userCart.id },
     });
@@ -370,100 +514,67 @@ async function getPayment(req, res) {
         }
       }
     }
+
     const totalPriceString = totalPrice.toString(); // Convert totalPrice to a string
 
     console.log(totalPriceString);
 
-    const response = await zarinpal.PaymentRequest({
+    const response = await axios.post(ZARINPAL_API, {
       Amount: totalPriceString,
       CallbackURL: "http://localhost:3000/check-payment",
       Description: "تست اتصال به درگاه پرداخت",
-      metadata: { mobile: userPhone },
       Mobile: userPhone,
     });
 
-    console.log(`>>>>>${JSON.stringify(response)}`);
+    console.log(`Response from Zarinpal: ${JSON.stringify(response.data)}`);
 
-    console.log(">>>>>" + totalPrice);
+    // Extract the authority code from the response (you may need to adjust this based on Zarinpal's response structure)
+    const authority = response.data.Authority;
 
-    // Pass totalPrice along with the response
-    res.status(200).json({ response, totalPrice });
+    res.status(200).json({ authority, totalPrice: totalPriceString });
   } catch (error) {
-    console.error(error);
+    console.error(`getPayment error: ${error.message}`);
     res
       .status(500)
       .json({ error: "An error occurred while preparing the checkout." });
   }
 }
 
-async function checkPayment(req, res, totalPriceString) {
+async function checkPayment(req, res) {
   try {
-    const { Status, Authority } = req.query;
+    const userPhone = req.user.phone;
+    const { Authority, Status } = req.query;
 
     if (Status === "OK") {
       // Payment was successful
+      const totalPriceString = req.body.totalPrice; // Extract the totalPrice as a string from the request body
 
-      const response = await zarinpal.PaymentVerification({
+      const response = await axios.post(ZARINPAL_VERIFICATION_API, {
         Amount: totalPriceString,
         Authority: Authority,
       });
 
-      console.log(JSON.stringify(response));
+      console.log(`Response from Zarinpal Verification: ${JSON.stringify(response.data)}`);
 
-      if (response.status === 100) {
+      if (response.data.Status === 100) {
         // Payment verification succeeded
         // You can create an order and perform any other necessary actions here
 
-        const userPhone = req.user.phone; // Extract user information
-        const orderRepository = getManager().getRepository(Order);
-        console.log(`refID is : ${response.RefID}`);
+        // ...
 
-        // Create a new order with the user's phone number and total price
-        const newOrder = orderRepository.create({
-          user: userPhone,
-          totalPrice: totalPriceString, // Use the calculated total price
-          orderStatus: "success",
-        });
-
-        // Save the order to your database
-        const savedOrder = await orderRepository.save(newOrder);
-
-        // Clear the user's shopping cart (You can implement this function)
-        await clearUserCart(userPhone);
-
-        console.log(`Order placed successfully. Order ID: ${savedOrder.id}`);
-
-        return res
-          .status(200)
-          .json({ message: "Payment successful", totalPrice });
+        return res.status(200).json({ message: "Payment successful", totalPrice: totalPriceString });
       } else {
         console.error(
-          "Payment Verification Failed. Status code: " +
-            response.status +
-            " - " +
-            response.message
+          `Payment Verification Failed. Status code: ${response.data.Status}`
         );
 
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (Status === "NOK") {
       // Payment was not successful
+      const totalPriceString = req.body.totalPrice; // Extract the totalPrice as a string from the request body
 
-      const userPhone = req.user.phone; // Extract user information
-      const orderRepository = getManager().getRepository(Order);
-
-      // Create a new order with the user's phone number and the total price
-      const newOrder = orderRepository.create({
-        user: userPhone,
-        totalPrice: totalPriceString, // Use the calculated total price
-        orderStatus: "cancelled",
-      });
-
-      // Save the order to your database
-      const savedOrder = await orderRepository.save(newOrder);
-
-      // Clear the user's shopping cart (You can implement this function)
-      await clearUserCart(userPhone);
+      // ...
 
       return res.status(400).json({ error: "Payment was not successful" });
     } else {
@@ -471,12 +582,13 @@ async function checkPayment(req, res, totalPriceString) {
       return res.status(400).json({ error: "Invalid payment status" });
     }
   } catch (error) {
-    console.error(`checkPayment error: ${error}`);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while processing the payment." });
+    console.error(`checkPayment error: ${error.message}`);
+    return res.status(500).json({ error: "An error occurred while processing the payment." });
   }
 }
+
+
+
 
 async function clearUserCart(userPhone) {
   const connection = getConnection();
