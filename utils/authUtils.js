@@ -21,8 +21,7 @@ function sendOTPSMS(phone, otp) {
       template: "verifyotp",
     },
     function (response, status) {
-      console.log(response);
-      console.log(status);
+      console.log(`message send with status : ${status}`);
     }
   );
 }

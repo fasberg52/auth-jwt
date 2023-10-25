@@ -25,9 +25,11 @@ const OTP = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
-    // expirationTime: {
-    //   type: "timestamp",
-    // },
+    expirationTime:{
+      type: "timestamp",
+      nullable: true,
+    }
+  
   },
 
   relations: {

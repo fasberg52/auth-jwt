@@ -1,3 +1,5 @@
+// users Entity
+
 const { EntitySchema } = require("typeorm");
 
 const User = new EntitySchema({
@@ -13,6 +15,7 @@ const User = new EntitySchema({
     },
     lastName: {
       type: "varchar",
+     
     },
     phone: {
       type: "text",
@@ -20,21 +23,23 @@ const User = new EntitySchema({
     },
     password: {
       type: "text",
+     
     },
     roles: {
       type: "enum",
-      enum: ["admin", "user"], // Use the enum-like values
+      enum: ["admin", "user"], 
       default: "user",
     },
     createdAt: {
       type: "timestamp",
       createDate: true,
     },
-    lastLogin:{
+    lastLogin: {
       type: "timestamp",
       nullable: true,
-    }
+    },
   },
+ 
 });
 
 module.exports = User;

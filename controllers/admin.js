@@ -1,4 +1,5 @@
 const Users = require("../model/users");
+const Order = require("../model/Orders")
 const { getManager } = require("typeorm");
 
 async function getUsers(req, res) {
@@ -7,7 +8,6 @@ async function getUsers(req, res) {
     const users = await userRepository.find();
     res.json(users);
   } catch (error) {
-    console.error("Error getting users:", error);
     res.status(500).json({ error: "An error occurred while getting users." });
   }
 }
@@ -27,7 +27,6 @@ async function getUserByPhone(req, res) {
       res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    console.error("Error getting user:", error);
     res
       .status(500)
       .json({ error: "An error occurred while getting the user." });
@@ -54,7 +53,6 @@ async function updateUsers(req, res) {
       res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
-    console.error("Error updating user:", error);
     res
       .status(500)
       .json({ error: "An error occurred while updating the user." });
@@ -63,21 +61,31 @@ async function updateUsers(req, res) {
 
 async function deleteUsers(req, res) {
   try {
-    const userRepository = getManager().getRepository(Users);
-    const phoneNumber = req.params.phone;
+    const phone = req.params.phone; // Extract the phone number from the request parameters
 
-    const existingUser = await userRepository.findOne({
-      where: { phone: phoneNumber },
+    await getManager().transaction(async (transactionalEntityManager) => {
+      // Find the user you want to delete
+      const user = await transactionalEntityManager.findOne(Users, { where: { phone: phone } });
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Set the user reference to null for associated orders
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .update(Order)
+        .set({ user: null })
+        .where("user.phone = :phone", { phone: phone }) // Use phone: phone to pass the parameter
+        .execute();
+
+      // Delete the user
+      await transactionalEntityManager.remove(Users, user);
+
+      return res.json({ message: "User deleted successfully" });
     });
-
-    if (existingUser) {
-      await userRepository.remove(existingUser);
-      res.json({ message: "User deleted successfully." });
-    } else {
-      res.status(404).json({ error: "User not found." });
-    }
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while deleting the user." });
