@@ -23,7 +23,7 @@ router.get(
   cartController.orderDetails
 );
 
-router.get(
+router.post(
   "/payment-request",
   jwtAuthMiddleware,
   cartController.getPayment

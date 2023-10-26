@@ -207,7 +207,7 @@ async function saveOrder(req, res) {
     const orderRepository = getManager().getRepository(Order);
     const newOrder = orderRepository.create({
       user: userPhone,
-      totalPrice: totalPriceString,
+      totalPrice: totalPrice,
       orderStatus: "pending",
     });
     await orderRepository.save(newOrder);
@@ -515,28 +515,49 @@ async function getPayment(req, res) {
       }
     }
 
-    const totalPriceString = totalPrice.toString(); // Convert totalPrice to a string
+    // Convert totalPrice to a string
 
-    console.log(totalPriceString);
+    // Replace with your Zarinpal merchant_id
+    const merchantId = "247e3e33-b38f-4e27-968c-1ee3e0881283";
+    const callbackUrl = "http://localhost:3000/check-payment"; // Replace with your callback URL
+    const description = "Transaction description.";
+    const mobile = "09106869409";
+    const email = "info.test@gmail.com";
 
-    const response = await axios.post(ZARINPAL_API, {
-      Amount: totalPriceString,
-      CallbackURL: "http://localhost:3000/check-payment",
-      Description: "تست اتصال به درگاه پرداخت",
-      Mobile: userPhone,
-    });
+    // Construct the request data
+    const requestData = {
+      merchant_id: merchantId,
+      amount: totalPrice,
+      callback_url: callbackUrl,
+      description: description,
+      metadata: {
+        mobile: mobile,
+        email: email,
+      },
+    };
 
+    // Send a POST request to Zarinpal's payment request endpoint
+    const response = await axios.post(
+      "https://api.zarinpal.com/pg/v4/payment/request.json",
+      requestData,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
     console.log(`Response from Zarinpal: ${JSON.stringify(response.data)}`);
 
     // Extract the authority code from the response (you may need to adjust this based on Zarinpal's response structure)
-    const authority = response.data.Authority;
+    const authority = response.data.authority;
 
-    res.status(200).json({ authority, totalPrice: totalPriceString });
+    res.status(200).json({ authority, totalPrice });
   } catch (error) {
     console.error(`getPayment error: ${error.message}`);
     res
       .status(500)
-      .json({ error: "An error occurred while preparing the checkout." });
+      .json({ error: "An error occurred while preparing the getPayment." });
   }
 }
 
@@ -554,7 +575,9 @@ async function checkPayment(req, res) {
         Authority: Authority,
       });
 
-      console.log(`Response from Zarinpal Verification: ${JSON.stringify(response.data)}`);
+      console.log(
+        `Response from Zarinpal Verification: ${JSON.stringify(response.data)}`
+      );
 
       if (response.data.Status === 100) {
         // Payment verification succeeded
@@ -562,7 +585,12 @@ async function checkPayment(req, res) {
 
         // ...
 
-        return res.status(200).json({ message: "Payment successful", totalPrice: totalPriceString });
+        return res
+          .status(200)
+          .json({
+            message: "Payment successful",
+            totalPrice: totalPriceString,
+          });
       } else {
         console.error(
           `Payment Verification Failed. Status code: ${response.data.Status}`
@@ -583,12 +611,11 @@ async function checkPayment(req, res) {
     }
   } catch (error) {
     console.error(`checkPayment error: ${error.message}`);
-    return res.status(500).json({ error: "An error occurred while processing the payment." });
+    return res
+      .status(500)
+      .json({ error: "An error occurred while processing the payment." });
   }
 }
-
-
-
 
 async function clearUserCart(userPhone) {
   const connection = getConnection();
