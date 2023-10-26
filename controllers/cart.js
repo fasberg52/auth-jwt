@@ -491,7 +491,7 @@ async function getPayment(req, res) {
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
-
+    console.log(userCart);
     if (!userCart) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
@@ -519,12 +519,13 @@ async function getPayment(req, res) {
 
     // Replace with your Zarinpal merchant_id
 
-    const callbackUrl = "http://localhost:3000/verify-payment"; // Replace with your callback URL
+    const callbackUrl =
+      "http://localhost:3000/verify-payment?" + `Amount=${totalPrice}`; // Replace with your callback URL
     const description = "Transaction description.";
     const mobile = userPhone;
 
     // Construct the request data
-    const requestData = {
+    const requestData = JSON.stringify({
       merchant_id: process.env.MERCHANT_ID,
       amount: totalPrice,
       callback_url: callbackUrl,
@@ -532,8 +533,8 @@ async function getPayment(req, res) {
       metadata: {
         mobile: mobile,
       },
-    };
-    console.log(requestData.metadata.mobile);
+    });
+    // console.log(requestData.metadata.mobile);
     // Send a POST request to Zarinpal's payment request endpoint
     const response = await axios.post(
       "https://api.zarinpal.com/pg/v4/payment/request.json",
@@ -553,7 +554,7 @@ async function getPayment(req, res) {
     if (code == 100) {
       // Payment request succeeded
       const authority = response.data.data.authority;
-      const paymentUrl = `https://api.zarinpal.com/pg/StartPay/${authority}`;
+      const paymentUrl = `https://www.zarinpal.com/pg/StartPay/${authority}`;
 
       res.json({ paymentUrl, totalPrice });
     } else {
@@ -570,11 +571,13 @@ async function getPayment(req, res) {
 
 async function verifyPayment(req, res) {
   try {
-    const { Authority, Status } = req.query;
+    const { Authority, Status, Amount } = req.query;
+
+    console.log("query", req.query);
 
     if (Status === "OK") {
       // Payment was successful
-      const amount = req.body.totalPrice;
+      const amount = Amount;
 
       // Replace with your Zarinpal merchant_id
       const merchant_id = process.env.MERCHANT_ID;
