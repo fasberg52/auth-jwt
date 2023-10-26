@@ -7,7 +7,6 @@ const Courses = require("../model/Course");
 const User = require("../model/users");
 
 const axios = require("axios");
-const ZarinpalCheckout = require("zarinpal-checkout");
 const { getManager, getConnection } = require("typeorm");
 
 const ZARINPAL_API = "https://api.zarinpal.com/pg/v4/payment/request.json";
@@ -482,6 +481,7 @@ async function removeCartItem(cartItemId) {
 
 async function getPayment(req, res) {
   try {
+    console.log("req is : " + req);
     const userPhone = req.user.phone;
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
@@ -518,24 +518,22 @@ async function getPayment(req, res) {
     // Convert totalPrice to a string
 
     // Replace with your Zarinpal merchant_id
-    const merchantId = "247e3e33-b38f-4e27-968c-1ee3e0881283";
-    const callbackUrl = "http://localhost:3000/check-payment"; // Replace with your callback URL
+
+    const callbackUrl = "http://localhost:3000/verify-payment"; // Replace with your callback URL
     const description = "Transaction description.";
-    const mobile = "09106869409";
-    const email = "info.test@gmail.com";
+    const mobile = userPhone;
 
     // Construct the request data
     const requestData = {
-      merchant_id: merchantId,
+      merchant_id: process.env.MERCHANT_ID,
       amount: totalPrice,
       callback_url: callbackUrl,
       description: description,
       metadata: {
         mobile: mobile,
-        email: email,
       },
     };
-
+    console.log(requestData.metadata.mobile);
     // Send a POST request to Zarinpal's payment request endpoint
     const response = await axios.post(
       "https://api.zarinpal.com/pg/v4/payment/request.json",
@@ -550,9 +548,18 @@ async function getPayment(req, res) {
     console.log(`Response from Zarinpal: ${JSON.stringify(response.data)}`);
 
     // Extract the authority code from the response (you may need to adjust this based on Zarinpal's response structure)
-    const authority = response.data.authority;
+    const code = response.data.data.code;
+    console.log(`code is : ${code}`);
+    if (code == 100) {
+      // Payment request succeeded
+      const authority = response.data.data.authority;
+      const paymentUrl = `https://api.zarinpal.com/pg/StartPay/${authority}`;
 
-    res.status(200).json({ authority, totalPrice });
+      res.json({ paymentUrl, totalPrice });
+    } else {
+      // Payment request failed
+      return res.status(400).json({ error: "Payment Request Failed" });
+    }
   } catch (error) {
     console.error(`getPayment error: ${error.message}`);
     res
@@ -561,48 +568,98 @@ async function getPayment(req, res) {
   }
 }
 
-async function checkPayment(req, res) {
+async function verifyPayment(req, res) {
   try {
-    const userPhone = req.user.phone;
     const { Authority, Status } = req.query;
 
     if (Status === "OK") {
       // Payment was successful
-      const totalPriceString = req.body.totalPrice; // Extract the totalPrice as a string from the request body
+      const amount = req.body.totalPrice;
 
-      const response = await axios.post(ZARINPAL_VERIFICATION_API, {
-        Amount: totalPriceString,
-        Authority: Authority,
-      });
+      // Replace with your Zarinpal merchant_id
+      const merchant_id = process.env.MERCHANT_ID;
 
-      console.log(
-        `Response from Zarinpal Verification: ${JSON.stringify(response.data)}`
+      // Construct the request data for verification
+      const verificationData = {
+        merchant_id: merchant_id,
+        authority: Authority,
+        amount: amount,
+      };
+
+      const response = await axios.post(
+        "https://api.zarinpal.com/pg/v4/payment/verify.json",
+        verificationData,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
       );
+      console.log(`response verify : ${JSON.stringify(response.data)}`);
+      const code = response.data.data.code;
 
-      if (response.data.Status === 100) {
+      if (code == 100) {
         // Payment verification succeeded
-        // You can create an order and perform any other necessary actions here
+        const refID = response.data.data.ref_id;
 
-        // ...
+        // You can create an order and perform any other necessary actions here
+        const userPhone = req.user.phone; // Extract user information
+        const orderRepository = getManager().getRepository(Order);
+
+        // Create a new order with the user's phone number and total price
+        const newOrder = orderRepository.create({
+          user: userPhone,
+          totalPrice: amount, // Use the amount from the verification
+          orderStatus: "success",
+          refID: refID, // Store the reference ID
+        });
+
+        console.log(JSON.stringify(newOrder));
+        // Save the order to your database
+        const savedOrder = await orderRepository.save(newOrder);
+
+        console.log(`savedOrder ${JSON.stringify(saveOrder)}`);
+        // Clear the user's shopping cart (You can implement this function)
+        await clearUserCart(userPhone);
+
+        console.log(`Order placed successfully. Order ID: ${savedOrder.id}`);
 
         return res
           .status(200)
-          .json({
-            message: "Payment successful",
-            totalPrice: totalPriceString,
-          });
+          .json({ message: "Payment verification succeeded", refID });
       } else {
         console.error(
-          `Payment Verification Failed. Status code: ${response.data.Status}`
+          "Payment Verification Failed. Status code: " +
+            response.data.data.code +
+            " - " +
+            response.data.data.message
         );
 
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (Status === "NOK") {
-      // Payment was not successful
-      const totalPriceString = req.body.totalPrice; // Extract the totalPrice as a string from the request body
+      console.log("req is : " + JSON.stringify(req));
 
-      // ...
+      // Payment was not successful
+      console.log("hereeeee");
+
+      const userPhone = req.user.phone; // Extract user information
+
+      const orderRepository = getManager().getRepository(Order);
+
+      // Create a new order with the user's phone number and the total price
+      const newOrder = orderRepository.create({
+        user: userPhone,
+        totalPrice: amount, // Use the amount from the verification
+        orderStatus: "cancelled",
+      });
+
+      // Save the order to your database
+      const savedOrder = await orderRepository.save(newOrder);
+
+      // Clear the user's shopping cart (You can implement this function)
+      await clearUserCart(userPhone);
 
       return res.status(400).json({ error: "Payment was not successful" });
     } else {
@@ -610,10 +667,10 @@ async function checkPayment(req, res) {
       return res.status(400).json({ error: "Invalid payment status" });
     }
   } catch (error) {
-    console.error(`checkPayment error: ${error.message}`);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while processing the payment." });
+    console.error(`verifyPayment error: ${error}`);
+    return res.status(500).json({
+      error: "An error occurred while processing the payment verification.",
+    });
   }
 }
 
@@ -649,5 +706,5 @@ module.exports = {
   saveOrder,
   orderDetails,
   getPayment,
-  checkPayment,
+  verifyPayment,
 };

@@ -23,11 +23,7 @@ router.get(
   cartController.orderDetails
 );
 
-router.post(
-  "/payment-request",
-  jwtAuthMiddleware,
-  cartController.getPayment
-);
-router.get("/check-payment", cartController.checkPayment);
+router.post("/payment-request", jwtAuthMiddleware, cartController.getPayment);
+router.get("/verify-payment", cartController.verifyPayment);
 
 module.exports = router;
