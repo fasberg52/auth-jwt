@@ -583,11 +583,11 @@ async function verifyPayment(req, res) {
       const merchant_id = process.env.MERCHANT_ID;
 
       // Construct the request data for verification
-      const verificationData = {
+      const verificationData = JSON.stringify({
         merchant_id: merchant_id,
         authority: Authority,
         amount: amount,
-      };
+      });
 
       const response = await axios.post(
         "https://api.zarinpal.com/pg/v4/payment/verify.json",
@@ -607,12 +607,10 @@ async function verifyPayment(req, res) {
         const refID = response.data.data.ref_id;
 
         // You can create an order and perform any other necessary actions here
-        const userPhone = req.user.phone; // Extract user information
         const orderRepository = getManager().getRepository(Order);
 
         // Create a new order with the user's phone number and total price
         const newOrder = orderRepository.create({
-          user: userPhone,
           totalPrice: amount, // Use the amount from the verification
           orderStatus: "success",
           refID: refID, // Store the reference ID
@@ -642,27 +640,23 @@ async function verifyPayment(req, res) {
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (Status === "NOK") {
-      console.log("req is : " + JSON.stringify(req));
 
       // Payment was not successful
       console.log("hereeeee");
-
-      const userPhone = req.user.phone; // Extract user information
 
       const orderRepository = getManager().getRepository(Order);
 
       // Create a new order with the user's phone number and the total price
       const newOrder = orderRepository.create({
-        user: userPhone,
-        totalPrice: amount, // Use the amount from the verification
+        
+        totalPrice: req.query.Amount, // Use the amount from the verification
         orderStatus: "cancelled",
       });
-
       // Save the order to your database
       const savedOrder = await orderRepository.save(newOrder);
 
       // Clear the user's shopping cart (You can implement this function)
-      await clearUserCart(userPhone);
+     // await clearUserCart(userPhone);
 
       return res.status(400).json({ error: "Payment was not successful" });
     } else {
@@ -670,7 +664,7 @@ async function verifyPayment(req, res) {
       return res.status(400).json({ error: "Invalid payment status" });
     }
   } catch (error) {
-    console.error(`verifyPayment error: ${error}`);
+    console.error(`verifyPayment error: ${error.message}`);
     return res.status(500).json({
       error: "An error occurred while processing the payment verification.",
     });
