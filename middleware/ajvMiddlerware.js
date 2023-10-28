@@ -7,7 +7,7 @@ function validateLoginUsers(req, res, next) {
   if (valid) {
     next();
   } else {
-    res.status(400).json({ error: 'Validation error', errors: loginUsersValidator.errors });
+    res.status(400).json({ error: 'فرمت شماره همراه اشتباه است', errors: loginUsersValidator.errors[0].message });
   }
 }
 

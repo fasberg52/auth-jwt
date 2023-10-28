@@ -5,10 +5,9 @@ const loginUsersSchema = {
   type: "object",
   properties: {
     phone: { type: "string", pattern: "^09\\d{9}$" },
-    password: { type: "string" },
   },
-  required: ["phone", "password"],
-};
+  required: ["phone"],
+}; 
 const loginUsersValidator = ajv.compile(loginUsersSchema);
 
 module.exports = loginUsersValidator;
