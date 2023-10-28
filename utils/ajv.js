@@ -1,5 +1,5 @@
 const Ajv = require("ajv");
-const ajv = new Ajv(); 
+const ajv = new Ajv();
 
 const loginUsersSchema = {
   type: "object",
@@ -7,7 +7,7 @@ const loginUsersSchema = {
     phone: { type: "string", pattern: "^09\\d{9}$" },
   },
   required: ["phone"],
-}; 
+};
 const loginUsersValidator = ajv.compile(loginUsersSchema);
 
 module.exports = loginUsersValidator;

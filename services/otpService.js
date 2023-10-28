@@ -17,7 +17,7 @@ async function sendOTP(phone) {
   //     console.error(`User with phone number ${phone} does not exist.`);
   //     return;
   //   }
-    const otp = generateNumericOTP(6).toString();
+    const otp = generateNumericOTP(5).toString();
     console.log(`>>>otp: ${otp}`);
     await sendOTPSMS(phone, otp);
 
