@@ -12,7 +12,11 @@ router.post(
 );
 router.post("/signup", usersController.signUpUsers);
 router.post("/login/verify/otp", usersController.verifyWithOTP);
-router.post("/login/otp", usersController.loginWithOTP);
+router.post(
+  "/login/otp",
+  ajvMiddleware.validateLoginUsers,
+  usersController.loginWithOTP
+);
 router.post("/signup/otp");
 
 module.exports = router;
