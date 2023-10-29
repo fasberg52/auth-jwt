@@ -8,15 +8,41 @@ const OTP = require("../model/OTP");
 const User = require("../model/users");
 const OTP_EXPIRATION_TIME_MS = 30 * 1000; // 30 seconds
 
-async function sendOTP(phone) {
-   try {
-  //   const userRepository = getManager().getRepository(User); // Assuming User is the correct entity name
-  //   const existingUser = await userRepository.findOne({ where: { phone } });
+// async function sendOTP(phone) {
+//    try {
+//   //   const userRepository = getManager().getRepository(User); // Assuming User is the correct entity name
+//   //   const existingUser = await userRepository.findOne({ where: { phone } });
 
-  //   if (!existingUser) {
-  //     console.error(`User with phone number ${phone} does not exist.`);
-  //     return;
-  //   }
+//   //   if (!existingUser) {
+//   //     console.error(`User with phone number ${phone} does not exist.`);
+//   //     return;
+//   //   }
+//     const otp = generateNumericOTP(5).toString();
+//     console.log(`>>>otp: ${otp}`);
+//     await sendOTPSMS(phone, otp);
+
+//     const otpRepository = getManager().getRepository(OTP);
+//     const hashedPassword = await bcrypt.hash(otp, 10);
+
+//     const expirationTime = new Date(Date.now() + OTP_EXPIRATION_TIME_MS);
+//     const newOTP = otpRepository.create({
+//       phone,
+//       otp: hashedPassword,
+//       expirationTime,
+//     });
+//     await otpRepository.save(newOTP);
+//     await otpRepository.delete({ expirationTime: LessThan(new Date()) });
+
+//     return otp;
+//   } catch (error) {
+//     console.error("Error sending OTP:", error);
+//     throw error;
+//   }
+// }
+
+
+async function sendOTP(phone) {
+  try {
     const otp = generateNumericOTP(5).toString();
     console.log(`>>>otp: ${otp}`);
     await sendOTPSMS(phone, otp);
@@ -31,7 +57,6 @@ async function sendOTP(phone) {
       expirationTime,
     });
     await otpRepository.save(newOTP);
-    await otpRepository.delete({ expirationTime: LessThan(new Date()) });
 
     return otp;
   } catch (error) {
@@ -39,41 +64,79 @@ async function sendOTP(phone) {
     throw error;
   }
 }
+
 async function verifyOTP(phone, otp) {
   try {
     const otpRepository = getManager().getRepository(OTP);
 
     const otpRecord = await otpRepository.findOne({ where: { phone: phone } });
     console.log("OTP record:", otpRecord);
+
     if (!otpRecord) {
-      console.log(!otpRecord);
-      return false; 
+      console.log("No OTP record found for the phone.");
+      return false;
     }
 
     const currentTime = new Date();
-    const otpTimestamp = otpRecord.createdAt; 
-    const otpExpirationTime = process.env.TIMER_SEND_OTP * 1000; // 30 seconds in milliseconds
+    const otpTimestamp = otpRecord.createdAt;
+    const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
 
     if (currentTime - otpTimestamp > otpExpirationTime) {
-     
+      console.log("OTP has expired. Removing record.");
       await otpRepository.remove(otpRecord);
-      return false; 
+      return false;
     }
 
     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
 
     if (isValidOTP) {
-      
       otpRecord.isVerified = true;
       await otpRepository.save(otpRecord);
     }
 
-    return isValidOTP; 
+    return isValidOTP;
   } catch (error) {
     console.error("Error verifying OTP:", error);
     throw error;
   }
 }
+
+
+// async function verifyOTP(phone, otp) {
+//   try {
+//     const otpRepository = getManager().getRepository(OTP);
+
+//     const otpRecord = await otpRepository.findOne({ where: { phone: phone } });
+//     console.log("OTP record:", otpRecord);
+//     if (!otpRecord) {
+//       console.log(!otpRecord);
+//       return false; 
+//     }
+
+//     const currentTime = new Date();
+//     const otpTimestamp = otpRecord.createdAt; 
+//     const otpExpirationTime = process.env.TIMER_SEND_OTP * 1000; // 30 seconds in milliseconds
+
+//     if (currentTime - otpTimestamp > otpExpirationTime) {
+     
+//       await otpRepository.remove(otpRecord);
+//       return false; 
+//     }
+
+//     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
+
+//     if (isValidOTP) {
+      
+//       otpRecord.isVerified = true;
+//       await otpRepository.save(otpRecord);
+//     }
+
+//     return isValidOTP; 
+//   } catch (error) {
+//     console.error("Error verifying OTP:", error);
+//     throw error;
+//   }
+// }
 
 module.exports = {
   verifyOTP,
