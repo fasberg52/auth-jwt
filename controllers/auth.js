@@ -108,7 +108,7 @@ async function signUpUsers(req, res) {
       return res.status(400).json({ error: "User already exists." });
     }
 
-    sendOTP(phone); // Send OTP via SMS
+    //sendOTP(phone); // Send OTP via SMS
 
     const newUser = userRepository.create({
       firstName,
