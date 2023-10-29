@@ -40,7 +40,6 @@ const OTP_EXPIRATION_TIME_MS = 30 * 1000; // 30 seconds
 //   }
 // }
 
-
 async function sendOTP(phone) {
   try {
     const otp = generateNumericOTP(5).toString();
@@ -101,7 +100,6 @@ async function verifyOTP(phone, otp) {
   }
 }
 
-
 // async function verifyOTP(phone, otp) {
 //   try {
 //     const otpRepository = getManager().getRepository(OTP);
@@ -110,28 +108,28 @@ async function verifyOTP(phone, otp) {
 //     console.log("OTP record:", otpRecord);
 //     if (!otpRecord) {
 //       console.log(!otpRecord);
-//       return false; 
+//       return false;
 //     }
 
 //     const currentTime = new Date();
-//     const otpTimestamp = otpRecord.createdAt; 
+//     const otpTimestamp = otpRecord.createdAt;
 //     const otpExpirationTime = process.env.TIMER_SEND_OTP * 1000; // 30 seconds in milliseconds
 
 //     if (currentTime - otpTimestamp > otpExpirationTime) {
-     
+
 //       await otpRepository.remove(otpRecord);
-//       return false; 
+//       return false;
 //     }
 
 //     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
 
 //     if (isValidOTP) {
-      
+
 //       otpRecord.isVerified = true;
 //       await otpRepository.save(otpRecord);
 //     }
 
-//     return isValidOTP; 
+//     return isValidOTP;
 //   } catch (error) {
 //     console.error("Error verifying OTP:", error);
 //     throw error;
