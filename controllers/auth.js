@@ -108,7 +108,7 @@ async function signUpUsers(req, res) {
       return res.status(400).json({ error: "User already exists." });
     }
 
-    //sendOTP(phone); // Send OTP via SMS
+    sendOTP(phone); // Send OTP via SMS
 
     const newUser = userRepository.create({
       firstName,
@@ -133,21 +133,25 @@ async function loginWithOTP(req, res) {
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
-    if (existingUser) {
-      await sendOTP(phone); // Send OTP via SMS
-    }
-    else {
-      await sendOTP(phone);
-      const newUser = userRepository.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phone: req.body.phone,
-        password: req.body.password,
-      });
-      const savedUser = await userRepository.save(newUser);
-    }
 
-    res.json({ message: "OTP sent to your phone successfully" });
+    if (existingUser) {
+      res.json({ message: "OTP sent to your phone successfully" });
+      await sendOTP(phone);
+    } else {
+      await sendOTP(phone);
+      console.log("user not found");
+      // const newUser = userRepository.create({
+      //   firstName: req.body.firstName,
+      //   lastName: req.body.lastName,
+      //   phone: req.params.phone,
+      //   password: req.body.password,
+      // });
+      // const savedUser = await userRepository.save(newUser);
+
+      res.json({
+        message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد",
+      });
+    }
   } catch (error) {
     console.log(error.message);
     res
@@ -171,7 +175,13 @@ async function verifyWithOTP(req, res) {
       where: { phone: phone },
     });
     if (!existingUser) {
-      res.status(404).json({ error: false });
+      const newUser = userRepository.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        password: req.body.passport,
+      });
+      const savedUser = userRepository.save(newUser);
+      res.status(201).json({ message: "user created" });
       return;
     }
 

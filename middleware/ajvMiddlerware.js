@@ -1,6 +1,10 @@
 // validationMiddleware.js
 
-const { phoneValidator, otpValidator,signUpValidator } = require("../utils/ajv");
+const {
+  phoneValidator,
+  loginWithOTPValidator,
+  signUpValidator,
+} = require("../utils/ajv");
 
 function validateLoginUsers(req, res, next) {
   const valid = phoneValidator(req.body);
@@ -15,13 +19,12 @@ function validateLoginUsers(req, res, next) {
 
 // Other validation functions for different routes
 function validateOTP(req, res, next) {
-  const valid = otpValidator(req.body);
+  const valid = loginWithOTPValidator(req.body);
   if (valid) {
     next();
   } else {
     res.status(400).json({
-      errors: otpValidator.errors[0].message
-      ,
+      errors: loginWithOTPValidator.errors[0].message,
     });
   }
 }
@@ -37,13 +40,10 @@ function validateSignUp(req, res, next) {
   }
 }
 
-
 module.exports = {
   validateLoginUsers,
   validateOTP,
-  validateSignUp
-  
+  validateSignUp,
+
   // Other validation functions
 };
-
-

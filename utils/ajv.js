@@ -9,12 +9,20 @@ const phoneSchema = {
   required: ["phone"],
 };
 
-const otpSchema = {
+const loginWithOTPSchema = {
   type: "object",
   properties: {
+    phone: { type: "string", pattern: "^09\\d{9}$" },
+
     otp: { type: "string", pattern: "^[0-9]{5}$" },
   },
-  required: ["otp"],
+  required: ["otp", "phone"],
+  errorMessage: {
+    properties: {
+      phone: "فرمت شماره همراه صحیح نیست",
+      otp: "لطفا رمز یکبار مصرف را صحیح وارد کنید",
+    },
+  },
 };
 const signUpSchema = {
   type: "object",
@@ -42,11 +50,11 @@ const signUpSchema = {
 };
 
 const phoneValidator = ajv.compile(phoneSchema);
-const otpValidator = ajv.compile(otpSchema);
+const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
 const signUpValidator = ajv.compile(signUpSchema);
 
 module.exports = {
   phoneValidator,
-  otpValidator,
+  loginWithOTPValidator,
   signUpValidator,
 };

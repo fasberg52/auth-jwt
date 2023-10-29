@@ -32,7 +32,7 @@ async function createCartItem(req, res) {
       where: { user: { phone: userPhone } },
     });
     console.log(`>> userCart  : ${JSON.stringify(userCart)}`);
-    console.log(userCart.id);
+    //console.log(userCart.id);
 
     if (!userCart) {
       const newCart = cartRepository.create({

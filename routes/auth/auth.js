@@ -7,20 +7,20 @@ const usersController = require("../../controllers/auth");
 
 router.post(
   "/login",
-  ajvMiddleware.validateLoginUsers,
+ // ajvMiddleware.validateLoginUsers,
   usersController.loginUsers
 );
 router.post("/signup", ajvMiddleware.validateSignUp, usersController.signUpUsers);
 router.post(
   "/login/verify/otp",
-  ajvMiddleware.validateLoginUsers,
+  
   ajvMiddleware.validateOTP,
 
   usersController.verifyWithOTP
 );
 router.post(
   "/login/otp",
-  ajvMiddleware.validateLoginUsers,
+  //ajvMiddleware.validateLoginUsers,
   usersController.loginWithOTP
 );
 router.post("/signup/otp");
