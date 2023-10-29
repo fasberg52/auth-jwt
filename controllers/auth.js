@@ -164,38 +164,37 @@ async function verifyWithOTP(req, res) {
   try {
     const { phone, otp } = req.body;
     const userRepository = getManager().getRepository(Users);
+    const existingUser = await userRepository.findOne({ where: { phone } });
 
-    const isValidOTP = await verifyOTP(phone, otp);
-    if (!isValidOTP) {
-      res.status(401).json({ error: "Invalid OTP" });
-      return;
-    }
-
-    const existingUser = await userRepository.findOne({
-      where: { phone: phone },
-    });
     if (!existingUser) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const newUser = userRepository.create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        password: req.body.passport,
+        ...req.body,
+        password: hashedPassword, // Should this be password?
       });
-      const savedUser = userRepository.save(newUser);
-      res.status(201).json({ message: "user created" });
-      return;
+      await userRepository.save(newUser);
+      const token = createToken(newUser);
+
+      res.status(201).json({ message: "User created", token }); // Send a 201 status code for resource creation
+    } else {
+      const isValidOTP = await verifyOTP(phone, otp);
+
+      if (!isValidOTP) {
+        res.status(401).json({ error: "Invalid OTP" }); // Send a 401 status code for unauthorized access
+      } else {
+        existingUser.lastLogin = new Date();
+        await userRepository.save(existingUser);
+
+        const token = createToken(existingUser);
+        res.status(200).json({ token, username: existingUser.phone }); // Send a 200 status code for success
+      }
     }
-
-    existingUser.lastLogin = new Date();
-    await userRepository.save(existingUser);
-
-    const token = createToken(existingUser);
-    res.json({ token, username: existingUser.phone });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while verifyWithOTP in." });
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while verifying OTP" }); // Send a 500 status code for internal server error
   }
 }
+
 async function verifySignup(req, res) {}
 
 module.exports = {
