@@ -1,6 +1,6 @@
 // validationMiddleware.js
 
-const { phoneValidator, otpValidator,persianNameValidator } = require("../utils/ajv");
+const { phoneValidator, otpValidator,signUpValidator } = require("../utils/ajv");
 
 function validateLoginUsers(req, res, next) {
   const valid = phoneValidator(req.body);
@@ -8,7 +8,6 @@ function validateLoginUsers(req, res, next) {
     next();
   } else {
     res.status(400).json({
-      error: "فرمت شماره همراه اشتباه است",
       errors: phoneValidator.errors[0].message,
     });
   }
@@ -21,21 +20,19 @@ function validateOTP(req, res, next) {
     next();
   } else {
     res.status(400).json({
-      error: "ارقام رمز یکبار مصرف صحیح نیست",
       errors: otpValidator.errors[0].message
       ,
     });
   }
 }
 
-function validateName(req, res, next) {
-  const valid = persianNameValidator(req.body);
+function validateSignUp(req, res, next) {
+  const valid = signUpValidator(req.body);
   if (valid) {
     next();
   } else {
     res.status(400).json({
-      error: "لطفا کیبورد خود را فارسی کنید",
-      errors: persianNameValidator.errors[0].message,
+      errors: signUpValidator.errors[0].message,
     });
   }
 }
@@ -44,7 +41,7 @@ function validateName(req, res, next) {
 module.exports = {
   validateLoginUsers,
   validateOTP,
-  validateName
+  validateSignUp
   
   // Other validation functions
 };
