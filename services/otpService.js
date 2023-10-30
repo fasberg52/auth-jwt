@@ -100,6 +100,26 @@ async function verifyOTP(phone, otp) {
   }
 }
 
+async function isOTPExpired(phone) {
+  try {
+    const otpRepository = getManager().getRepository(OTP);
+    const otpRecord = await otpRepository.findOne({ where: { phone: phone } });
+
+    if (!otpRecord) {
+      // No OTP record found, consider it as expired
+      return true;
+    }
+
+    const currentTime = new Date();
+    const otpTimestamp = otpRecord.createdAt;
+    const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
+
+    return currentTime - otpTimestamp > otpExpirationTime;
+  } catch (error) {
+    console.error("Error checking OTP expiration:", error);
+    return false; // Assume OTP is not expired in case of an error
+  }
+}
 // async function verifyOTP(phone, otp) {
 //   try {
 //     const otpRepository = getManager().getRepository(OTP);
@@ -139,6 +159,7 @@ async function verifyOTP(phone, otp) {
 module.exports = {
   verifyOTP,
   sendOTP,
+  isOTPExpired
 };
 
 // exports.verifyOTP = async (phone, otp) => {
