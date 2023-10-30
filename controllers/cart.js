@@ -38,7 +38,7 @@ async function createCartItem(req, res) {
       const newCart = cartRepository.create({
         user: userPhone,
       });
-
+      console.log(`newCart ${JSON.stringify(newCart)}`);
       // Note: Do not include createdAt in the cart creation
       await cartRepository.save(newCart);
 
@@ -47,12 +47,15 @@ async function createCartItem(req, res) {
         courseId: courseId, // Set courseId here
         quantity: quantity,
       });
+      console.log(`cartItem ${JSON.stringify(cartItem)}`);
+
       await cartItemsRepository.save(cartItem);
     } else {
       const existingCartItem = await cartItemsRepository.findOne({
-        where: { cart: userCart, courseId: courseId }, // Ensure courseId is set here
+        where: { cart: userCart.id, courseId: courseId }, // Ensure courseId is set here
       });
 
+      console.log(`existingCartItem : ${existingCartItem}`);
       if (existingCartItem) {
         existingCartItem.quantity += quantity;
         await cartItemsRepository.save(existingCartItem);
@@ -65,9 +68,8 @@ async function createCartItem(req, res) {
 
         await cartItemsRepository.save(newCartItem);
       }
-
-      res.status(200).json({ message: "Item added to cart successfully" });
     }
+    res.status(200).json({ message: "Item added to cart successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -225,12 +227,7 @@ async function orderDetails(req, res) {}
 async function getUserCart(req, res) {
   try {
     const user = req.user;
-
-    if (user.phone !== req.params.phone) {
-      return res
-        .status(403)
-        .json({ error: "Unauthorized access to cart data" });
-    }
+    console.log(user);
 
     const userPhone = req.user.phone;
     console.log("userPhone: " + userPhone);
@@ -710,5 +707,3 @@ module.exports = {
   getPayment,
   verifyPayment,
 };
-
-

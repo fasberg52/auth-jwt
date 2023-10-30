@@ -6,8 +6,7 @@ const { routerConfig } = require("./config/routerConfig");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const multer = require("multer");
-var bodyParser = require("body-parser");
-
+const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const app = express();
 

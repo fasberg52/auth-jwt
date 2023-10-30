@@ -71,7 +71,7 @@ async function loginUsers(req, res) {
         password: req.body.password,
       });
       const savedUser = await userRepository.save(newUser);
-
+  
       return res.json({ message: "User registered successfully" });
     }
     const passwordMatch = await bcrypt.compare(
@@ -199,53 +199,39 @@ async function verifyWithOTP(req, res) {
     const userRepository = getManager().getRepository(Users);
 
     const isValidOTP = await verifyOTP(phone, otp);
+    
     if (!isValidOTP) {
-      // Check if the OTP has expired
-      if (await verifyOTP(phone)) {
-        res.status(401).json({ error: "OTP has expired. Please request a new OTP." });
-        return;
-      } else {
-        res.status(401).json({ error: "Invalid OTP" });
-        return;
-      }
+      res.status(401).json({ error: "Invalid OTP" }); // Sending a response for invalid OTP
+      return;
     }
 
+    let user;
     const existingUser = await userRepository.findOne({ where: { phone: phone } });
+
     if (!existingUser) {
+      // User does not exist, create a new user
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const newUser = userRepository.create({
         ...req.body,
         password: hashedPassword,
       });
-      await userRepository.save(newUser);
-      const token = createToken(newUser);
-
-      res.status(201).json({ message: "User created", token }); // Send a 201 status code for resource creation
+      user = await userRepository.save(newUser);
     } else {
-      const isValidOTP = await verifyOTP(phone, otp);
-      console.log(`isValidOTP  : ${isValidOTP}`);
-
-      if (!isValidOTP) {
-        res.status(401).json({ error: "Invalid OTP" }); // Send a 401 status code for unauthorized access
-      } else {
-        existingUser.lastLogin = new Date();
-        await userRepository.save(existingUser);
-
-        const token = createToken(existingUser);
-        res.status(200).json({ token, username: existingUser.phone }); // Send a 200 status code for success
-      }
+      // User exists, update last login time
+      existingUser.lastLogin = new Date();
+      await userRepository.save(existingUser);
+      user = existingUser;
     }
 
-    existingUser.lastLogin = new Date();
-    await userRepository.save(existingUser);
+    const token = createToken(user);
+    res.status(200).json({ token, username: user.phone }); // Sending a response for success
 
-    const token = createToken(existingUser);
-    res.status(200).json({ token, username: existingUser.phone });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred while verifying OTP" });
   }
 }
+
 
 
 
