@@ -146,31 +146,44 @@ module.exports = router;
  * @swagger
  * /auth/login/otp:
  *   post:
- *     summary: User login with OTP
- *     description: Log in a user with OTP.
+ *     summary: Log in with OTP
+ *     description: Log in with a one-time password (OTP).
  *     tags:
  *       - Auth
- *     requestBody:
- *       parameters:
- *       - name: phone
- *         in: query
- *         description: User's phone number
+ *     parameters:
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: number
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
  *     responses:
  *       200:
- *         description: OTP login successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Phone number not found
+ *         description: Successful OTP request
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { message: "رمز یکبار مصرف ارسال شد" }
+ *           userNotFound:
+ *             value: { message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد" }
  *       500:
- *         description: An error occurred while logging in with OTP
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while logging in with OTP." }
  */
 
 /**

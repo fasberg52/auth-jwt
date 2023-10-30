@@ -220,7 +220,6 @@ async function verifyWithOTP(req, res) {
       await userRepository.save(newUser);
       const token = createToken(newUser);
 
-<<<<<<< HEAD
       res.status(201).json({ message: "User created", token }); // Send a 201 status code for resource creation
     } else {
       const isValidOTP = await verifyOTP(phone, otp);
@@ -235,10 +234,6 @@ async function verifyWithOTP(req, res) {
         const token = createToken(existingUser);
         res.status(200).json({ token, username: existingUser.phone }); // Send a 200 status code for success
       }
-=======
-      res.status(201).json({ message: "User created", token });
-      return;
->>>>>>> 97b9e70fef3fefdc93a9cfba3e7661539999b0dc
     }
 
     existingUser.lastLogin = new Date();
