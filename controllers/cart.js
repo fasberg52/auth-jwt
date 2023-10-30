@@ -225,6 +225,13 @@ async function orderDetails(req, res) {}
 async function getUserCart(req, res) {
   try {
     const user = req.user;
+
+    if (user.phone !== req.params.phone) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized access to cart data" });
+    }
+
     const userPhone = req.user.phone;
     console.log("userPhone: " + userPhone);
     const connection = getConnection();
@@ -640,7 +647,6 @@ async function verifyPayment(req, res) {
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
     } else if (Status === "NOK") {
-
       // Payment was not successful
       console.log("hereeeee");
 
@@ -648,7 +654,6 @@ async function verifyPayment(req, res) {
 
       // Create a new order with the user's phone number and the total price
       const newOrder = orderRepository.create({
-        
         totalPrice: req.query.Amount, // Use the amount from the verification
         orderStatus: "cancelled",
       });
@@ -656,7 +661,7 @@ async function verifyPayment(req, res) {
       const savedOrder = await orderRepository.save(newOrder);
 
       // Clear the user's shopping cart (You can implement this function)
-     // await clearUserCart(userPhone);
+      // await clearUserCart(userPhone);
 
       return res.status(400).json({ error: "Payment was not successful" });
     } else {

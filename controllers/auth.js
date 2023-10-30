@@ -6,10 +6,8 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const { sendOTP, verifyOTP } = require("../services/otpService");
 const { getManager } = require("typeorm");
-const { generateNumericOTP } = require("../utils/otpUtils");
 const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
-const { sendOTPSMS } = require("../utils/authUtils");
 
 require("dotenv").config();
 
@@ -135,7 +133,7 @@ async function loginWithOTP(req, res) {
     });
 
     if (existingUser) {
-      res.json({ message: "OTP sent to your phone successfully" });
+      res.json({ message: "رمز یکبار مصرف ارسال شد" });
       await sendOTP(phone);
     } else {
       await sendOTP(phone);
@@ -178,6 +176,7 @@ async function verifyWithOTP(req, res) {
       res.status(201).json({ message: "User created", token }); // Send a 201 status code for resource creation
     } else {
       const isValidOTP = await verifyOTP(phone, otp);
+      console.log(`isValidOTP  : ${isValidOTP}`);
 
       if (!isValidOTP) {
         res.status(401).json({ error: "Invalid OTP" }); // Send a 401 status code for unauthorized access
