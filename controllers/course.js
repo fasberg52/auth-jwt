@@ -1,12 +1,7 @@
-const { json } = require("express");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
 
-// var zarinpal = ZarinpalCheckout.create(
-//   "247e3e33-b38f-4e27-968c-1ee3e0881283",
-//   false
-// );
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
