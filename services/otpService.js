@@ -110,11 +110,13 @@ async function verifyOTP(phone, otp) {
     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
     console.log(`isVALIDOTP VERIFY : ${isValidOTP}`);
     if (isValidOTP) {
-      otpRecord.isVerified = true; // Mark the OTP as verified for the current verification
-      await otpRepository.save(otpRecord); // Update the OTP record
-
-      // Remove the OTP record from the database to prevent further use
-      await otpRepository.remove(otpRecord);
+      // Use a query builder to update isVerified to true without deleting the record
+      await otpRepository
+        .createQueryBuilder()
+        .update(OTP)
+        .set({ isVerified: true })
+        .where("phone = :phone", { phone: phone })
+        .execute();
     }
 
     return isValidOTP;

@@ -12,14 +12,14 @@ router.post(
 );
 router.post("/signup", ajvMiddleware.validateSignUp, usersController.signUpUsers);
 router.post(
-  "/login/verify/otp",
+  "/verify/otp",
   
-  ajvMiddleware.validateSignUp,
+  ajvMiddleware.validateOTP,
 
   usersController.verifyWithOTP
 );
 router.post(
-  "/login/otp",
+  "/otp",
   //ajvMiddleware.validateLoginUsers,
   usersController.loginWithOTP
 );

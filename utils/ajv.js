@@ -20,7 +20,7 @@ const loginWithOTPSchema = {
   errorMessage: {
     properties: {
       phone: "فرمت شماره همراه صحیح نیست",
-      otp: "لطفا رمز یکبار مصرف را صحیح وارد کنید",
+      otp: "رمز یکبار مصرف را 5 رقم وارد کنید",
     },
   },
 };

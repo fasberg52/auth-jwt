@@ -1,4 +1,5 @@
 const Users = require("../model/users");
+const OTP = require("../model/OTP");
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
@@ -107,16 +108,23 @@ async function signUpUsers(req, res) {
       return res.status(400).json({ error: "User already exists." });
     }
 
-    sendOTP(phone); // Send OTP via SMS
-
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    const newUser = userRepository.create({
-      ...req.body,
-      password: hashedPassword,
+    const otpRepository = getManager().getRepository(OTP);
+    const existingOTP = await otpRepository.findOne({
+      where: { phone: phone },
     });
+    if (!existingOTP || !existingOTP.isVerified) {
+      return res.status(401).json({ message: "Please verify your phone number with a one-time password." });
+    }
+    
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    user = await userRepository.save(newUser);
+      const newUser = userRepository.create({
+        ...req.body,
+        password: hashedPassword,
+      });
+
+      user = await userRepository.save(newUser);
+   
     const token = createToken(user);
     res.status(200).json({ token, username: user.phone }); // Sending a response for success  }
   } catch (error) {
@@ -161,29 +169,30 @@ async function verifyWithOTP(req, res) {
     const isValidOTP = await verifyOTP(phone, otp);
 
     if (!isValidOTP) {
-      res.status(401).json({ error: "Invalid OTP" }); // Sending a response for invalid OTP
+      res.status(401).json({ error: "رمز یکبار مصرف اشتباه است" }); // Sending a response for invalid OTP
       return;
     }
 
-     let user;
-    // const existingUser = await userRepository.findOne({
-    //   where: { phone: phone },
-    // });
+    let user;
+    const existingUser = await userRepository.findOne({
+      where: { phone: phone },
+    });
 
-    //  if (!existingUser) {
-    //   // User does not exist, create a new user
-    //   const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    //   const newUser = userRepository.create({
-    //     ...req.body,
-    //     password: hashedPassword,
-    //   });
-    //   user = await userRepository.save(newUser);
-    // } else {
-    //    User exists, update last login time
-       existingUser.lastLogin = new Date();
-       await userRepository.save(existingUser);
-       user = existingUser;
-     //}
+    if (!existingUser) {
+      return res.status(201).json({ message: " user not found but otp true" });
+      //   // User does not exist, create a new user
+      //   const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      //   const newUser = userRepository.create({
+      //     ...req.body,
+      //     password: hashedPassword,
+      //   });
+      //   user = await userRepository.save(newUser);
+    } else {
+      //    User exists, update last login time
+      existingUser.lastLogin = new Date();
+      await userRepository.save(existingUser);
+      user = existingUser;
+    }
 
     const token = createToken(user);
     res.status(200).json({ token, username: user.phone }); // Sending a response for success
@@ -193,12 +202,9 @@ async function verifyWithOTP(req, res) {
   }
 }
 
-async function verifySignup(req, res) {}
-
 module.exports = {
   loginUsers,
   loginWithOTP,
   verifyWithOTP,
   signUpUsers,
-  verifySignup,
 };
