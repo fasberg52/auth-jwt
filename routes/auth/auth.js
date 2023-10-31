@@ -66,7 +66,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /signup:
+ * /auth/signup:
  *   post:
  *     summary: Sign up a new user
  *     description: Register a new user with a phone number, first name, last name, and password.
@@ -144,40 +144,69 @@ module.exports = router;
 
 /**
  * @swagger
- * /auth/login/verify/otp:
+ * /auth/verify/otp:
  *   post:
- *     summary: Verify user login with OTP
- *     description: Verify a user's login with OTP.
+ *     summary: Verify OTP and log in
+ *     description: Verify a one-time password (OTP) and log in the user.
  *     tags:
  *       - Auth
- *     requestBody:
- *       description: OTP verification information
- *       content:
- *         application/json:
  *     parameters:
- *       - name: phone
- *         in: query
- *         description: User's phone number
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: number
- *       - name: otp
- *         in: query
- *         description: OTP sent to the user's phone
- *         required: true
- *         schema:
- *           type: number
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *             otp:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
+ *           otp: "yourOTPHere"
  *     responses:
  *       200:
  *         description: OTP verification successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
+ *         schema:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *             username:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { token: "yourAccessTokenHere", username: "user'sPhone" }
+ *       201:
+ *         description: User not found but OTP is true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           notFound:
+ *             value: { message: "user not found but OTP is true" }
  *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
+ *         description: Invalid OTP
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           invalidOTP:
+ *             value: { error: "رمز یکبار مصرف اشتباه است" }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while verifying OTP" }
  */
 
 /**

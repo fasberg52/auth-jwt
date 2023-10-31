@@ -113,11 +113,10 @@ async function signUpUsers(req, res) {
       where: { phone: phone },
     });
     if (!existingOTP || !existingOTP.isVerified) {
-      return res
-        .status(401)
-        .json({
-          message: "Please verify your phone number with a one-time password.",
-        });
+      return res.status(401).json({
+        message: "ابتدا شماره خود را با رمز یکبار مصرف تایید کنید",
+        register: false,
+      });
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -130,15 +129,20 @@ async function signUpUsers(req, res) {
     user = await userRepository.save(newUser);
 
     const token = createToken(user);
-    res.status(200).json({ token, username: user.phone }); // Sending a response for success  }
+    res
+      .status(200)
+      .json({
+        message: "ثبت نام با موفقیت انجام شد",
+        token,
+        username: user.phone,
+        register: true,
+      }); // Sending a response for success  }
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while creating the user.",
-        registred: ture,
-      });
+    res.status(500).json({
+      error: "An error occurred while creating the user.",
+      registred: true,
+    });
   }
 }
 async function loginWithOTP(req, res) {
