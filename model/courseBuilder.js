@@ -1,13 +1,37 @@
 // courseBuilder Entity
 
-const { EntitySchema } = require("typeorm");
+const { EntitySchema, PrimaryColumn } = require("typeorm");
 
-const courseBuilder = new EntitySchema({
-     
-    
-
+const CourseBuilder = new EntitySchema({
+  name: "CourseBuilder",
+  tableName: "courseBuilder",
+  columns: {
+    id: {
+      type: "int",
+      generated: true,
+      primary: true,
+    },
+    part: {
+      type: "json",
+    },
+    title: {
+      type: "varchar",
+    },
+    description: {
+      type: "varchar",
+    },
+    videoPath: {
+      type: "varchar",
+    },
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
+    lastModified: {
+      type: "timestamp",
+      onUpdate: "CURRENT_TIMESTAMP",
+    },
+  },
 });
 
-modulde.exports = {
-  courseBuilder,
-};
+module.exports = CourseBuilder;

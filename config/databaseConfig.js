@@ -7,7 +7,7 @@ const Category = require("../model/Category");
 const Session = require("../model/Session");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
-
+const CourseBuilder = require("../model/courseBuilder");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -21,7 +21,17 @@ async function setupDatabase() {
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
-      entities: [Users, OTP, Course, Order, Category, Session, Cart, CartItems],
+      entities: [
+        Users,
+        OTP,
+        Course,
+        Order,
+        Category,
+        Session,
+        Cart,
+        CartItems,
+        CourseBuilder,
+      ],
       synchronize: true,
     });
 
