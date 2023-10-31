@@ -9,6 +9,7 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const app = express();
+app.disable('x-powered-by');
 
 async function main() {
   try {

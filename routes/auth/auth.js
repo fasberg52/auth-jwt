@@ -7,13 +7,17 @@ const usersController = require("../../controllers/auth");
 
 router.post(
   "/login",
- // ajvMiddleware.validateLoginUsers,
+  // ajvMiddleware.validateLoginUsers,
   usersController.loginUsers
 );
-router.post("/signup", ajvMiddleware.validateSignUp, usersController.signUpUsers);
+router.post(
+  "/signup",
+  ajvMiddleware.validateSignUp,
+  usersController.signUpUsers
+);
 router.post(
   "/verify/otp",
-  
+
   ajvMiddleware.validateOTP,
 
   usersController.verifyWithOTP
@@ -59,51 +63,85 @@ module.exports = router;
  *         description: Unauthorized
  */
 
+
 /**
  * @swagger
- * /auth/signup:
+ * /signup:
  *   post:
- *     summary: User signup
- *     description: Sign up a new user.
+ *     summary: Sign up a new user
+ *     description: Register a new user with a phone number, first name, last name, and password.
  *     tags:
  *       - Auth
- *     requestBody:
- *       description: User signup information
- *       content:
- *         application/json:
  *     parameters:
- *       - name: firstName
- *         in: query
- *         description: User's first name
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: string
- *       - name: lastName
- *         in: query
- *         description: User's last name
- *         required: true
- *         schema:
- *           type: string
- *       - name: phone
- *         in: query
- *         description: User's phone number
- *         required: true
- *         schema:
- *           type: number
- *       - name: password
- *         in: query
- *         description: User's password
- *         required: true
- *         schema:
- *           type: string
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *             firstName:
+ *               type: string
+ *             lastName:
+ *               type: string
+ *             password:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
+ *           firstName: "John"
+ *           lastName: "Doe"
+ *           password: "yourPasswordHere"
  *     responses:
- *       201:
- *         description: User registered successfully
+ *       200:
+ *         description: User registration successful
+ *         schema:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *             username:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { token: "yourAccessTokenHere", username: "user'sPhone" }
  *       400:
- *         description: Bad request
- *       409:
  *         description: User already exists
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           userExists:
+ *             value: { error: "User already exists." }
+ *       401:
+ *         description: Phone number not verified
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           notVerified:
+ *             value: { message: "Please verify your phone number with a one-time password." }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *             registred:
+ *               type: boolean
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while creating the user.", registred: true }
  */
+
+
+
+
 /**
  * @swagger
  * /auth/login/verify/otp:

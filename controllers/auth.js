@@ -113,25 +113,32 @@ async function signUpUsers(req, res) {
       where: { phone: phone },
     });
     if (!existingOTP || !existingOTP.isVerified) {
-      return res.status(401).json({ message: "Please verify your phone number with a one-time password." });
+      return res
+        .status(401)
+        .json({
+          message: "Please verify your phone number with a one-time password.",
+        });
     }
-    
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-      const newUser = userRepository.create({
-        ...req.body,
-        password: hashedPassword,
-      });
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-      user = await userRepository.save(newUser);
-   
+    const newUser = userRepository.create({
+      ...req.body,
+      password: hashedPassword,
+    });
+
+    user = await userRepository.save(newUser);
+
     const token = createToken(user);
     res.status(200).json({ token, username: user.phone }); // Sending a response for success  }
   } catch (error) {
     console.log(error);
     res
       .status(500)
-      .json({ error: "An error occurred while creating the user." });
+      .json({
+        error: "An error occurred while creating the user.",
+        registred: ture,
+      });
   }
 }
 async function loginWithOTP(req, res) {
@@ -143,7 +150,11 @@ async function loginWithOTP(req, res) {
     });
 
     if (existingUser) {
-      res.json({ message: "رمز یکبار مصرف ارسال شد" });
+      res.json({
+        message: "رمز یکبار مصرف ارسال شد",
+        registred: false,
+        login: true,
+      });
       await sendOTP(phone);
     } else {
       await sendOTP(phone);
@@ -151,6 +162,8 @@ async function loginWithOTP(req, res) {
 
       res.json({
         message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد",
+        registred: false,
+        login: false,
       });
     }
   } catch (error) {
