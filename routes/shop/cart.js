@@ -14,21 +14,16 @@ router.post(
   "/orders",
 
   checkRole("user"),
-  cartController.placeOrder
+  cartController.saveOrder
 );
 router.get(
   "/orders",
 
   checkRole("user"),
-  cartController.getUserOrders
+  cartController.orderDetails
 );
 
-router.get("/checkout", jwtAuthMiddleware, cartController.getCheckout);
-router.get(
-  "/payment-request/:sid",
-  jwtAuthMiddleware,
-  cartController.getPayment
-);
-router.get("/check-payment", cartController.checkPayment);
+router.post("/payment-request", jwtAuthMiddleware, cartController.getPayment);
+router.get("/verify-payment", cartController.verifyPayment);
 
 module.exports = router;

@@ -7,12 +7,26 @@ const usersController = require("../../controllers/auth");
 
 router.post(
   "/login",
-  ajvMiddleware.validateLoginUsers,
+  // ajvMiddleware.validateLoginUsers,
   usersController.loginUsers
 );
-router.post("/signup", usersController.signUpUsers);
-router.post("/login/verify/otp", usersController.verifyWithOTP);
-router.post("/login/otp", usersController.loginWithOTP);
+router.post(
+  "/signup",
+  ajvMiddleware.validateSignUp,
+  usersController.signUpUsers
+);
+router.post(
+  "/verify/otp",
+
+  ajvMiddleware.validateOTP,
+
+  usersController.verifyWithOTP
+);
+router.post(
+  "/otp",
+  //ajvMiddleware.validateLoginUsers,
+  usersController.loginWithOTP
+);
 router.post("/signup/otp");
 
 module.exports = router;
@@ -49,118 +63,194 @@ module.exports = router;
  *         description: Unauthorized
  */
 
+
 /**
  * @swagger
  * /auth/signup:
  *   post:
- *     summary: User signup
- *     description: Sign up a new user.
+ *     summary: Sign up a new user
+ *     description: Register a new user with a phone number, first name, last name, and password.
  *     tags:
  *       - Auth
- *     requestBody:
- *       description: User signup information
- *       content:
- *         application/json:
  *     parameters:
- *       - name: firstName
- *         in: query
- *         description: User's first name
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: string
- *       - name: lastName
- *         in: query
- *         description: User's last name
- *         required: true
- *         schema:
- *           type: string
- *       - name: phone
- *         in: query
- *         description: User's phone number
- *         required: true
- *         schema:
- *           type: number
- *       - name: password
- *         in: query
- *         description: User's password
- *         required: true
- *         schema:
- *           type: string
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *             firstName:
+ *               type: string
+ *             lastName:
+ *               type: string
+ *             password:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
+ *           firstName: "John"
+ *           lastName: "Doe"
+ *           password: "yourPasswordHere"
  *     responses:
- *       201:
- *         description: User registered successfully
+ *       200:
+ *         description: User registration successful
+ *         schema:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *             username:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { token: "yourAccessTokenHere", username: "user'sPhone" }
  *       400:
- *         description: Bad request
- *       409:
  *         description: User already exists
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           userExists:
+ *             value: { error: "User already exists." }
+ *       401:
+ *         description: Phone number not verified
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           notVerified:
+ *             value: { message: "Please verify your phone number with a one-time password." }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *             registred:
+ *               type: boolean
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while creating the user.", registred: true }
  */
+
+
+
+
 /**
  * @swagger
- * /auth/login/verify/otp:
+ * /auth/verify/otp:
  *   post:
- *     summary: Verify user login with OTP
- *     description: Verify a user's login with OTP.
+ *     summary: Verify OTP and log in
+ *     description: Verify a one-time password (OTP) and log in the user.
  *     tags:
  *       - Auth
- *     requestBody:
- *       description: OTP verification information
- *       content:
- *         application/json:
  *     parameters:
- *       - name: phone
- *         in: query
- *         description: User's phone number
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: number
- *       - name: otp
- *         in: query
- *         description: OTP sent to the user's phone
- *         required: true
- *         schema:
- *           type: number
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *             otp:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
+ *           otp: "yourOTPHere"
  *     responses:
  *       200:
  *         description: OTP verification successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
+ *         schema:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *             username:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { token: "yourAccessTokenHere", username: "user'sPhone" }
+ *       201:
+ *         description: User not found but OTP is true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           notFound:
+ *             value: { message: "user not found but OTP is true" }
  *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
+ *         description: Invalid OTP
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           invalidOTP:
+ *             value: { error: "رمز یکبار مصرف اشتباه است" }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while verifying OTP" }
  */
 
 /**
  * @swagger
  * /auth/login/otp:
  *   post:
- *     summary: User login with OTP
- *     description: Log in a user with OTP.
+ *     summary: Log in with OTP
+ *     description: Log in with a one-time password (OTP).
  *     tags:
  *       - Auth
- *     requestBody:
- *       parameters:
- *       - name: phone
- *         in: query
- *         description: User's phone number
+ *     parameters:
+ *       - name: body
+ *         in: body
  *         required: true
  *         schema:
- *           type: number
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *         example:
+ *           phone: "1234567890"
  *     responses:
  *       200:
- *         description: OTP login successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Phone number not found
+ *         description: Successful OTP request
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *         examples:
+ *           success:
+ *             value: { message: "رمز یکبار مصرف ارسال شد" }
+ *           userNotFound:
+ *             value: { message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد" }
  *       500:
- *         description: An error occurred while logging in with OTP
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while logging in with OTP." }
  */
 
 /**

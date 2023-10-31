@@ -32,16 +32,16 @@ const OTP = new EntitySchema({
   
   },
 
-  relations: {
-    user: {
-      type: "many-to-one",
-      target: "User",
-      joinColumn: {
-        name: "phone",
-        referencedColumnName: "phone",
-      },
-    },
-  },
+  // relations: {
+  //   user: {
+  //     type: "one-to-one",
+  //     target: "User",
+  //     joinColumn: {
+  //       name: "phone",
+  //       referencedColumnName: "phone",
+  //     },
+  //   },
+  // },
 });
 
 module.exports = OTP;
