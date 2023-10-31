@@ -4,8 +4,7 @@ const checkRole = (role) => (req, res, next) => {
     console.log(`role is ${req.user.roles}`);
     return next();
   }
-  res.status(403).send("Access denied");
+  res.status(403).json({ error: "شما دسترسی ندارید", Access: false });
 };
 
 module.exports = { checkRole };
-
