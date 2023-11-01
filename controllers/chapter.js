@@ -35,26 +35,29 @@ async function createChapter(req, res) {
 
 async function editChapter(req, res) {
   try {
-    const { title, icon } = req.body;
-    const chapterRepository = getManager().getRepository(Chapter);
     const chapterId = req.params.id;
+    const { title } = req.body;
+    const chapterRepository = getManager().getRepository(Chapter);
+
 
     const existingChapter = await chapterRepository.findOne({
       where: { id: chapterId },
     });
 
-    if (existingChapter) {
-      existingChapter.title = title;
-      existingChapter.icon = icon;
-
-      // Save the updated chapter
-      existingChapter.lastModified = new Date();
-      const updatedChapter = await chapterRepository.save(existingChapter);
-
-      res.json(updatedChapter);
-    } else {
-      res.status(404).json({ error: "Chapter not found." });
+    if (!existingChapter) {
+      res.status(404).json({ error: "Chapter not found.", status: 404 });
     }
+    existingChapter.title = title;
+
+    if (req.file) {
+      existingChapter.icon = req.file.filename;
+    }
+
+    // Save the updated chapter
+    existingChapter.lastModified = new Date();
+    const updatedChapter = await chapterRepository.save(existingChapter);
+
+    res.json({ message: "success", updatedChapter, status: 200 });
   } catch (error) {
     console.error(`Error editing chapter: ${error}`);
     res
