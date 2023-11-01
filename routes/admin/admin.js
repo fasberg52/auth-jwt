@@ -204,4 +204,162 @@ module.exports = router;
  *         description: User not found
  */
 
-// Define similar Swagger documentation for the other routes: add/newcourse, editcourse, deletecourse, create-category, update-category, delete-category
+/**
+ * @swagger
+ * /admin/create-category:
+ *   post:
+ *     summary: Create a new category
+ *     description: Create a new category with a name, description, and an optional icon.
+ *     tags:
+ *       - Categories
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             name:
+ *               type: string
+ *             description:
+ *               type: string
+ *         example:
+ *           name: "Category Name"
+ *           description: "Category Description"
+ *       - name: icon
+ *         in: formData
+ *         type: file
+ *         required: false
+ *         description: Category icon (optional)
+ *     responses:
+ *       201:
+ *         description: Category created successfully
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *             savedCategory:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 icon:
+ *                   type: string
+ *             status:
+ *               type: integer
+ *         examples:
+ *           success:
+ *             value: { message: "success", savedCategory: { id: 1, name: "Category Name", description: "Category Description", icon: "icon_filename.jpg" }, status: 201 }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while creating the category." }
+ *     security:
+ *       - jwt_auth: []
+ *
+ * securityDefinitions:
+ *   jwt_auth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ */
+
+/**
+ * @swagger
+ * /admin/update-category/{categoryId}:
+ *   put:
+ *     summary: Update a category
+ *     description: Update an existing category with a new name and description, and an optional icon.
+ *     tags:
+ *       - Categories
+ *     consumes:
+ *       - multipart/form-data
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - in: path
+ *         name: categoryId
+ *         type: integer
+ *         required: true
+ *         description: ID of the category to update
+ *       - in: formData
+ *         name: name
+ *         type: string
+ *         required: true
+ *         description: New name for the category
+ *       - in: formData
+ *         name: description
+ *         type: string
+ *         required: true
+ *         description: New description for the category
+ *       - in: formData
+ *         name: icon
+ *         type: file
+ *         required: false
+ *         description: Category icon (optional)
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *         schema:
+ *           type: object
+ *           properties:
+ *             message:
+ *               type: string
+ *             updatedCategory:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 icon:
+ *                   type: string
+ *             status:
+ *               type: integer
+ *         examples:
+ *           success:
+ *             value: { message: "success", updatedCategory: { id: 1, name: "Updated Category Name", description: "Updated Category Description", icon: "updated_icon.jpg" }, status: 200 }
+ *       404:
+ *         description: Category not found
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *             status:
+ *               type: integer
+ *         examples:
+ *           not_found:
+ *             value: { error: "Category not found.", status: 404 }
+ *       500:
+ *         description: Internal Server Error
+ *         schema:
+ *           type: object
+ *           properties:
+ *             error:
+ *               type: string
+ *         examples:
+ *           error:
+ *             value: { error: "An error occurred while updating the category." }
+ *     security:
+ *       - jwt_auth: []
+ *
+ * securityDefinitions:
+ *   jwt_auth:
+ *     type: apiKey
+ *     name: Authorization
+ *     in: header
+ */
