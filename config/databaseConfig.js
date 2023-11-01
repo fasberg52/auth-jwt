@@ -1,6 +1,6 @@
 const { createConnection, getManager } = require("typeorm");
 const Users = require("../model/users");
-const OTP = require("../model/OTP");
+const OTP = require("../model/otp");
 const Course = require("../model/Course");
 const Order = require("../model/Orders");
 const Category = require("../model/Category");
