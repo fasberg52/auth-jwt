@@ -2,7 +2,7 @@
 const express = require("express");
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
-
+const cors = require("cors")
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const multer = require("multer");
@@ -22,6 +22,8 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
+ 
+    app.use(cors());
 
     routerConfig(app);
     // Start the server
