@@ -2,25 +2,23 @@
 
 const { EntitySchema, PrimaryColumn } = require("typeorm");
 
-const CourseBuilder = new EntitySchema({
-  name: "CourseBuilder",
-  tableName: "courseBuilder",
+const Chapter = new EntitySchema({
+  name: "Chapter",
+  tableName: "chapters",
   columns: {
     id: {
       type: "int",
       generated: true,
       primary: true,
     },
-    part: {
-      type: "json",
+    courseId: {
+      type: "int",
     },
     title: {
       type: "varchar",
     },
-    description: {
-      type: "varchar",
-    },
-    videoPath: {
+
+    icon: {
       type: "varchar",
     },
     createdAt: {
@@ -32,6 +30,13 @@ const CourseBuilder = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
     },
   },
+  relations: {
+    course: {
+      type: "many-to-one",
+      target: "Course",
+      joinColumn: true,
+    },
+  },
 });
 
-module.exports = CourseBuilder;
+module.exports = Chapter;

@@ -7,7 +7,8 @@ const Category = require("../model/Category");
 const Session = require("../model/Session");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
-const CourseBuilder = require("../model/courseBuilder");
+const Part = require("../model/Part");
+const Chapter = require("../model/Chapter")
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -30,7 +31,8 @@ async function setupDatabase() {
         Session,
         Cart,
         CartItems,
-        CourseBuilder,
+        Chapter,
+        Part,
       ],
       synchronize: true,
     });
