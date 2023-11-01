@@ -2,18 +2,16 @@
 
 const { EntitySchema, PrimaryColumn } = require("typeorm");
 
-const CourseBuilder = new EntitySchema({
-  name: "CourseBuilder",
-  tableName: "courseBuilder",
+const Section = new EntitySchema({
+  name: "Section",
+  tableName: "sections",
   columns: {
     id: {
       type: "int",
       generated: true,
       primary: true,
     },
-    part: {
-      type: "json",
-    },
+
     title: {
       type: "varchar",
     },
@@ -34,4 +32,4 @@ const CourseBuilder = new EntitySchema({
   },
 });
 
-module.exports = CourseBuilder;
+module.exports = Section;
