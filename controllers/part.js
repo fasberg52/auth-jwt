@@ -64,7 +64,30 @@ async function editPart(req, res) {
   }
 }
 
+
+async function deletePart(req, res) {
+    try {
+      const partRepository = getManager().getRepository(Part);
+      const partId = req.params.id;
+  
+      const existingPart = await partRepository.findOne({
+        where: { id: partId },
+      });
+  
+      if (existingPart) {
+        await partRepository.remove(existingPart);
+        res.json({ message: "Part deleted successfully." });
+      } else {
+        res.status(404).json({ error: "Part not found." });
+      }
+    } catch (error) {
+      console.error(`Error deleting part: ${error}`);
+      res.status(500).json({ error: "An error occurred while deleting the part." });
+    }
+  }
+
 module.exports = {
   createPart,
   editPart,
+  deletePart
 };
