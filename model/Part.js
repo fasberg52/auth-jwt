@@ -11,7 +11,9 @@ const Part = new EntitySchema({
       generated: true,
       primary: true,
     },
-
+    chapterId:{
+      type:"int"
+    },
     title: {
       type: "varchar",
     },
@@ -31,6 +33,13 @@ const Part = new EntitySchema({
     lastModified: {
       type: "timestamp",
       onUpdate: "CURRENT_TIMESTAMP",
+    },
+  },
+  relations: {
+    chapter: {
+      type: "many-to-one",
+      target: "Chapter",
+      joinColumn: true,
     },
   },
 });
