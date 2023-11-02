@@ -211,7 +211,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /auth/login/otp:
+ * /auth/otp:
  *   post:
  *     summary: Log in with OTP
  *     description: Log in with a one-time password (OTP).
@@ -255,7 +255,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /auth/signup/otp:
+ * /auth/signup:
  *   post:
  *     summary: Send OTP for signup
  *     description: Send OTP for user signup.
