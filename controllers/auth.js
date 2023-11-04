@@ -129,14 +129,12 @@ async function signUpUsers(req, res) {
     user = await userRepository.save(newUser);
 
     const token = createToken(user);
-    res
-      .status(200)
-      .json({
-        message: "ثبت نام با موفقیت انجام شد",
-        token,
-        username: user.phone,
-        register: true,
-      }); // Sending a response for success  }
+    res.status(200).json({
+      message: "ثبت نام با موفقیت انجام شد",
+      token,
+      username: user.phone,
+      register: true,
+    }); // Sending a response for success  }
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -165,13 +163,13 @@ async function loginWithOTP(req, res) {
       console.log("user not found");
 
       res.json({
-        message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد",
+        message: "کاربری یافت نشد",
         registred: false,
         login: false,
       });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while logging in with OTP." });
@@ -196,7 +194,13 @@ async function verifyWithOTP(req, res) {
     });
 
     if (!existingUser) {
-      return res.status(201).json({ message: " user not found but otp true" });
+      return res
+        .status(201)
+        .json({
+          message: " user not found but otp true",
+          register: false,
+          otp: true,
+        });
       //   // User does not exist, create a new user
       //   const hashedPassword = await bcrypt.hash(req.body.password, 10);
       //   const newUser = userRepository.create({
