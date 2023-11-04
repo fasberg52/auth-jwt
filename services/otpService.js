@@ -77,6 +77,7 @@ async function sendOTP(phone) {
     if (existingOTP) {
       // If an OTP record exists, update the existing record
       existingOTP.otp = await bcrypt.hash(otp, 10);
+      existingOTP.isVerified = false;
       existingOTP.expirationTime = new Date(
         Date.now() + OTP_EXPIRATION_TIME_MS
       );
@@ -106,7 +107,6 @@ async function sendOTP(phone) {
   }
 }
 
-
 async function verifyOTP(phone, otp) {
   try {
     const otpRepository = getManager().getRepository(OTP);
@@ -123,9 +123,9 @@ async function verifyOTP(phone, otp) {
     const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
 
     if (currentTime - otpTimestamp > otpExpirationTime) {
-      console.log("OTP has expired. Removing record.");
-      await otpRepository.remove(otpRecord);
-      return false;
+      console.log("OTP has expired. Update new time record.");
+      otpRecord.expirationTime = new Date(currentTime + otpExpirationTime);
+      await otpRepository.save(otpRecord);
     }
 
     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);
