@@ -33,6 +33,7 @@ const Part = new EntitySchema({
     lastModified: {
       type: "timestamp",
       onUpdate: "CURRENT_TIMESTAMP",
+      nullable: true,
     },
   },
   relations: {

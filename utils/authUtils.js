@@ -10,17 +10,17 @@ function createToken(user) {
   return token;
 }
 
-function sendOTPSMS(phone, otp) {
+ function sendOTPSMS(phone, otp) {
   const OtpApi = Kavenegar.KavenegarApi({
     apikey: process.env.KAVENEGAR_API_KEY,
   });
-  OtpApi.VerifyLookup(
+   OtpApi.VerifyLookup(
     {
       receptor: phone,
       token: otp,
       template: "verifyotp",
     },
-    function (response, status) {
+      function (response, status) {
       console.log(`message send with status : ${status}`);
     }
   );
