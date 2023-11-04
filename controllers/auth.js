@@ -165,13 +165,13 @@ async function loginWithOTP(req, res) {
       console.log("user not found");
 
       res.json({
-        message: "کاربری یافت نشد پیامک جهت اعتبارسنجی همراه ارسال شد",
+        message: "کاربری یافت نشد",
         registred: false,
         login: false,
       });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while logging in with OTP." });
