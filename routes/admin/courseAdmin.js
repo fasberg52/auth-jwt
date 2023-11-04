@@ -23,6 +23,13 @@ router.put(
   chapterController.editChapter
 );
 
+router.get(
+  "/course/all-chapter",
+  jwtAuthMiddleware,
+  upload.single("icon"),
+  chapterController.getAllChpters
+);
+
 router.post(
   "/course/create-part",
   jwtAuthMiddleware,

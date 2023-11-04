@@ -39,7 +39,6 @@ async function editChapter(req, res) {
     const { title } = req.body;
     const chapterRepository = getManager().getRepository(Chapter);
 
-
     const existingChapter = await chapterRepository.findOne({
       where: { id: chapterId },
     });
@@ -89,8 +88,24 @@ async function deleteChapter(req, res) {
   }
 }
 
+async function getAllChpters(req, res) {
+  try {
+    const chapterRepository = getManager().getRepository(Chapter);
+
+    const chapters = await chapterRepository.find();
+
+    res.json({ chapters, status: 200 });
+  } catch (error) {
+    console.error(`Error getAllChapter : ${error}`);
+    res
+      .status(500)
+      .json({ error: "An error occurred while getAllChapter the chapter." });
+  }
+}
+
 module.exports = {
   createChapter,
   editChapter,
   deleteChapter,
+  getAllChpters,
 };

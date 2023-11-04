@@ -194,13 +194,11 @@ async function verifyWithOTP(req, res) {
     });
 
     if (!existingUser) {
-      return res
-        .status(201)
-        .json({
-          message: " user not found but otp true",
-          register: false,
-          otp: true,
-        });
+      return res.status(201).json({
+        message: " user not found but otp true",
+        register: false,
+        otp: true,
+      });
       //   // User does not exist, create a new user
       //   const hashedPassword = await bcrypt.hash(req.body.password, 10);
       //   const newUser = userRepository.create({
