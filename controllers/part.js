@@ -68,7 +68,38 @@ async function editPart(req, res) {
       .json({ error: "An error occurred while editing the part." });
   }
 }
+async function editPartWithChapterId(req, res) {
+  try {
+    const { chapterId, partId, title, description, videoPath } = req.body;
+    const icon = req.file.filename;
+    const partRepository = getManager().getRepository(Part);
 
+    const existingPart = await partRepository.findOne({
+      where: { id: partId, chapterId },
+    });
+
+    if (existingPart) {
+      existingPart.title = title;
+      existingPart.description = description;
+      existingPart.icon = icon;
+      existingPart.videoPath = videoPath;
+
+      existingPart.lastModified = new Date();
+      const updatedPart = await partRepository.save(existingPart);
+
+      res.json({ updatedPart, status: 200 });
+    } else {
+      res
+        .status(404)
+        .json({ error: "Part not found in the specified chapter." });
+    }
+  } catch (error) {
+    console.error(`Error editing part with chapter ID: ${error}`);
+    res.status(500).json({
+      error: "An error occurred while editing the part with chapter ID.",
+    });
+  }
+}
 async function deletePart(req, res) {
   try {
     const partRepository = getManager().getRepository(Part);
@@ -92,7 +123,6 @@ async function deletePart(req, res) {
   }
 }
 async function gatAllPart(req, res) {
-
   const partRepository = getManager().getRepository(Part);
   const parts = await partRepository.find();
   console.log(parts);
@@ -114,14 +144,16 @@ async function getAllPartsWithChapterId(req, res) {
     res.json({ parts, status: 200 });
   } catch (error) {
     console.error(`Error retrieving parts with chapter ID: ${error}`);
-    res.status(500).json({ error: "An error occurred while retrieving parts with chapter ID." });
+    res.status(500).json({
+      error: "An error occurred while retrieving parts with chapter ID.",
+    });
   }
 }
-
 
 module.exports = {
   createPart,
   editPart,
+  editPartWithChapterId,
   deletePart,
   gatAllPart,
   getAllPartsWithChapterId,
