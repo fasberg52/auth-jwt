@@ -44,7 +44,13 @@ router.put(
   upload.single("icon"),
   partController.editPart
 );
-
+router.put(
+  "/course/:courseId/chapter/:chapterId/part/:partId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  upload.single("icon"),
+  partController.editPartWithChapterId
+);
 router.get("/course/all-parts", jwtAuthMiddleware, partController.gatAllPart);
 router.get(
   "/course/chapters/:chapterId/parts",

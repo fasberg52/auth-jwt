@@ -70,29 +70,33 @@ async function editPart(req, res) {
 }
 async function editPartWithChapterId(req, res) {
   try {
-    const { chapterId, partId, title, description, videoPath } = req.body;
-    const icon = req.file.filename;
+    const { title, description, videoPath } = req.body;
+    const { courseId, chapterId, partId } = req.params;
     const partRepository = getManager().getRepository(Part);
 
     const existingPart = await partRepository.findOne({
       where: { id: partId, chapterId },
     });
 
-    if (existingPart) {
-      existingPart.title = title;
-      existingPart.description = description;
-      existingPart.icon = icon;
-      existingPart.videoPath = videoPath;
-
-      existingPart.lastModified = new Date();
-      const updatedPart = await partRepository.save(existingPart);
-
-      res.json({ updatedPart, status: 200 });
-    } else {
+    if (!existingPart) {
       res
         .status(404)
         .json({ error: "Part not found in the specified chapter." });
     }
+
+    existingPart.title = title;
+    existingPart.description = description;
+    existingPart.videoPath = videoPath;
+
+    // Check if there's a file upload and update the icon if needed
+    if (req.file) {
+      existingPart.icon = req.file.filename;
+    }
+
+    existingPart.lastModified = new Date();
+    const updatedPart = await partRepository.save(existingPart);
+
+    res.json({ updatedPart, status: 200 });
   } catch (error) {
     console.error(`Error editing part with chapter ID: ${error}`);
     res.status(500).json({
@@ -100,6 +104,7 @@ async function editPartWithChapterId(req, res) {
     });
   }
 }
+
 async function deletePart(req, res) {
   try {
     const partRepository = getManager().getRepository(Part);
@@ -158,3 +163,6 @@ module.exports = {
   gatAllPart,
   getAllPartsWithChapterId,
 };
+
+
+
