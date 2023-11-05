@@ -91,9 +91,16 @@ async function deletePart(req, res) {
       .json({ error: "An error occurred while deleting the part." });
   }
 }
+async function gatAllPart(res) {
+  const partRepository = getManager().getRepository(Part);
+  const parts = partRepository.find();
+
+  res.json({ parts, status: 200 });
+}
 
 module.exports = {
   createPart,
   editPart,
   deletePart,
+  gatAllPart,
 };
