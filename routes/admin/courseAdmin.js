@@ -38,6 +38,11 @@ router.post(
   partController.createPart
 );
 
-router.get("course/all-parts", jwtAuthMiddleware, partController.gatAllPart);
+router.get("/course/all-parts", jwtAuthMiddleware, partController.gatAllPart);
+router.get(
+  "/course/chapters/:chapterId/parts",
+  jwtAuthMiddleware,
+  partController.getAllPartsWithChapterId
+);
 
 module.exports = router;

@@ -91,16 +91,38 @@ async function deletePart(req, res) {
       .json({ error: "An error occurred while deleting the part." });
   }
 }
-async function gatAllPart(res) {
-  const partRepository = getManager().getRepository(Part);
-  const parts = partRepository.find();
+async function gatAllPart(req, res) {
 
+  const partRepository = getManager().getRepository(Part);
+  const parts = await partRepository.find();
+  console.log(parts);
   res.json({ parts, status: 200 });
 }
+async function getAllPartsWithChapterId(req, res) {
+  try {
+    const chapterId = req.params.chapterId;
+
+    const partRepository = getManager().getRepository(Part);
+    const parts = await partRepository.find({
+      where: { chapterId },
+    });
+
+    if (parts.length === 0) {
+      return res.status(404).json({ error: "پارت یافت نشد برای سرفصل" });
+    }
+
+    res.json({ parts, status: 200 });
+  } catch (error) {
+    console.error(`Error retrieving parts with chapter ID: ${error}`);
+    res.status(500).json({ error: "An error occurred while retrieving parts with chapter ID." });
+  }
+}
+
 
 module.exports = {
   createPart,
   editPart,
   deletePart,
   gatAllPart,
+  getAllPartsWithChapterId,
 };
