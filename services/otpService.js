@@ -123,7 +123,7 @@ async function verifyOTP(phone, otp) {
     const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
 
     if (currentTime - otpTimestamp > otpExpirationTime) {
-      console.log("OTP has expired. Update new time record.");
+      console.log("OTP has expired.");
       otpRecord.expirationTime = new Date(currentTime + otpExpirationTime);
       await otpRepository.save(otpRecord);
     }
