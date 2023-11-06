@@ -102,10 +102,22 @@ async function getAllChpters(req, res) {
       .json({ error: "An error occurred while getAllChapter the chapter." });
   }
 }
+async function getChapterById(req, res) {
+  const { chapterId } = req.body;
+  const chapterRepository = getManager().getRepository(Chapter);
+  const existingChapterId = await chapterRepository.findOne({
+    where: { id: chapterId },
+  });
+  if (!existingChapterId) {
+    res.json({ message: "این سرفصل وجود ندارد", chapterId: false });
+  }
+  res.json({ existingChapterId, chapterId: true });
+}
 
 module.exports = {
   createChapter,
   editChapter,
   deleteChapter,
   getAllChpters,
+  getChapterById,
 };

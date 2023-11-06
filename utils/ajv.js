@@ -7,6 +7,11 @@ const phoneSchema = {
     phone: { type: "string", pattern: "^09\\d{9}$" },
   },
   required: ["phone"],
+  errorMessage: {
+    properties: {
+      phone: "فرمت شماره همراه صحیح نیست",
+    },
+  },
 };
 
 const loginWithOTPSchema = {

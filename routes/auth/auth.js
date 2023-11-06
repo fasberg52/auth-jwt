@@ -24,7 +24,7 @@ router.post(
 );
 router.post(
   "/otp",
-  //ajvMiddleware.validateLoginUsers,
+  ajvMiddleware.validateLoginUsers,
   usersController.loginWithOTP
 );
 router.post("/signup/otp");

@@ -26,8 +26,12 @@ router.put(
 router.get(
   "/course/all-chapter",
   jwtAuthMiddleware,
-  upload.single("icon"),
   chapterController.getAllChpters
+);
+router.get(
+  "/course/chapter-id",
+  jwtAuthMiddleware,
+  chapterController.getChapterById
 );
 
 router.post(
