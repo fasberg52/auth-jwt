@@ -40,11 +40,13 @@ async function createCartItem(req, res) {
     console.log(`userCart.id before findOne: ${userCart.id}`);
 
     const existingCartItem = await cartItemsRepository
-    .createQueryBuilder('cartItem')
-    .where('cartItem.cartId = :cartId', { cartId: userCart.id })
-    .andWhere('cartItem.courseId = :courseId', { courseId: courseId })
-    .getOne();
-    console.log(`existingCartItem > >  > > > > ${JSON.stringify(existingCartItem)}`)
+      .createQueryBuilder("cartItem")
+      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
+      .andWhere("cartItem.courseId = :courseId", { courseId: courseId })
+      .getOne();
+    console.log(
+      `existingCartItem > >  > > > > ${JSON.stringify(existingCartItem)}`
+    );
     if (existingCartItem) {
       existingCartItem.quantity += quantity;
       await cartItemsRepository.save(existingCartItem);
@@ -188,10 +190,11 @@ async function checkOutCart(req, res) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
 
-    const cartItems = await cartItemsRepository.find({
-      where: { cart: userCart.id },
-    });
-
+    const cartItems = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
+      .getMany();
+    console.log(`cartItems >> ${JSON.stringify(cartItems)}`);
     let totalPrice = 0;
 
     for (const cartItem of cartItems) {
@@ -269,17 +272,27 @@ async function saveOrder(req, res) {
 
 async function orderDetails(req, res) {}
 
-async function removeCartItem(cartItemId) {
+async function removeCartItem(req, res) {
   try {
-    const cartRepository = getManager().getRepository(Cart);
+    const { cartItemId } = req.params; // Assuming you're passing cartItemId as a route parameter
 
-    // Find and remove the item from the user's cart
-    await cartRepository.delete(cartItemId);
+    const connection = getConnection();
+    const cartItemsRepository = connection.getRepository(CartItems);
 
-    return { message: "Item removed from cart" };
+    const cartItemToRemove = await cartItemsRepository.findOne({
+      where: { id: cartItemId },
+    });
+
+    if (!cartItemToRemove) {
+      return res.status(404).json({ error: "Cart item not found" });
+    }
+
+    await cartItemsRepository.remove(cartItemToRemove);
+
+    res.status(200).json({ message: "Cart item removed successfully" });
   } catch (error) {
     console.error(error);
-    throw new Error("An error occurred while removing from the cart");
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -303,9 +316,12 @@ async function getPayment(req, res) {
     // Calculate the total price
     let totalPrice = 0;
 
-    const cartItems = await cartItemsRepository.find({
-      where: { cart: userCart.id },
-    });
+    const cartItems = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
+      .getMany();
+
+    console.log(`cartItems >> ${JSON.stringify(cartItems)}`);
 
     for (const cartItem of cartItems) {
       if (cartItem.courseId) {
