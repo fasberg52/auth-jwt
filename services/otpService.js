@@ -34,6 +34,7 @@ async function sendOTP(phone) {
       // If an OTP record exists, update the existing record
       existingOTP.otp = await bcrypt.hash(otp, 10);
       existingOTP.isVerified = false;
+      existingOTP.createdAt = new Date()
       existingOTP.expirationTime = new Date(
         Date.now() + OTP_EXPIRATION_TIME_MS
       );
