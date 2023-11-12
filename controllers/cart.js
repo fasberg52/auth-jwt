@@ -21,61 +21,106 @@ const ZARINPAL_VERIFICATION_API =
 async function createCartItem(req, res) {
   try {
     const { courseId, quantity } = req.body;
-    const user = req.user; // Retrieve the user ID from the token
     const userPhone = req.user.phone;
-    console.log(userPhone);
+
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
 
-    const userCart = await cartRepository.findOne({
+    let userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
-    console.log(`>> userCart  : ${JSON.stringify(userCart)}`);
-    //console.log(userCart.id);
 
     if (!userCart) {
-      const newCart = cartRepository.create({
+      userCart = cartRepository.create({
         user: userPhone,
       });
-      console.log(`newCart ${JSON.stringify(newCart)}`);
-      // Note: Do not include createdAt in the cart creation
-      await cartRepository.save(newCart);
+      await cartRepository.save(userCart);
+    }
+    console.log(`userCart.id before findOne: ${userCart.id}`);
 
-      const cartItem = cartItemsRepository.create({
-        cart: newCart,
-        courseId: courseId, // Set courseId here
+    const existingCartItem = await cartItemsRepository
+    .createQueryBuilder('cartItem')
+    .where('cartItem.cartId = :cartId', { cartId: userCart.id })
+    .andWhere('cartItem.courseId = :courseId', { courseId: courseId })
+    .getOne();
+    console.log(`existingCartItem > >  > > > > ${JSON.stringify(existingCartItem)}`)
+    if (existingCartItem) {
+      existingCartItem.quantity += quantity;
+      await cartItemsRepository.save(existingCartItem);
+    } else {
+      const newCartItem = cartItemsRepository.create({
+        cart: userCart,
+        courseId: courseId,
         quantity: quantity,
       });
-      console.log(`cartItem ${JSON.stringify(cartItem)}`);
-
-      await cartItemsRepository.save(cartItem);
-    } else {
-      const existingCartItem = await cartItemsRepository.findOne({
-        where: { cart: userCart.id, courseId: courseId }, // Ensure courseId is set here
-      });
-
-      console.log(`existingCartItem : ${existingCartItem}`);
-      if (existingCartItem) {
-        existingCartItem.quantity += quantity;
-        await cartItemsRepository.save(existingCartItem);
-      } else {
-        const newCartItem = cartItemsRepository.create({
-          cart: userCart,
-          courseId: courseId, // Set courseId here
-          quantity: quantity,
-        });
-
-        await cartItemsRepository.save(newCartItem);
-      }
+      await cartItemsRepository.save(newCartItem);
     }
+
     res.status(200).json({ message: "Item added to cart successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
+async function getUserCart(req, res) {
+  try {
+    const user = req.user;
+    console.log(user);
 
+    const userPhone = req.user.phone;
+    console.log("userPhone: " + userPhone);
+    const connection = getConnection();
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
+
+    const userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
+    });
+    console.log(`>>> userCart: ${JSON.stringify(userCart)}`);
+    if (!userCart) {
+      return res.status(404).json({ error: "Cart not found for the user" });
+    }
+
+    const cartItems = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
+      .getMany();
+
+    console.log(`>>> cartItems: ${JSON.stringify(cartItems)}`);
+
+    const cartDataPromises = cartItems.map(async (cartItem) => {
+      console.log("Processing cartItem: ", cartItem);
+      if (cartItem.courseId) {
+        console.log("Course data exists for cartItem: ", cartItem.courseId);
+        try {
+          const course = await courseRepository.findOne({
+            where: { id: cartItem.courseId },
+          });
+          console.log("Fetched course data: ", course);
+          if (course) {
+            return {
+              courseId: course.id,
+              quantity: cartItem.quantity,
+              price: course.price,
+              title: course.title,
+            };
+          }
+        } catch (error) {
+          console.error("Error fetching course: ", error);
+        }
+      }
+    });
+
+    const cartData = await Promise.all(cartDataPromises);
+    console.log("Final cartData: ", cartData);
+    res.status(200).json(cartData);
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 // async function checkOutCart(req, res) {
 //   try {
 //     const user = req.user; // Retrieve user information from the request
@@ -224,63 +269,6 @@ async function saveOrder(req, res) {
 
 async function orderDetails(req, res) {}
 
-async function getUserCart(req, res) {
-  try {
-    const user = req.user;
-    console.log(user);
-
-    const userPhone = req.user.phone;
-    console.log("userPhone: " + userPhone);
-    const connection = getConnection();
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
-    const courseRepository = connection.getRepository(Courses);
-
-    const userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
-    });
-    console.log(`>>> userCart: ${JSON.stringify(userCart)}`);
-    if (!userCart) {
-      return res.status(404).json({ error: "Cart not found for the user" });
-    }
-
-    const cartItems = await cartItemsRepository.find({
-      where: { cart: userCart.id },
-    });
-    console.log(`>>> cartItems: ${JSON.stringify(cartItems)}`);
-
-    const cartDataPromises = cartItems.map(async (cartItem) => {
-      console.log("Processing cartItem: ", cartItem);
-      if (cartItem.courseId) {
-        console.log("Course data exists for cartItem: ", cartItem.courseId);
-        try {
-          const course = await courseRepository.findOne({
-            where: { id: cartItem.courseId },
-          });
-          console.log("Fetched course data: ", course);
-          if (course) {
-            return {
-              courseId: course.id,
-              quantity: cartItem.quantity,
-              price: course.price,
-              title: course.title,
-            };
-          }
-        } catch (error) {
-          console.error("Error fetching course: ", error);
-        }
-      }
-    });
-
-    const cartData = await Promise.all(cartDataPromises);
-    console.log("Final cartData: ", cartData);
-    res.status(200).json(cartData);
-  } catch (error) {
-    console.error("Error: ", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-
 async function removeCartItem(cartItemId) {
   try {
     const cartRepository = getManager().getRepository(Cart);
@@ -294,7 +282,6 @@ async function removeCartItem(cartItemId) {
     throw new Error("An error occurred while removing from the cart");
   }
 }
-
 
 async function getPayment(req, res) {
   try {
