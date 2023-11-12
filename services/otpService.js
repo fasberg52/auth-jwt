@@ -8,51 +8,7 @@ const OTP = require("../model/OTP");
 const User = require("../model/users");
 const OTP_EXPIRATION_TIME_MS = 60 * 1000; // 60 seconds
 
-// async function sendOTP(phone) {
-//   let otp; // Define otp variable outside the try block
 
-//   try {
-//     const otpRepository = getManager().getRepository(OTP);
-//     const existingOTP = await otpRepository.findOne({
-//       where: { phone: phone },
-//     });
-
-//     if (existingOTP) {
-//       // If an OTP record already exists, update the existing record
-//       otp = generateNumericOTP(5).toString();
-//       console.log(`>>>otp: ${otp}`);
-//       sendOTPSMS(phone, otp);
-
-//       // Update the existing OTP record with the new OTP and reset expiration time
-//       existingOTP.otp = await bcrypt.hash(otp, 10);
-//       existingOTP.expirationTime = new Date(
-//         Date.now() + OTP_EXPIRATION_TIME_MS
-//       );
-
-//       await otpRepository.save(existingOTP);
-//     } else {
-//       // If no OTP record exists, create a new one
-//       otp = generateNumericOTP(5).toString();
-//       console.log(`>>>otp ${phone}: ${otp}`);
-//       await sendOTPSMS(phone, otp);
-
-//       const hashedOTP = await bcrypt.hash(otp, 10);
-//       const expirationTime = new Date(Date.now() + OTP_EXPIRATION_TIME_MS);
-//       const newOTP = otpRepository.create({
-//         phone,
-//         otp: hashedOTP,
-//         expirationTime,
-//       });
-
-//       await otpRepository.save(newOTP);
-//     }
-
-//     return otp;
-//   } catch (error) {
-//     console.error("Error sending OTP:", error);
-//     throw error;
-//   }
-// }
 
 async function sendOTP(phone) {
   // Define the OTP variable outside the try block for better scoping
@@ -78,6 +34,7 @@ async function sendOTP(phone) {
       // If an OTP record exists, update the existing record
       existingOTP.otp = await bcrypt.hash(otp, 10);
       existingOTP.isVerified = false;
+      existingOTP.createdAt = new Date()
       existingOTP.expirationTime = new Date(
         Date.now() + OTP_EXPIRATION_TIME_MS
       );
@@ -92,6 +49,7 @@ async function sendOTP(phone) {
         phone,
         otp: hashedOTP,
         expirationTime,
+        createdAt:new Date()
       });
 
       // Save the new OTP record
@@ -123,7 +81,7 @@ async function verifyOTP(phone, otp) {
     const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
 
     if (currentTime - otpTimestamp > otpExpirationTime) {
-      console.log("OTP has expired. Update new time record.");
+      console.log("OTP has expired.");
       otpRecord.expirationTime = new Date(currentTime + otpExpirationTime);
       await otpRepository.save(otpRecord);
     }

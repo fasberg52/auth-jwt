@@ -2,14 +2,14 @@
 const express = require("express");
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
-const cors = require("cors")
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const multer = require("multer");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 const app = express();
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 
 async function main() {
   try {
@@ -22,10 +22,12 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
- 
+
     app.use(cors());
 
+
     routerConfig(app);
+
     // Start the server
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
