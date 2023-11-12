@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const ajvMiddleware = require("../../middleware/ajvMiddlerware");
 const usersController = require("../../controllers/auth");
+const { otpRateLimiter } = require("../../config/rateLimiterConfig");
 // const authMiddleware = require("../middleware/authMiddleware");
 
 router.post(
@@ -25,6 +26,7 @@ router.post(
 router.post(
   "/otp",
   ajvMiddleware.validateLoginUsers,
+  otpRateLimiter,
   usersController.loginWithOTP
 );
 router.post("/signup/otp");
@@ -62,7 +64,6 @@ module.exports = router;
  *       401:
  *         description: Unauthorized
  */
-
 
 /**
  * @swagger
@@ -138,9 +139,6 @@ module.exports = router;
  *           error:
  *             value: { error: "An error occurred while creating the user.", registred: true }
  */
-
-
-
 
 /**
  * @swagger

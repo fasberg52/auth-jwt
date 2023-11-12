@@ -24,8 +24,7 @@ async function main() {
     app.use(express.json());
 
     app.use(cors());
-    
-    rateLimterConfig(app);
+
 
     routerConfig(app);
 
