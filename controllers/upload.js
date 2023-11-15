@@ -1,6 +1,7 @@
 // controllers/upload.js
 
 const { getManager } = require("typeorm");
+const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the path accordingly
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -16,10 +17,10 @@ async function createUpload(req, res) {
       });
     }
 
-    const path = req.file.originalname;
+    const filePath = req.file.originalname; // Change variable name to filePath
 
     // Handle the case where the file upload was successful, but path is not defined
-    if (!path) {
+    if (!filePath) {
       return res.status(500).json({
         message: "Internal Server Error: File path not generated",
         status: 500,
@@ -29,7 +30,7 @@ async function createUpload(req, res) {
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
-      path,
+      path: filePath, // Use the modified variable name
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
@@ -116,6 +117,8 @@ async function deleteUpload(req, res) {
   try {
     const uploadId = req.params.id;
 
+    const subdirectory = createSubdirectory();
+    console.log(`>>> ${subdirectory}`);
     const uploadRepository = getManager().getRepository(Upload);
 
     const upload = await uploadRepository.findOne({ where: { id: uploadId } });
@@ -127,7 +130,12 @@ async function deleteUpload(req, res) {
       });
     }
     // Remove the file from the uploads folder
-    const filePath = path.resolve(__dirname, "../uploads",  upload.path);
+    const filePath = path.resolve(
+      __dirname,
+      `../uploads/${subdirectory}`,
+
+      upload.path
+    );
     console.log(` > >>> filePath : ${filePath}`);
     await fs.unlink(filePath);
     await uploadRepository.remove(upload);
