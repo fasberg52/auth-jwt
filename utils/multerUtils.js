@@ -8,7 +8,7 @@ const createSubdirectory = () => {
   const now = new Date();
   const year = now.getFullYear();
   const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
-  return `${year}-${month}`;
+  return path.join(year.toString(), month);
 };
 
 const storage = multer.diskStorage({

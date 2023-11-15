@@ -127,7 +127,7 @@ async function deleteUpload(req, res) {
       });
     }
     // Remove the file from the uploads folder
-    const filePath = path.resolve(__dirname, "../uploads","2023-11",  upload.path);
+    const filePath = path.resolve(__dirname, "../uploads",  upload.path);
     console.log(` > >>> filePath : ${filePath}`);
     await fs.unlink(filePath);
     await uploadRepository.remove(upload);
