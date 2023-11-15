@@ -7,6 +7,7 @@ const Upload = new EntitySchema({
   columns: {
     id: {
       type: "int",
+      primary:true,
       generated: true,
     },
     path: {
