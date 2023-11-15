@@ -20,12 +20,17 @@ router.post(
   createUpload
 );
 
-router.get("/upload", getAllUploads);
+router.get("/upload", jwtAuthMiddleware, checkRole("admin"), getAllUploads);
 
-router.get("/upload", getUploadById);
+router.get("/upload/:id", jwtAuthMiddleware, checkRole("admin"), getUploadById);
 
-router.put("upload", updateUpload);
+router.put("/upload", jwtAuthMiddleware, checkRole("admin"), updateUpload);
 
-router.delete("upload", deleteUpload);
+router.delete(
+  "/upload/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  deleteUpload
+);
 
 module.exports = router;
