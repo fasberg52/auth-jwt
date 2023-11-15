@@ -4,7 +4,20 @@ const {
   phoneValidator,
   loginWithOTPValidator,
   signUpValidator,
+  partValidator,
+  
 } = require("../utils/ajv");
+
+function validParts(req, res, next) {
+  const valid = partValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: partValidator.errors[0].message,
+    });
+  }
+}
 
 function validateLoginUsers(req, res, next) {
   const valid = phoneValidator(req.body);
@@ -44,6 +57,7 @@ module.exports = {
   validateLoginUsers,
   validateOTP,
   validateSignUp,
+  validParts
 
   // Other validation functions
 };

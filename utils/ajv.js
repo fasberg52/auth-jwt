@@ -54,12 +54,34 @@ const signUpSchema = {
   },
 };
 
+const createPartSchema = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    chapterId: { type: "integer" },
+    description: { type: "string" },
+    videoPath: { type: "string", pattern: "^(.*\\.(mp4|m4v))$" },
+  },
+  required: ["title", "chapterId", "description", "videoPath"],
+  errorMessage: {
+    properties: {
+      title: "Input should be a string",
+      chapterId: "Input should be an integer",
+      description: "Input should be a string",
+      videoPath: "Format is wrong. Supported formats: mp4, m4v",
+    },
+  },
+};
+
+
 const phoneValidator = ajv.compile(phoneSchema);
 const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
 const signUpValidator = ajv.compile(signUpSchema);
-
+const partValidator = ajv.compile(createPartSchema);
 module.exports = {
   phoneValidator,
   loginWithOTPValidator,
   signUpValidator,
+  partValidator,
+  
 };

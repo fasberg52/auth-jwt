@@ -5,7 +5,7 @@ const Chapter = require("../model/Chapter");
 async function createPart(req, res) {
   try {
     const { chapterId, title, description, videoPath } = req.body;
-    const icon = req.file ? req.file.filename : null;
+    //const icon = req.file ? req.file.filename : null;
 
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
@@ -22,7 +22,7 @@ async function createPart(req, res) {
       chapterId,
       title,
       description,
-      icon,
+     // icon,
       videoPath,
     });
 

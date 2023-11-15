@@ -80,6 +80,8 @@ router.delete(
   categoryController.deleteCategory
 );
 
+router.post("upload",jwtAuthMiddleware,checkRole("admin"))
+
 // router.post(
 //   "/uploads",
 //   upload.single("courseImage"),

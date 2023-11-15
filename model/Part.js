@@ -22,7 +22,9 @@ const Part = new EntitySchema({
     },
     icon: {
       type: "varchar",
+      nullable:true
     },
+
     videoPath: {
       type: "varchar",
     },
