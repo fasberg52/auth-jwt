@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const upload = require("../../utils/multerUtils");
+const {upload} = require("../../utils/multerUtils");
 const usersController = require("../../controllers/admin");
 const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
@@ -79,6 +79,8 @@ router.delete(
 
   categoryController.deleteCategory
 );
+
+router.post("upload",jwtAuthMiddleware,checkRole("admin"))
 
 // router.post(
 //   "/uploads",

@@ -9,6 +9,7 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter")
+const Upload = require("../model/Upload")
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -33,6 +34,7 @@ async function setupDatabase() {
         CartItems,
         Chapter,
         Part,
+        Upload
       ],
       synchronize: true,
     });
