@@ -9,14 +9,21 @@ const Upload = require("../model/Upload");
 
 async function createUpload(req, res) {
   try {
-    // Check if file upload was successful
     if (!req.file) {
+      // Check if file upload was successful
       return res.status(400).json({
         message: "File upload failed",
         status: 400,
       });
     }
 
+    const sizeFile = req.file.size;
+    console.log(`sizeFile ${sizeFile}`);
+    if (sizeFile > 5 * 1024 * 1024) {
+      res.status(400).json({
+        error: "حداکثر تا 5 مگابایت آپلود",
+      });
+    }
     const filePath = req.file.originalname; // Change variable name to filePath
 
     // Handle the case where the file upload was successful, but path is not defined
@@ -41,9 +48,6 @@ async function createUpload(req, res) {
       status: 200,
     });
   } catch (error) {
-    console.error("Error creating upload:", error);
-
-    // Handle the case where an error occurred during the upload process
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,

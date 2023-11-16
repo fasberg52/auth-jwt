@@ -4,6 +4,10 @@ const router = express.Router();
 const ajvMiddleware = require("../../middleware/ajvMiddlerware");
 const usersController = require("../../controllers/auth");
 const { otpRateLimiter } = require("../../config/rateLimiterConfig");
+const jwt = require("jsonwebtoken");
+
+const dotenv = require("dotenv");
+
 // const authMiddleware = require("../middleware/authMiddleware");
 
 router.post(
@@ -30,6 +34,28 @@ router.post(
   usersController.loginWithOTP
 );
 router.post("/signup/otp");
+
+router.post("/validate-token", (req, res) => {
+  try {
+    const { token } = req.body;
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res
+          .status(401)
+          .json({ error: "Token is invalid or expired", result: false });
+      }
+
+      // Token is valid, you can access the decoded payload
+      res.json({ message: "Token is valid", decoded, result: true });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: "internal error",
+    });
+  }
+});
 
 module.exports = router;
 
