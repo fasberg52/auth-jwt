@@ -1,6 +1,6 @@
 //model/Orders.js
 const { EntitySchema } = require("typeorm");
-const User = require("./users"); 
+const User = require("./users");
 
 const Order = new EntitySchema({
   name: "Order",
@@ -10,6 +10,10 @@ const Order = new EntitySchema({
       primary: true,
       type: "int",
       generated: true,
+    },
+    cartId: {
+      type: "int",
+      nullable: true,
     },
     orderDate: {
       type: "timestamp",
@@ -24,6 +28,11 @@ const Order = new EntitySchema({
     },
   },
   relations: {
+    cart: {
+      type: "one-to-one",
+      target: "Cart",
+      joinColumn: true,
+    },
     user: {
       target: User,
       type: "many-to-one",

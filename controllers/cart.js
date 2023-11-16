@@ -312,7 +312,7 @@ async function getPayment(req, res) {
     if (!userCart) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
-
+  // const cartId = await cartRepository.finOne()
     // Calculate the total price
     let totalPrice = 0;
 
@@ -357,7 +357,7 @@ async function getPayment(req, res) {
     // console.log(requestData.metadata.mobile);
     // Send a POST request to Zarinpal's payment request endpoint
     const response = await axios.post(
-      "https://api.zarinpal.com/pg/v4/payment/request.json",
+      `${process.env.ZARINPAL_LINK_REQUEST}`,
       requestData,
       {
         headers: {
@@ -374,9 +374,11 @@ async function getPayment(req, res) {
     if (code == 100) {
       // Payment request succeeded
       const authority = response.data.data.authority;
-      const paymentUrl = `https://www.zarinpal.com/pg/StartPay/${authority}`;
-
-      res.json({ paymentUrl, totalPrice });
+      const paymentUrl = `${process.env.ZARINPAL_LINK_STARTPAY}/${authority}`;
+      console.log(paymentUrl);
+      const cartId = cartItems[0].cartId
+      console.log(cartId);
+      res.json({ paymentUrl, totalPrice ,cartId});
     } else {
       // Payment request failed
       return res.status(400).json({ error: "Payment Request Failed" });
@@ -410,7 +412,7 @@ async function verifyPayment(req, res) {
       });
 
       const response = await axios.post(
-        "https://api.zarinpal.com/pg/v4/payment/verify.json",
+        `${process.env.ZARINPAL_LINK_VERIFY}`,
         verificationData,
         {
           headers: {
@@ -467,6 +469,7 @@ async function verifyPayment(req, res) {
 
       // Create a new order with the user's phone number and the total price
       const newOrder = orderRepository.create({
+      
         totalPrice: req.query.Amount, // Use the amount from the verification
         orderStatus: "cancelled",
       });
@@ -523,4 +526,3 @@ module.exports = {
   getPayment,
   verifyPayment,
 };
-
