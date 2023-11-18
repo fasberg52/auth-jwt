@@ -5,7 +5,7 @@ const CartItems = require("../model/CartItems");
 const Order = require("../model/Orders");
 const Courses = require("../model/Course");
 const User = require("../model/users");
-
+const OrderItems = require("../model/orderItems");
 const axios = require("axios");
 const { getManager, getConnection } = require("typeorm");
 
@@ -181,6 +181,8 @@ async function checkOutCart(req, res) {
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
+    const orderRepository = connection.getRepository(Order);
+    const orderItemsRepository = connection.getRepository(OrderItems);
 
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -195,7 +197,18 @@ async function checkOutCart(req, res) {
       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
       .getMany();
     console.log(`cartItems >> ${JSON.stringify(cartItems)}`);
+
     let totalPrice = 0;
+
+    // Create a new order with the user's phone number and total price
+    const newOrder = orderRepository.create({
+      user: userPhone,
+      totalPrice: totalPrice,
+      orderStatus: "pending",
+    });
+
+    // Save the order to your database
+    const savedOrder = await orderRepository.save(newOrder);
 
     for (const cartItem of cartItems) {
       if (cartItem.courseId) {
@@ -205,12 +218,26 @@ async function checkOutCart(req, res) {
 
         if (course) {
           totalPrice += course.price * cartItem.quantity;
+
+          // Create a new order item for each course in the cart
+          const newOrderItem = orderItemsRepository.create({
+            order: savedOrder,
+            courseId: cartItem.courseId,
+            quantity: cartItem.quantity,
+          });
+
+          // Save the order item to your database
+          await orderItemsRepository.save(newOrderItem);
         }
       }
     }
 
-    // Here, you can update the user's purchase history or perform any other actions
-    // related to completing the purchase.
+    // Update the total price in the order based on the courses
+    savedOrder.totalPrice = totalPrice;
+    await orderRepository.save(savedOrder);
+
+    // Clear the user's shopping cart
+    // await clearUserCart(userPhone);
 
     res.status(200).json({ message: "Checkout successful", totalPrice });
   } catch (error) {
@@ -312,7 +339,7 @@ async function getPayment(req, res) {
     if (!userCart) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
-  // const cartId = await cartRepository.finOne()
+    // const cartId = await cartRepository.finOne()
     // Calculate the total price
     let totalPrice = 0;
 
@@ -340,10 +367,10 @@ async function getPayment(req, res) {
     // Replace with your Zarinpal merchant_id
 
     const callbackUrl =
-      "http://localhost:3000/verify-payment?" + `Amount=${totalPrice}`; // Replace with your callback URL
+      "http://localhost:3000/verify-payment?" +
+      `Amount=${totalPrice}&Phone=${userPhone}`; // Replace with your callback URL
     const description = "Transaction description.";
-    const mobile = userPhone;
-
+    const user = req.user;
     // Construct the request data
     const requestData = JSON.stringify({
       merchant_id: process.env.MERCHANT_ID,
@@ -351,7 +378,7 @@ async function getPayment(req, res) {
       callback_url: callbackUrl,
       description: description,
       metadata: {
-        mobile: mobile,
+        mobile: userPhone,
       },
     });
     // console.log(requestData.metadata.mobile);
@@ -376,9 +403,9 @@ async function getPayment(req, res) {
       const authority = response.data.data.authority;
       const paymentUrl = `${process.env.ZARINPAL_LINK_STARTPAY}/${authority}`;
       console.log(paymentUrl);
-      const cartId = cartItems[0].cartId
+      const cartId = cartItems[0].cartId;
       console.log(cartId);
-      res.json({ paymentUrl, totalPrice ,cartId});
+      res.json({ paymentUrl, totalPrice, cartId });
     } else {
       // Payment request failed
       return res.status(400).json({ error: "Payment Request Failed" });
@@ -397,6 +424,8 @@ async function verifyPayment(req, res) {
 
     console.log("query", req.query);
 
+    let response;
+
     if (Status === "OK") {
       // Payment was successful
       const amount = Amount;
@@ -411,7 +440,7 @@ async function verifyPayment(req, res) {
         amount: amount,
       });
 
-      const response = await axios.post(
+      response = await axios.post(
         `${process.env.ZARINPAL_LINK_VERIFY}`,
         verificationData,
         {
@@ -421,28 +450,63 @@ async function verifyPayment(req, res) {
           },
         }
       );
+
       console.log(`response verify : ${JSON.stringify(response.data)}`);
-      const code = response.data.data.code;
+    } else if (Status === "NOK") {
+      // Payment was not successful
+      console.log("hereeeee");
+      const orderRepository = getManager().getRepository(Order);
+      response = {
+        data: {
+          metadata: {
+            mobile: req.query.Phone, // Set a default user phone number or handle it accordingly
+          },
+        },
+      };
+      const phone = response.data.metadata.mobile;
+      console.log("phone : " + phone);
+      const newOrder = orderRepository.create({
+        userPhone: phone,
+        totalPrice: req.query.Amount, // Use the amount from the verification
+        orderStatus: "cancelled",
+      });
+      console.log(`newOrder : ${JSON.stringify(newOrder)}`);
+      const savedOrder = await orderRepository.save(newOrder);
+
+      console.log(` > >  > response ${JSON.stringify(response)}`);
+      return res.status(400).json({ error: "Payment was not successful" });
+    } else {
+      // Handle other Status values if needed
+      return res.status(400).json({ error: "Invalid payment status" });
+    }
+
+    // Check if the response and data properties exist
+    if (response && response.data) {
+      const code = response.data.code;
 
       if (code == 100) {
         // Payment verification succeeded
-        const refID = response.data.data.ref_id;
+        const refID = response.data.ref_id;
 
         // You can create an order and perform any other necessary actions here
         const orderRepository = getManager().getRepository(Order);
+        const userPhone =
+          response.data.metadata && response.data.metadata.userPhone
+            ? response.data.metadata.userPhone
+            : "UNKNOWN"; // Set a default user phone number or handle it accordingly
 
         // Create a new order with the user's phone number and total price
         const newOrder = orderRepository.create({
-          totalPrice: amount, // Use the amount from the verification
+          userPhone: userPhone,
+          totalPrice: Amount, // Use the amount from the verification
           orderStatus: "success",
-          refID: refID, // Store the reference ID
+          refId: refID, // Store the reference ID
         });
 
         console.log(JSON.stringify(newOrder));
         // Save the order to your database
         const savedOrder = await orderRepository.save(newOrder);
 
-        console.log(`savedOrder ${JSON.stringify(saveOrder)}`);
         // Clear the user's shopping cart (You can implement this function)
         await clearUserCart(userPhone);
 
@@ -454,38 +518,21 @@ async function verifyPayment(req, res) {
       } else {
         console.error(
           "Payment Verification Failed. Status code: " +
-            response.data.data.code +
+            response.data.code +
             " - " +
-            response.data.data.message
+            response.data.message
         );
 
         return res.status(400).json({ error: "Payment Verification Failed" });
       }
-    } else if (Status === "NOK") {
-      // Payment was not successful
-      console.log("hereeeee");
-
-      const orderRepository = getManager().getRepository(Order);
-
-      // Create a new order with the user's phone number and the total price
-      const newOrder = orderRepository.create({
-      
-        totalPrice: req.query.Amount, // Use the amount from the verification
-        orderStatus: "cancelled",
-      });
-      // Save the order to your database
-      const savedOrder = await orderRepository.save(newOrder);
-
-      // Clear the user's shopping cart (You can implement this function)
-      // await clearUserCart(userPhone);
-
-      return res.status(400).json({ error: "Payment was not successful" });
     } else {
-      // Handle other Status values if needed
-      return res.status(400).json({ error: "Invalid payment status" });
+      console.error("Invalid response format");
+      return res.status(500).json({
+        error: "An error occurred while processing the payment verification.",
+      });
     }
   } catch (error) {
-    console.error(`verifyPayment error: ${error.message}`);
+    console.error(`verifyPayment error: ${error}`);
     return res.status(500).json({
       error: "An error occurred while processing the payment verification.",
     });

@@ -28,6 +28,11 @@ const Order = new EntitySchema({
     },
     refId: {
       type: "varchar",
+      nullable: true,
+    },
+    userPhone: {
+      type: "int",
+      nullable: true,
     },
   },
   relations: {
@@ -39,7 +44,7 @@ const Order = new EntitySchema({
     user: {
       target: User,
       type: "many-to-one",
-      inverseSide: "orders",
+      joinColumn: true,
     },
   },
 });

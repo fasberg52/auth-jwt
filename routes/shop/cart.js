@@ -14,18 +14,18 @@ router.delete(
 );
 router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
 
-router.post(
-  "/orders",
+// router.post(
+//   "/orders",
 
-  checkRole("user"),
-  cartController.saveOrder
-);
-router.get(
-  "/orders",
+//   checkRole("user"),
+//   cartController.saveOrder
+// );
+// router.get(
+//   "/orders",
 
-  checkRole("user"),
-  cartController.orderDetails
-);
+//   checkRole("user"),
+//   cartController.orderDetails
+// );
 
 router.post("/payment-request", jwtAuthMiddleware, cartController.getPayment);
 router.get("/verify-payment", cartController.verifyPayment);

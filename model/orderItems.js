@@ -11,6 +11,7 @@ const OrderItem = new EntitySchema({
     },
     orderId: {
       type: "int",
+      nullable:true
     },
     courseId: {
       type: "int",
