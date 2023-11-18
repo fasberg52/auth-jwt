@@ -30,6 +30,10 @@ const User = new EntitySchema({
       enum: ["admin", "user"], 
       default: "user",
     },
+    imageUrl: {
+      type: "varchar",
+      nullable: true,
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,

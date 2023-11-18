@@ -10,7 +10,7 @@ const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
 router.get(
-  "/allusers",
+  "/users",
 
   jwtAuthMiddleware,
   checkRole("admin"),
@@ -81,6 +81,15 @@ router.delete(
 );
 
 router.post("upload",jwtAuthMiddleware,checkRole("admin"))
+
+
+router.post(
+  "/users",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  upload.single("icon"),
+  categoryController.createCategory
+);
 
 // router.post(
 //   "/uploads",

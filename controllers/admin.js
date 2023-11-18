@@ -1,14 +1,23 @@
 const Users = require("../model/users");
-const Order = require("../model/Orders")
+const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
 
 async function getUsers(req, res) {
   try {
     const userRepository = getManager().getRepository(Users);
-    const users = await userRepository.find();
-    res.json(users);
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const offset = (page - 1) * pageSize;
+    const allUsers = await userRepository.find({
+      skip: offset,
+      take: pageSize,
+    });
+    res.json(allUsers);
   } catch (error) {
-    res.status(500).json({ error: "An error occurred while getting users." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the getAllUsers." });
   }
 }
 
@@ -65,7 +74,9 @@ async function deleteUsers(req, res) {
 
     await getManager().transaction(async (transactionalEntityManager) => {
       // Find the user you want to delete
-      const user = await transactionalEntityManager.findOne(Users, { where: { phone: phone } });
+      const user = await transactionalEntityManager.findOne(Users, {
+        where: { phone: phone },
+      });
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -94,6 +105,7 @@ async function deleteUsers(req, res) {
 
 module.exports = {
   getUsers,
+
   getUserByPhone,
   updateUsers,
   deleteUsers,
