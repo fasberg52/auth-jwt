@@ -26,6 +26,9 @@ const Order = new EntitySchema({
     totalPrice: {
       type: "int",
     },
+    refId: {
+      type: "varchar",
+    },
   },
   relations: {
     cart: {
