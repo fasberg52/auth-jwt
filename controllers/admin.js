@@ -2,6 +2,8 @@ const Users = require("../model/users");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
 
+const moment = require("jalali-moment");
+
 async function getUsers(req, res) {
   try {
     const userRepository = getManager().getRepository(Users);
@@ -13,7 +15,19 @@ async function getUsers(req, res) {
       skip: offset,
       take: pageSize,
     });
-    res.json(allUsers);
+
+    const usersWithJalaliDates = allUsers.map((user) => {
+      return {
+        ...user,
+        createdAt: moment(user.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+        updatedAt: moment(user.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+        lastLogin: user.lastLogin
+          ? moment(user.lastLogin).format("jYYYY/jMM/jDD HH:mm:ss")
+          : null,
+      };
+    });
+
+    res.json(usersWithJalaliDates);
   } catch (error) {
     res
       .status(500)

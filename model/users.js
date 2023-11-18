@@ -34,6 +34,10 @@ const User = new EntitySchema({
       type: "varchar",
       nullable: true,
     },
+    grade: {
+      type: "varchar",
+      nullable: true,
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,
