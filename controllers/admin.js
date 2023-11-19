@@ -45,7 +45,20 @@ async function getUserByPhone(req, res) {
     });
 
     if (existingUser) {
-      res.json(existingUser);
+      const userWithJalaliDates = {
+        ...existingUser,
+        createdAt: moment(existingUser.createdAt).format(
+          "jYYYY/jMM/jDD HH:mm:ss"
+        ),
+        updatedAt: moment(existingUser.updatedAt).format(
+          "jYYYY/jMM/jDD HH:mm:ss"
+        ),
+        lastLogin: existingUser.lastLogin
+          ? moment(existingUser.lastLogin).format("jYYYY/jMM/jDD HH:mm:ss")
+          : null,
+      };
+
+      res.json(userWithJalaliDates);
     } else {
       res.status(404).json({ error: "User not found." });
     }
