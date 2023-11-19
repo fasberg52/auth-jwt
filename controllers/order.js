@@ -3,8 +3,8 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const OrderItems = require("../model/orderItems");
-
+const OrderItems = require("../model/OrderItems");
+const axios = require("axios");
 async function checkOutCart(req, res) {
   try {
     const user = req.user;
@@ -34,9 +34,9 @@ async function checkOutCart(req, res) {
 
     // Create a new order with the user's phone number and total price
     const newOrder = orderRepository.create({
-      user: userPhone,
+      userPhone: userPhone,
       totalPrice: totalPrice,
-      orderStatus: "pending",
+     // orderStatus: "pending",
     });
 
     // Save the order to your database
@@ -71,7 +71,12 @@ async function checkOutCart(req, res) {
     // Clear the user's shopping cart
     // await clearUserCart(userPhone);
 
-    res.status(200).json({ message: "Checkout successful", totalPrice });
+    res.status(200).json({
+      message: "Checkout successful",
+      totalPrice,
+      orderId: savedOrder.id,
+      savedOrder: savedOrder,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -86,6 +91,7 @@ async function getPayment(req, res) {
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
+    const orderRepository = connection.getRepository(Order);
 
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -117,13 +123,11 @@ async function getPayment(req, res) {
       }
     }
 
-    // Convert totalPrice to a string
-
-    // Replace with your Zarinpal merchant_id
+    const savedOrderId = req.body.orderId;
 
     const callbackUrl =
       "http://localhost:3000/verify-payment?" +
-      `Amount=${totalPrice}&Phone=${userPhone}`; // Replace with your callback URL
+      `Amount=${totalPrice}&Phone=${userPhone}&OrderId=${savedOrderId}`; // Replace with your callback URL
     const description = "Transaction description.";
     const user = req.user;
     // Construct the request data
@@ -160,13 +164,13 @@ async function getPayment(req, res) {
       console.log(paymentUrl);
       const cartId = cartItems[0].cartId;
       console.log(cartId);
-      res.json({ paymentUrl, totalPrice, cartId });
+      res.json({ paymentUrl, totalPrice, cartId, savedOrderId });
     } else {
       // Payment request failed
       return res.status(400).json({ error: "Payment Request Failed" });
     }
   } catch (error) {
-    console.error(`getPayment error: ${error.message}`);
+    console.error(`getPayment error: ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while preparing the getPayment." });
@@ -175,7 +179,7 @@ async function getPayment(req, res) {
 
 async function verifyPayment(req, res) {
   try {
-    const { Authority, Status, Amount } = req.query;
+    const { Authority, Status, Amount, OrderId } = req.query;
 
     console.log("query", req.query);
 
@@ -207,84 +211,73 @@ async function verifyPayment(req, res) {
       );
 
       console.log(`response verify : ${JSON.stringify(response.data)}`);
-    } else if (Status === "NOK") {
-      // Payment was not successful
-      console.log("hereeeee");
-      const orderRepository = getManager().getRepository(Order);
-      response = {
-        data: {
-          metadata: {
-            mobile: req.query.Phone, // Set a default user phone number or handle it accordingly
-          },
-        },
-      };
-      const phone = response.data.metadata.mobile;
-      console.log("phone : " + phone);
-      const newOrder = orderRepository.create({
-        userPhone: phone,
-        totalPrice: req.query.Amount, // Use the amount from the verification
-        orderStatus: "cancelled",
-      });
-      console.log(`newOrder : ${JSON.stringify(newOrder)}`);
-      const savedOrder = await orderRepository.save(newOrder);
 
-      console.log(` > >  > response ${JSON.stringify(response)}`);
-      return res.status(400).json({ error: "Payment was not successful" });
-    } else {
-      // Handle other Status values if needed
-      return res.status(400).json({ error: "Invalid payment status" });
-    }
+      const code = response.data.data.code;
 
-    // Check if the response and data properties exist
-    if (response && response.data) {
-      const code = response.data.code;
+      console.log(`code  >> ${code}`);
 
       if (code == 100) {
         // Payment verification succeeded
-        const refID = response.data.ref_id;
+        const refID = response.data.data.ref_id;
 
         // You can create an order and perform any other necessary actions here
         const orderRepository = getManager().getRepository(Order);
-        const userPhone =
-          response.data.metadata && response.data.metadata.userPhone
-            ? response.data.metadata.userPhone
-            : "UNKNOWN"; // Set a default user phone number or handle it accordingly
+        const phone = req.query.Phone || "UNKNOWN";
 
-        // Create a new order with the user's phone number and total price
-        const newOrder = orderRepository.create({
-          userPhone: userPhone,
-          totalPrice: Amount, // Use the amount from the verification
-          orderStatus: "success",
-          refId: refID, // Store the reference ID
+        // Find the existing order with the orderId
+        const existingOrder = await orderRepository.findOne({
+          where: {
+            id: OrderId,
+            userPhone: phone,
+            orderStatus: "pending",
+          },
         });
 
-        console.log(JSON.stringify(newOrder));
-        // Save the order to your database
-        const savedOrder = await orderRepository.save(newOrder);
+        if (existingOrder) {
+          // Update the existing order to "success"
+          existingOrder.orderStatus = "success";
+          existingOrder.totalPrice = req.query.Amount; // Update total price if needed
+          existingOrder.refId = refID; // Save the refId
+
+          const updatedOrder = await orderRepository.save(existingOrder);
+          console.log(`existingOrder >> ${existingOrder}`);
+          console.log(
+            `Order updated successfully. Order ID: ${updatedOrder.id}`
+          );
+        } else {
+          console.log("No order found with the given orderId.");
+        }
 
         // Clear the user's shopping cart (You can implement this function)
-        await clearUserCart(userPhone);
-
-        console.log(`Order placed successfully. Order ID: ${savedOrder.id}`);
+        //await clearUserCart(userPhone);
 
         return res
           .status(200)
           .json({ message: "Payment verification succeeded", refID });
-      } else {
-        console.error(
-          "Payment Verification Failed. Status code: " +
-            response.data.code +
-            " - " +
-            response.data.message
-        );
-
-        return res.status(400).json({ error: "Payment Verification Failed" });
       }
-    } else {
-      console.error("Invalid response format");
-      return res.status(500).json({
-        error: "An error occurred while processing the payment verification.",
+    } else if (Status === "NOK") {
+      // Payment was not successful
+      console.log("hereeeee");
+      const orderRepository = getManager().getRepository(Order);
+      const phone = req.query.Phone || "UNKNOWN";
+      console.log("phone : " + phone);
+      const existingOrder = await orderRepository.findOne({
+        where: { id: OrderId, userPhone: phone, orderStatus: "pending" },
       });
+      if (existingOrder) {
+        // Update the existing order to "cancelled"
+        existingOrder.orderStatus = "cancelled";
+        existingOrder.totalPrice = req.query.Amount; // Update total price if needed
+        const updatedOrder = await orderRepository.save(existingOrder);
+
+        console.log(`Order updated successfully. Order ID: ${updatedOrder.id}`);
+      } else {
+        console.log("No pending order found for cancellation.");
+      }
+      return res.status(400).json({ error: "Payment was not successful" });
+    } else {
+      // Handle other Status values if needed
+      return res.status(400).json({ error: "Invalid payment status" });
     }
   } catch (error) {
     console.error(`verifyPayment error: ${error}`);

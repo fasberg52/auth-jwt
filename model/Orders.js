@@ -11,6 +11,7 @@ const Order = new EntitySchema({
       type: "int",
       generated: true,
     },
+
     cartId: {
       type: "int",
       nullable: true,
@@ -22,6 +23,7 @@ const Order = new EntitySchema({
     orderStatus: {
       type: "enum",
       enum: ["pending", "cancelled", "success"],
+      nullable: true,
     },
     totalPrice: {
       type: "int",
