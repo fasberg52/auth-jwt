@@ -6,7 +6,7 @@ const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the pa
 const fs = require("fs").promises;
 const path = require("path");
 const Upload = require("../model/Upload");
-
+const moment = require("jalali-moment");
 async function createUpload(req, res) {
   try {
     if (!req.file) {
@@ -69,9 +69,19 @@ async function getAllUploads(req, res) {
       take: pageSize,
     });
 
+    // Convert dates to Jalali format before sending the response
+    const uploadsWithJalaliDates = uploads.map((upload) => {
+      return {
+        ...upload,
+        createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+        updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+        // Add more date fields if necessary
+      };
+    });
+
     res.status(200).json({
       message: "All uploads retrieved successfully",
-      uploads,
+      uploads: uploadsWithJalaliDates,
       totalCount,
       status: 200,
     });
@@ -98,10 +108,16 @@ async function getUploadById(req, res) {
         status: 404,
       });
     }
+    const uploadWithJalaliDates = {
+      ...upload,
+      createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+      
+      // Add more date fields if necessary
+    };
 
     res.status(200).json({
       message: "Upload retrieved successfully",
-      upload,
+      upload: uploadWithJalaliDates,
       status: 200,
     });
   } catch (error) {

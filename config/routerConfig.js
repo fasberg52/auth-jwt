@@ -4,6 +4,7 @@ const cartRouter = require("../routes/shop/cart");
 const courseRouter = require("../routes/shop/course");
 const courseAdminrouter = require("../routes/admin/courseAdmin");
 const uploadRouter = require("../routes/admin/upload");
+const orderRouter = require("../routes/shop/order")
 const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
 const swaggerSpec = require("../utils/swagger");
@@ -19,6 +20,7 @@ async function routerConfig(app) {
   app.use("/", cartRouter);
   app.use("/admin", courseAdminrouter);
   app.use("/", uploadRouter);
+  app.use("/",orderRouter)
 }
 
 module.exports = {
