@@ -31,6 +31,19 @@ async function checkOutCart(req, res) {
 
     let totalPrice = 0;
 
+<<<<<<< HEAD
+=======
+    // Create a new order with the user's phone number and total price
+    // const newOrder = orderRepository.create({
+    //   userPhone: userPhone,
+    //   totalPrice: totalPrice,
+    //   // orderStatus: "pending",
+    // });
+
+    // // Save the order to your database
+    // const savedOrder = await orderRepository.save(newOrder);
+
+>>>>>>> c9390b1bc44a3c6858d53828b731467cd8f6d22c
     for (const cartItem of cartItems) {
       if (cartItem.courseId) {
         const course = await courseRepository.findOne({
@@ -39,6 +52,19 @@ async function checkOutCart(req, res) {
 
         if (course) {
           totalPrice += course.price * cartItem.quantity;
+<<<<<<< HEAD
+=======
+
+          // Create a new order item for each course in the cart
+          const newOrderItem = orderItemsRepository.create({
+            order: savedOrder,
+            courseId: cartItem.courseId, 
+            quantity: cartItem.quantity,
+          });
+
+          // Save the order item to your database
+          await orderItemsRepository.save(newOrderItem);
+>>>>>>> c9390b1bc44a3c6858d53828b731467cd8f6d22c
         }
       }
     }
@@ -351,28 +377,16 @@ async function verifyPayment(req, res) {
         const phone = req.query.Phone || "UNKNOWN";
 
         // Find the existing order with the orderId
-        const existingOrder = await orderRepository.findOne({
-          where: {
-            id: OrderId,
-            userPhone: phone,
-            orderStatus: "pending",
-          },
+        const newOrder = orderRepository.create({
+          userPhone: phone,
+          totalPrice: req.query.Amount,
+          orderStatus: "success",
+          refId: refID,
         });
 
-        if (existingOrder) {
-          // Update the existing order to "success"
-          existingOrder.orderStatus = "success";
-          existingOrder.totalPrice = req.query.Amount; // Update total price if needed
-          existingOrder.refId = refID; // Save the refId
-
-          const updatedOrder = await orderRepository.save(existingOrder);
-          console.log(`existingOrder >> ${existingOrder}`);
-          console.log(
-            `Order updated successfully. Order ID: ${updatedOrder.id}`
-          );
-        } else {
-          console.log("No order found with the given orderId.");
-        }
+        const updatedOrder = await orderRepository.save(newOrder);
+        console.log(`existingOrder >> ${existingOrder}`);
+        console.log(`Order updated successfully. Order ID: ${updatedOrder.id}`);
 
         // Clear the user's shopping cart (You can implement this function)
         //await clearUserCart(userPhone);
@@ -387,19 +401,16 @@ async function verifyPayment(req, res) {
       const orderRepository = getManager().getRepository(Order);
       const phone = req.query.Phone || "UNKNOWN";
       console.log("phone : " + phone);
-      const existingOrder = await orderRepository.findOne({
-        where: { id: OrderId, userPhone: phone, orderStatus: "pending" },
-      });
-      if (existingOrder) {
-        // Update the existing order to "cancelled"
-        existingOrder.orderStatus = "cancelled";
-        existingOrder.totalPrice = req.query.Amount; // Update total price if needed
-        const updatedOrder = await orderRepository.save(existingOrder);
 
-        console.log(`Order updated successfully. Order ID: ${updatedOrder.id}`);
-      } else {
-        console.log("No pending order found for cancellation.");
-      }
+      const newOrder = orderRepository.create({
+        userPhone: phone,
+        totalPrice: req.query.Amount,
+        orderStatus: "cancelled",
+      });
+
+      // Save the new order to the database
+      const updatedOrder = await orderRepository.save(newOrder);
+      console.log(`Order created successfully. Order ID: ${updatedOrder.id}`);
       return res.status(400).json({ error: "Payment was not successful" });
     } else {
       // Handle other Status values if needed

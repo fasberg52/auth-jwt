@@ -7,15 +7,11 @@ const Order = new EntitySchema({
   tableName: "orders",
   columns: {
     id: {
-      primary: true,
       type: "int",
       generated: true,
+      primary: true,
     },
 
-    cartId: {
-      type: "int",
-      nullable: true,
-    },
     orderDate: {
       type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
@@ -38,11 +34,6 @@ const Order = new EntitySchema({
     },
   },
   relations: {
-    cart: {
-      type: "one-to-one",
-      target: "Cart",
-      joinColumn: true,
-    },
     user: {
       target: User,
       type: "many-to-one",
