@@ -31,19 +31,6 @@ async function checkOutCart(req, res) {
 
     let totalPrice = 0;
 
-<<<<<<< HEAD
-=======
-    // Create a new order with the user's phone number and total price
-    // const newOrder = orderRepository.create({
-    //   userPhone: userPhone,
-    //   totalPrice: totalPrice,
-    //   // orderStatus: "pending",
-    // });
-
-    // // Save the order to your database
-    // const savedOrder = await orderRepository.save(newOrder);
-
->>>>>>> c9390b1bc44a3c6858d53828b731467cd8f6d22c
     for (const cartItem of cartItems) {
       if (cartItem.courseId) {
         const course = await courseRepository.findOne({
@@ -52,19 +39,6 @@ async function checkOutCart(req, res) {
 
         if (course) {
           totalPrice += course.price * cartItem.quantity;
-<<<<<<< HEAD
-=======
-
-          // Create a new order item for each course in the cart
-          const newOrderItem = orderItemsRepository.create({
-            order: savedOrder,
-            courseId: cartItem.courseId, 
-            quantity: cartItem.quantity,
-          });
-
-          // Save the order item to your database
-          await orderItemsRepository.save(newOrderItem);
->>>>>>> c9390b1bc44a3c6858d53828b731467cd8f6d22c
         }
       }
     }
