@@ -53,120 +53,7 @@ async function checkOutCart(req, res) {
   }
 }
 
-// async function createPayment(req, res) {
-//   try {
-//     console.log("req is : " + req);
-//     const userPhone = req.user.phone;
-//     const connection = getConnection();
-//     const cartRepository = connection.getRepository(Cart);
-//     const cartItemsRepository = connection.getRepository(CartItems);
-//     const courseRepository = connection.getRepository(Courses);
-//     const orderRepository = connection.getRepository(Order);
-//     const orderItemsRepository = connection.getRepository(OrderItems);
-//     const userCart = await cartRepository.findOne({
-//       where: { user: { phone: userPhone } },
-//     });
-//     console.log(userCart);
-//     if (!userCart) {
-//       return res.status(404).json({ error: "Cart not found for the user" });
-//     }
-//     //const cartId = await cartRepository.finOne()
-//     //Calculate the total price
-//     const cartItems = await cartItemsRepository
-//       .createQueryBuilder("cartItem")
-//       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-//       .getMany();
-//     console.log(`cartItems >> ${JSON.stringify(cartItems)}`);
 
-//     let totalPrice = 0;
-
-//     //Create a new order with the user's phone number and total price
-//     const newOrder = orderRepository.create({
-//       userPhone: userPhone,
-//       totalPrice: totalPrice,
-//       orderStatus: "pending",
-//     });
-
-//     // Save the order to your database
-//     const savedOrder = await orderRepository.save(newOrder);
-
-//     for (const cartItem of cartItems) {
-//       if (cartItem.courseId) {
-//         const course = await courseRepository.findOne({
-//           where: { id: cartItem.courseId },
-//         });
-
-//         if (course) {
-//           totalPrice += course.price * cartItem.quantity;
-
-//           // Create a new order item for each course in the cart
-//           const newOrderItem = orderItemsRepository.create({
-//             order: savedOrder,
-//             courseId: cartItem.courseId,
-//             quantity: cartItem.quantity,
-//           });
-
-//           // Save the order item to your database
-//           await orderItemsRepository.save(newOrderItem);
-//         }
-//       }
-//     }
-
-//     // Update the total price in the order based on the courses
-//     savedOrder.totalPrice = totalPrice;
-//     await orderRepository.save(savedOrder);
-
-//     const callbackUrl =
-//       "http://localhost:3000/verify-payment?" +
-//       `Amount=${totalPrice}&Phone=${userPhone}&OrderId=${savedOrder.id}`; // Replace with your callback URL
-//     const description = "Transaction description.";
-//     const user = req.user;
-//     // Construct the request data
-//     const requestData = JSON.stringify({
-//       merchant_id: process.env.MERCHANT_ID,
-//       amount: totalPrice,
-//       callback_url: callbackUrl,
-//       description: description,
-//       metadata: {
-//         mobile: userPhone,
-//       },
-//     });
-//     // console.log(requestData.metadata.mobile);
-//     // Send a POST request to Zarinpal's payment request endpoint
-//     const response = await axios.post(
-//       `${process.env.ZARINPAL_LINK_REQUEST}`,
-//       requestData,
-//       {
-//         headers: {
-//           Accept: "application/json",
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     console.log(`Response from Zarinpal: ${JSON.stringify(response.data)}`);
-
-//     // Extract the authority code from the response (you may need to adjust this based on Zarinpal's response structure)
-//     const code = response.data.data.code;
-//     console.log(`code is : ${code}`);
-//     if (code == 100) {
-//       // Payment request succeeded
-//       const authority = response.data.data.authority;
-//       const paymentUrl = `${process.env.ZARINPAL_LINK_STARTPAY}/${authority}`;
-//       console.log(paymentUrl);
-//       const cartId = cartItems[0].cartId;
-//       console.log(cartId);
-//       res.json({ paymentUrl, totalPrice, cartId, savedOrder });
-//     } else {
-//       // Payment request failed
-//       return res.status(400).json({ error: "Payment Request Failed" });
-//     }
-//   } catch (error) {
-//     console.error(`createPayment error: ${error}`);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while preparing the createPayment." });
-//   }
-// }
 
 async function createPayment(req, res) {
   try {
@@ -285,7 +172,7 @@ function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
     merchant_id: merchantId,
     amount: totalPrice,
     callback_url: callbackUrl,
-    description: "Transaction description.",
+    description: "اتصال به درگاه پرداخت",
     metadata: { mobile: userPhone },
   });
 }
