@@ -6,7 +6,6 @@ const express = require("express");
 
 const router = express.Router();
 router.post("/cart/add", jwtAuthMiddleware, cartController.createCartItem);
-router.get("/checkout", jwtAuthMiddleware, cartController.checkOutCart);
 router.delete(
   "/cart/remove/cartItem/:cartItemId",
   jwtAuthMiddleware,
@@ -27,7 +26,6 @@ router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
 //   cartController.orderDetails
 // );
 
-router.post("/payment-request", jwtAuthMiddleware, cartController.getPayment);
-router.get("/verify-payment", cartController.verifyPayment);
+
 
 module.exports = router;

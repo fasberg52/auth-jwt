@@ -7,14 +7,11 @@ const Order = new EntitySchema({
   tableName: "orders",
   columns: {
     id: {
-      primary: true,
       type: "int",
       generated: true,
+      primary: true,
     },
-    cartId: {
-      type: "int",
-      nullable: true,
-    },
+
     orderDate: {
       type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
@@ -22,6 +19,7 @@ const Order = new EntitySchema({
     orderStatus: {
       type: "enum",
       enum: ["pending", "cancelled", "success"],
+      nullable: true,
     },
     totalPrice: {
       type: "int",
@@ -36,15 +34,15 @@ const Order = new EntitySchema({
     },
   },
   relations: {
-    cart: {
-      type: "one-to-one",
-      target: "Cart",
-      joinColumn: true,
-    },
     user: {
       target: User,
       type: "many-to-one",
       joinColumn: true,
+    },
+    orderItems: {
+      type: "one-to-many",
+      target: "OrderItem",
+      inverseSide: "order",
     },
   },
 });
