@@ -7,7 +7,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/checkout", jwtAuthMiddleware, orderController.checkOutCart);
-router.post("/payment-request", jwtAuthMiddleware, orderController.getPayment);
+router.post("/payment-request", jwtAuthMiddleware, orderController.createPayment);
 router.get("/verify-payment", orderController.verifyPayment);
 
 module.exports = router;

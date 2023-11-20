@@ -11,7 +11,7 @@ const OrderItem = new EntitySchema({
     },
     orderId: {
       type: "int",
-      nullable:true
+      nullable: true,
     },
     courseId: {
       type: "int",
@@ -20,6 +20,14 @@ const OrderItem = new EntitySchema({
       type: "int",
     },
   },
+  relations: {
+    order: {
+      type: "many-to-one",
+      target: "Order",
+      joinColumn: true,
+      joinColumn: { name: "orderId", referencedColumnName: "id" }, // Join column details
+    },
+  },
 });
 
-module.exports = OrderItem
+module.exports = OrderItem;

@@ -48,6 +48,11 @@ const Order = new EntitySchema({
       type: "many-to-one",
       joinColumn: true,
     },
+    orderItems: {
+      type: "one-to-many",
+      target: "OrderItem",
+      inverseSide: "order",
+    },
   },
 });
 
