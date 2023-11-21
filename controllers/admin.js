@@ -14,6 +14,9 @@ async function getUsers(req, res) {
     const allUsers = await userRepository.find({
       skip: offset,
       take: pageSize,
+      order: {
+        id: "ASC",
+      },
     });
 
     const usersWithJalaliDates = allUsers.map((user) => {
@@ -23,18 +26,15 @@ async function getUsers(req, res) {
         lastName: user.lastName,
         phone: user.phone,
         role: user.roles,
-        imageUrl: user.imageUrl,
         grade: user.grade,
-        createdAt: moment(user.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        updatedAt: moment(user.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        lastLogin: user.lastLogin
-          ? moment(user.lastLogin).format("jYYYY/jMM/jDD HH:mm:ss")
-          : null,
       };
     });
 
+    // Sort the array based on the "amount" property in ascending order
+    console.log(usersWithJalaliDates);
     res.json(usersWithJalaliDates);
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while creating the getAllUsers." });
@@ -52,7 +52,13 @@ async function getUserByPhone(req, res) {
 
     if (existingUser) {
       const userWithJalaliDates = {
-        ...existingUser,
+        id: existingUser.id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        phone: existingUser.phone,
+        role: existingUser.roles,
+        imageUrl: existingUser.imageUrl,
+        grade: existingUser.grade,
         createdAt: moment(existingUser.createdAt).format(
           "jYYYY/jMM/jDD HH:mm:ss"
         ),
