@@ -23,6 +23,8 @@ async function getUsers(req, res) {
         lastName: user.lastName,
         phone: user.phone,
         role: user.roles,
+        imageUrl: user.imageUrl,
+        grade: user.grade,
         createdAt: moment(user.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         updatedAt: moment(user.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         lastLogin: user.lastLogin
