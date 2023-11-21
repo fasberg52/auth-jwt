@@ -1,3 +1,5 @@
+//model/orderItem.js
+
 const { EntitySchema } = require("typeorm");
 
 const OrderItem = new EntitySchema({
