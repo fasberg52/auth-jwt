@@ -10,16 +10,15 @@ async function getUsers(req, res) {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const offset = (page - 1) * pageSize;
-    const allUsers = await userRepository.find({
-      skip: offset,
+    const [users, totalUsers] = await userRepository.findAndCount({
+      skip: (page - 1) * pageSize,
       take: pageSize,
       order: {
         id: "ASC",
       },
     });
 
-    const usersWithJalaliDates = allUsers.map((user) => {
+    const usersWithJalaliDates = users.map((user) => {
       return {
         id: user.id,
         firstName: user.firstName,
@@ -30,16 +29,16 @@ async function getUsers(req, res) {
       };
     });
 
-    // Sort the array based on the "amount" property in ascending order
-    console.log(usersWithJalaliDates);
-    res.json(usersWithJalaliDates);
+    res.json({
+      users: usersWithJalaliDates,
+      totalUsers: totalUsers,
+    });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the getAllUsers." });
+    res.status(500).json({ error: "An error occurred while getting the users." });
   }
 }
+
 
 async function getUserByPhone(req, res) {
   try {

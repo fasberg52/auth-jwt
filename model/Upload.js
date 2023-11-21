@@ -7,11 +7,15 @@ const Upload = new EntitySchema({
   columns: {
     id: {
       type: "int",
-      primary:true,
+      primary: true,
       generated: true,
     },
     path: {
       type: "varchar",
+      nullable: true,
+    },
+    content: {
+      type: "bytea", // Use "bytea" for binary data
       nullable: true,
     },
     createdAt: {

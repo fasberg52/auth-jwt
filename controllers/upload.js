@@ -24,9 +24,12 @@ async function createUpload(req, res) {
         error: "حداکثر تا 5 مگابایت آپلود",
       });
     }
-    const filePath = req.file.originalname; // Change variable name to filePath
 
-    // Handle the case where the file upload was successful, but path is not defined
+    const filePath = req.file.originalname;
+    
+    // Read file content using fs.readFile
+    const fileContent = await fs.readFile(req.file.path);
+
     if (!filePath) {
       return res.status(500).json({
         message: "Internal Server Error: File path not generated",
@@ -37,7 +40,8 @@ async function createUpload(req, res) {
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
-      path: filePath, // Use the modified variable name
+      path: filePath,
+      content: fileContent, // Store file content in the database
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
@@ -48,6 +52,7 @@ async function createUpload(req, res) {
       status: 200,
     });
   } catch (error) {
+    console.log("createUpload error " + error);
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
@@ -94,6 +99,53 @@ async function getAllUploads(req, res) {
   }
 }
 
+async function getUploadByPath(req, res) {
+  try {
+    const uploadPath = req.params.path;
+
+    const uploadRepository = getManager().getRepository(Upload);
+
+    const upload = await uploadRepository.findOne({
+      where: { path: uploadPath },
+    });
+
+    if (!upload) {
+      return res.status(404).json({
+        message: "Upload not found",
+        status: 404,
+      });
+    }
+
+    const filePath = path.resolve(__dirname, `../uploads/${upload.path}`);
+
+    let fileContent;
+    try {
+      fileContent = await fs.readFile(filePath, "utf-8");
+    } catch (error) {
+      fileContent = "Unable to read file content";
+    }
+
+    const uploadWithContent = {
+      ...upload,
+      createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+      updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+      content: fileContent,
+    };
+
+    res.status(200).json({
+      message: "Upload retrieved successfully",
+      upload: uploadWithContent,
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error getting upload by Path:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      status: 500,
+    });
+  }
+}
+
 async function getUploadById(req, res) {
   try {
     const uploadId = req.params.id;
@@ -111,7 +163,7 @@ async function getUploadById(req, res) {
     const uploadWithJalaliDates = {
       ...upload,
       createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-      
+
       // Add more date fields if necessary
     };
 
@@ -177,6 +229,7 @@ module.exports = {
   createUpload,
   getAllUploads,
   getUploadById,
+  getUploadByPath,
   updateUpload,
   deleteUpload,
 };
