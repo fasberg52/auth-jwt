@@ -5,7 +5,7 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const OrderItems = require("../model/OrderItems");
+const OrderItems = require("../model/orderItems");
 const axios = require("axios");
 
 const ZARINPAL_API = "https://api.zarinpal.com/pg/v4/payment/request.json";

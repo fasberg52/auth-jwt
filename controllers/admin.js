@@ -10,30 +10,35 @@ async function getUsers(req, res) {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
-    const offset = (page - 1) * pageSize;
-    const allUsers = await userRepository.find({
-      skip: offset,
+    const [users, totalUsers] = await userRepository.findAndCount({
+      skip: (page - 1) * pageSize,
       take: pageSize,
+      order: {
+        id: "ASC",
+      },
     });
 
-    const usersWithJalaliDates = allUsers.map((user) => {
+    const usersWithJalaliDates = users.map((user) => {
       return {
-        ...user,
-        createdAt: moment(user.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        updatedAt: moment(user.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        lastLogin: user.lastLogin
-          ? moment(user.lastLogin).format("jYYYY/jMM/jDD HH:mm:ss")
-          : null,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        role: user.roles,
+        grade: user.grade,
       };
     });
 
-    res.json(usersWithJalaliDates);
+    res.json({
+      users: usersWithJalaliDates,
+      totalUsers: totalUsers,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the getAllUsers." });
+    console.log(error);
+    res.status(500).json({ error: "An error occurred while getting the users." });
   }
 }
+
 
 async function getUserByPhone(req, res) {
   try {
@@ -46,7 +51,13 @@ async function getUserByPhone(req, res) {
 
     if (existingUser) {
       const userWithJalaliDates = {
-        ...existingUser,
+        id: existingUser.id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        phone: existingUser.phone,
+        role: existingUser.roles,
+        imageUrl: existingUser.imageUrl,
+        grade: existingUser.grade,
         createdAt: moment(existingUser.createdAt).format(
           "jYYYY/jMM/jDD HH:mm:ss"
         ),

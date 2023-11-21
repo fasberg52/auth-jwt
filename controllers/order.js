@@ -3,7 +3,7 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const OrderItems = require("../model/OrderItems");
+const OrderItems = require("../model/orderItems");
 const axios = require("axios");
 async function checkOutCart(req, res) {
   try {

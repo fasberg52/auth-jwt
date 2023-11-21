@@ -50,6 +50,7 @@ async function createUpload(req, res) {
       status: 200,
     });
   } catch (error) {
+    console.log("createUpload error " + error);
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
@@ -137,6 +138,53 @@ async function getAllUploads(req, res) {
     });
   } catch (error) {
     console.error("Error getting all uploads:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      status: 500,
+    });
+  }
+}
+
+async function getUploadByPath(req, res) {
+  try {
+    const uploadPath = req.params.path;
+
+    const uploadRepository = getManager().getRepository(Upload);
+
+    const upload = await uploadRepository.findOne({
+      where: { path: uploadPath },
+    });
+
+    if (!upload) {
+      return res.status(404).json({
+        message: "Upload not found",
+        status: 404,
+      });
+    }
+
+    const filePath = path.resolve(__dirname, `../uploads/${upload.path}`);
+
+    let fileContent;
+    try {
+      fileContent = await fs.readFile(filePath, "utf-8");
+    } catch (error) {
+      fileContent = "Unable to read file content";
+    }
+
+    const uploadWithContent = {
+      ...upload,
+      createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+      updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+      content: fileContent,
+    };
+
+    res.status(200).json({
+      message: "Upload retrieved successfully",
+      upload: uploadWithContent,
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error getting upload by Path:", error);
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
