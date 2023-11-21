@@ -34,22 +34,23 @@ const Course = new EntitySchema({
     lastModified: {
       type: "timestamp",
       onUpdate: "CURRENT_TIMESTAMP",
-      nullable: true, 
+      nullable: true,
     },
   },
   relations: {
     category: {
       type: "many-to-one",
-      target: "Category",
+      target: "Category", // Target entity name
+      joinColumn: { name: "categoryId", referencedColumnName: "id" }, // Specify the join column
     },
-   
+
     users: {
       type: "many-to-many",
-      target: "User", 
+      target: "User",
       joinTable: {
-        name: "user_courses", 
+        name: "user_courses",
         joinColumn: { name: "courseId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "userId", referencedColumnName: "phone" }, 
+        inverseJoinColumn: { name: "userId", referencedColumnName: "phone" },
       },
     },
   },

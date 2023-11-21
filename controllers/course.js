@@ -9,12 +9,28 @@ async function getAllCourse(req, res) {
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const offset = (page - 1) * pageSize;
-    const allCourses = await courseRepository.find({
-      skip: offset,
-      take: pageSize,
-    });
+
+    const allCourses = await courseRepository
+      .createQueryBuilder("course")
+      .leftJoinAndSelect("course.category", "category") // Join with category
+      .select([
+        "course.id",
+        "course.title",
+        "course.description",
+        "course.price",
+        "course.imageUrl",
+        "course.videoUrl",
+        "course.createdAt",
+        "course.lastModified",
+      ])
+      .addSelect(["category.name"]) // Include category.name in the select
+      .skip(offset)
+      .take(pageSize)
+      .getMany();
+
     res.json(allCourses);
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ error: "An error occurred while creating the getAllCourse." });
@@ -44,5 +60,4 @@ async function getProductById(req, res) {
 module.exports = {
   getAllCourse,
   getProductById,
-
 };
