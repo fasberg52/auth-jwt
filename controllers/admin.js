@@ -18,7 +18,11 @@ async function getUsers(req, res) {
 
     const usersWithJalaliDates = allUsers.map((user) => {
       return {
-        ...user,
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        role: user.roles,
         createdAt: moment(user.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         updatedAt: moment(user.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         lastLogin: user.lastLogin
