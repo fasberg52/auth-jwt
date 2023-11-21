@@ -24,20 +24,22 @@ async function createUpload(req, res) {
         error: "حداکثر تا 5 مگابایت آپلود",
       });
     }
-    const filePath = req.file.originalname; // Change variable name to filePath
-
-    // Handle the case where the file upload was successful, but path is not defined
-    if (!filePath) {
-      return res.status(500).json({
-        message: "Internal Server Error: File path not generated",
-        status: 500,
-      });
-    }
+    const originalFilename = req.file.originalname;
 
     const uploadRepository = getManager().getRepository(Upload);
 
+    // Check if a file with the same name already exists
+    let filename = originalFilename;
+    let counter = 1;
+    while (await uploadRepository.findOne({ where: { path: filename } })) {
+      const extension = path.extname(originalFilename);
+      const baseName = path.basename(originalFilename, extension);
+      filename = `${baseName}-${counter}${extension}`;
+      counter++;
+    }
+
     const newUpload = uploadRepository.create({
-      path: filePath, // Use the modified variable name
+      path: filename,
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
@@ -55,6 +57,46 @@ async function createUpload(req, res) {
   }
 }
 
+// async function getAllUploads(req, res) {
+//   try {
+//     const uploadRepository = getManager().getRepository(Upload);
+
+//     const page = req.query.page || 1;
+//     const pageSize = req.query.pageSize || 10;
+
+//     const skip = (page - 1) * pageSize;
+
+//     const [uploads, totalCount] = await uploadRepository.findAndCount({
+//       skip,
+//       take: pageSize,
+//     });
+
+//     // Convert dates to Jalali format before sending the response
+//     const uploadsWithJalaliDates = uploads.map((upload) => {
+//       return {
+//         ...upload,
+//         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+//         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
+
+//         // Add more date fields if necessary
+//       };
+//     });
+
+//     res.status(200).json({
+//       message: "All uploads retrieved successfully",
+//       uploads: uploadsWithJalaliDates,
+//       totalCount,
+//       status: 200,
+//     });
+//   } catch (error) {
+//     console.error("Error getting all uploads:", error);
+//     res.status(500).json({
+//       message: "Internal Server Error",
+//       status: 500,
+//     });
+//   }
+// }
+
 async function getAllUploads(req, res) {
   try {
     const uploadRepository = getManager().getRepository(Upload);
@@ -69,19 +111,27 @@ async function getAllUploads(req, res) {
       take: pageSize,
     });
 
-    // Convert dates to Jalali format before sending the response
-    const uploadsWithJalaliDates = uploads.map((upload) => {
+    // Convert dates to Jalali format and include file paths
+    const uploadsData = uploads.map((upload) => {
+      const subdirectory = createSubdirectory();
+      const filePath = path.resolve(
+        __dirname,
+        `../uploads/${subdirectory}`,
+        upload.path
+      );
+
       return {
-        ...upload,
+        id: upload.id,
         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         // Add more date fields if necessary
+        filePath: filePath,
       };
     });
 
     res.status(200).json({
       message: "All uploads retrieved successfully",
-      uploads: uploadsWithJalaliDates,
+      uploads: uploadsData,
       totalCount,
       status: 200,
     });
@@ -111,7 +161,7 @@ async function getUploadById(req, res) {
     const uploadWithJalaliDates = {
       ...upload,
       createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-      
+
       // Add more date fields if necessary
     };
 
@@ -173,10 +223,53 @@ async function deleteUpload(req, res) {
   }
 }
 
+async function getUploadPath(req, res) {
+  try {
+    const uploadPath = req.params.path;
+
+    const uploadRepository = getManager().getRepository(Upload);
+
+    const upload = await uploadRepository.findOne({
+      where: { path: uploadPath },
+    });
+
+    if (!upload) {
+      return res.status(404).json({
+        message: "Upload not found",
+        status: 404,
+      });
+    }
+
+    // Construct the file path
+    const subdirectory = createSubdirectory();
+    const filePath = path.resolve(
+      __dirname,
+      `../uploads/${subdirectory}`,
+      upload.path
+    );
+
+    res.status(200).json({
+      message: "File path retrieved successfully",
+      id: upload.id, 
+      createdAt: upload.createdAt,
+      
+      filePath: filePath,
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error getting upload path:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      status: 500,
+    });
+  }
+}
+
 module.exports = {
   createUpload,
   getAllUploads,
   getUploadById,
+  getUploadPath,
   updateUpload,
   deleteUpload,
 };

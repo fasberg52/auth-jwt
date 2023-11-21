@@ -2,13 +2,14 @@ const express = require("express");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
-const {upload} = require("../../utils/multerUtils");
+const { upload } = require("../../utils/multerUtils");
 const {
   createUpload,
   getAllUploads,
   getUploadById,
   updateUpload,
   deleteUpload,
+  getUploadPath,
 } = require("../../controllers/upload");
 const router = express.Router();
 
@@ -23,6 +24,8 @@ router.post(
 router.get("/upload", jwtAuthMiddleware, checkRole("admin"), getAllUploads);
 
 router.get("/upload/:id", jwtAuthMiddleware, checkRole("admin"), getUploadById);
+router.get("/upload/path/:path", getUploadPath);
+
 
 router.put("/upload", jwtAuthMiddleware, checkRole("admin"), updateUpload);
 

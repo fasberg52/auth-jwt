@@ -2,14 +2,31 @@
 
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs-extra"); // Import fs-extra
+const fs = require("fs-extra");
+
+let uploadCounter = {}; // Maintain a counter object to track each file
 
 const createSubdirectory = () => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
   const subdirectory = path.join(year.toString(), month);
-  return subdirectory; // Only return the subdirectory string
+  return subdirectory;
+};
+
+const generateUniqueFilename = (originalname) => {
+  const baseName = path.basename(originalname, path.extname(originalname));
+  const extension = path.extname(originalname);
+
+  if (!uploadCounter[originalname]) {
+    // First upload of this file
+    uploadCounter[originalname] = 1;
+    return `${baseName}${extension}`;
+  } else {
+    // Subsequent uploads, increment the counter
+    const count = uploadCounter[originalname]++;
+    return `${baseName}-${count}${extension}`;
+  }
 };
 
 const storage = multer.diskStorage({
@@ -22,19 +39,20 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
       })
       .catch((err) => {
-        // Check for file size limit error
         cb(err);
       });
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    const originalname = file.originalname;
+    const filename = generateUniqueFilename(originalname);
+    cb(null, filename);
   },
 });
-// Configuration for multer upload
+
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Limit file size to 5 MB
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     const allowedFileTypes = [
@@ -44,9 +62,9 @@ const upload = multer({
       "video/mp4",
       "video/avi",
     ];
-    if (file.size > 1 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) {
       return cb(null, false, {
-        error: "File size limit exceeded. Maximum file size is 1 MB.",
+        error: "File size limit exceeded. Maximum file size is 5 MB.",
       });
     }
     if (allowedFileTypes.includes(file.mimetype)) {
