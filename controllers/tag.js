@@ -1,6 +1,6 @@
 const { getRepository } = require("typeorm");
-const Tags = require("../model/Tags"); 
-
+const Tags = require("../model/Tags");
+const Category = require("../model/Category");
 
 const getAllTags = async (req, res) => {
   const tagRepository = getRepository(Tags);
@@ -23,23 +23,41 @@ const getTagById = async (req, res) => {
       res.json(tag);
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
-const createTag = async (req, res) => {
-  const newTagData = req.body;
-  const tagRepository = getRepository(Tags);
-  const newTag = tagRepository.create(newTagData);
-
+async function createTag(req, res) {
   try {
+    const categoryId = req.params.id;
+    const { name } = req.body;
+    const categoryRepository = getRepository(Category);
+
+    // Ensure to await the findOne method
+    const existingCategory = await categoryRepository.findOne({
+      where: { id: categoryId },
+    });
+
+    if (!existingCategory) {
+      return res.status(404).json({ error: "This category does not exist", status: 404 });
+    }
+
+    const tagRepository = getRepository(Tags);
+    const newTag = tagRepository.create({ name });
+
+    // Associate the tag with the existing category
+    newTag.category = existingCategory;
+
+    // Save the newTag with the associated category
     await tagRepository.save(newTag);
-    res.status(201).json(newTag);
+
+    res.status(201).json({ newTag, status: 200 });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
+}
 
 const updateTag = async (req, res) => {
   const tagId = req.params.id;

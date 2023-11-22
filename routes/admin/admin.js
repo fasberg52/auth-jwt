@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const {upload} = require("../../utils/multerUtils");
+const { upload } = require("../../utils/multerUtils");
 const usersController = require("../../controllers/admin");
 const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
+const tagController = require("../../controllers/tag");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
@@ -80,8 +81,7 @@ router.delete(
   categoryController.deleteCategory
 );
 
-router.post("upload",jwtAuthMiddleware,checkRole("admin"))
-
+router.post("upload", jwtAuthMiddleware, checkRole("admin"));
 
 router.post(
   "/users",
@@ -97,6 +97,20 @@ router.post(
 //   courseController.addCourse
 // );
 
+router.post(
+  "/tag/:id/category",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  tagController.createTag
+);
+
+router.get(
+  "/tags",
+
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  tagController.getAllTags
+);
 module.exports = router;
 
 /**

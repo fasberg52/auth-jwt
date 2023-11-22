@@ -11,9 +11,9 @@ const Tag = new EntitySchema({
       generated: true,
       primary: true,
     },
-    data: {
-      type: "json",
-      nullable: false,
+    name: {
+      type: "varchar",
+      nullable: true,
     },
     createdAt: {
       type: "timestamp",
@@ -25,6 +25,13 @@ const Tag = new EntitySchema({
       nullable: true,
     },
   },
+  relations:{
+    category: {
+      type: "many-to-one",
+      target: "Category", // Target entity name
+      joinColumn: { name: "categoryId", referencedColumnName: "id" }, // Specify the join column
+    },
+  }
 });
 
 module.exports = Tag;
