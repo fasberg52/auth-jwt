@@ -1,6 +1,7 @@
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
+const moment = require('jalali-moment');
 
 async function getAllCourse(req, res) {
   try {
@@ -31,8 +32,14 @@ async function getAllCourse(req, res) {
       .take(pageSize)
       .getManyAndCount();
 
+    // Convert createdAt and lastModified to Jalali calendar
+    const jalaliCourses = courses.map(course => ({
+      ...course,
+      createdAt: moment(course.createdAt).format('jYYYY/jMM/jDD'),
+    }));
+
     res.json({
-      courses,
+      courses: jalaliCourses,
       total,
     });
   } catch (error) {

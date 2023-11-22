@@ -292,15 +292,15 @@ async function getUploadPath(req, res) {
     const subdirectory = createSubdirectory();
     const filePath = path.resolve(
       __dirname,
-      `../uploads/${subdirectory}`,
-      upload.path
+      `../uploads/${subdirectory}/${upload.path}`
     );
+    console.log(`filePath >>>> ${filePath}`);
 
     res.status(200).json({
       message: "File path retrieved successfully",
-      id: upload.id, 
+      id: upload.id,
       createdAt: upload.createdAt,
-      
+
       filePath: filePath,
       status: 200,
     });

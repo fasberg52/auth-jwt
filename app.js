@@ -7,10 +7,11 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const multer = require("multer");
 const bodyParser = require("body-parser");
+const path = require("path");
+
 const dotenv = require("dotenv").config();
 const app = express();
 app.disable("x-powered-by");
-
 async function main() {
   try {
     await setupDatabase();
@@ -22,9 +23,8 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
 
     app.use(express.json());
-
+    app.use("/app/uploads", express.static("uploads"));
     app.use(cors());
-
 
     routerConfig(app);
 

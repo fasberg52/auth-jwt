@@ -1,6 +1,6 @@
 // utils/multerUtils.js
 
-const multer = require('multer');
+const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 
@@ -79,3 +79,82 @@ const upload = multer({
 });
 
 module.exports = { upload, createSubdirectory };
+
+// const multer = require('multer');
+// const multerS3 = require('multer-s3');
+// const { S3 } = require('@aws-sdk/client-s3');
+// const path = require('path');
+// const dotenv = require("dotenv").config();
+
+// const config = {
+//   endpoint: process.env.LIARA_ENDPOINT,
+//   accessKeyId: process.env.LIARA_ACCESS_KEY,
+//   secretAccessKey: process.env.LIARA_SECRET_KEY,
+//   region: "default",
+// };
+
+// const s3 = new S3(config);
+
+// let uploadCounter = {};
+
+// const createSubdirectory = () => {
+//   const now = new Date();
+//   const year = now.getFullYear();
+//   const month = (now.getMonth() + 1).toString().padStart(2, '0');
+//   const subdirectory = path.join(year.toString(), month);
+//   return subdirectory;
+// };
+
+// const generateUniqueFilename = (originalname) => {
+//   const baseName = path.basename(originalname, path.extname(originalname));
+//   const extension = path.extname(originalname);
+
+//   if (!uploadCounter[originalname]) {
+//     uploadCounter[originalname] = 1;
+//     return `${baseName}${extension}`;
+//   } else {
+//     const count = uploadCounter[originalname]++;
+//     return `${baseName}-${count}${extension}`;
+//   }
+// };
+
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: process.env.LIARA_BUCKET_NAME,
+//     acl: 'public-read',
+//     key: (req, file, cb) => {
+//       const subdirectory = createSubdirectory();
+//       const filename = generateUniqueFilename(file.originalname);
+//       const key = path.join(subdirectory, filename);
+//       cb(null, key);
+//     },
+//   }),
+//   limits: {
+//     fileSize: 5 * 1024 * 1024,
+//   },
+//   fileFilter: (req, file, cb) => {
+//     const allowedFileTypes = [
+//       'image/jpeg',
+//       'image/png',
+//       'image/webp',
+//       'video/mp4',
+//       'video/avi',
+//     ];
+//     if (file.size > 5 * 1024 * 1024) {
+//       return cb(null, false, {
+//         error: 'File size limit exceeded. Maximum file size is 5 MB.',
+//       });
+//     }
+//     if (allowedFileTypes.includes(file.mimetype)) {
+//       cb(null, true);
+//     } else {
+//       cb(null, false, {
+//         error:
+//           'Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.',
+//       });
+//     }
+//   },
+// });
+
+// module.exports = { upload, createSubdirectory };
