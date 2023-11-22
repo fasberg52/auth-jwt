@@ -14,10 +14,7 @@ const Upload = new EntitySchema({
       type: "varchar",
       nullable: true,
     },
-    content: {
-      type: "bytea", // Use "bytea" for binary data
-      nullable: true,
-    },
+
     createdAt: {
       type: "timestamp",
       createDate: true,

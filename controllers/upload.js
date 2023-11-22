@@ -2,7 +2,6 @@
 
 const { getManager } = require("typeorm");
 const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the path accordingly
-
 const fs = require("fs").promises;
 const path = require("path");
 const Upload = require("../model/Upload");
@@ -44,9 +43,19 @@ async function createUpload(req, res) {
 
     const saveNewUpload = await uploadRepository.save(newUpload);
 
+    const jalaliCreatedAt = moment(saveNewUpload.createdAt).format(
+      "jYYYY/jM/jD HH:mm:ss"
+    );
+
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
-      saveNewUpload,
+      saveNewUpload: {
+        path: saveNewUpload.path,
+        sizeFile: sizeFile,
+        lastModified: saveNewUpload.lastModified,
+        id: saveNewUpload.id,
+        createdAt: jalaliCreatedAt, // Use Jalali date
+      },
       status: 200,
     });
   } catch (error) {
