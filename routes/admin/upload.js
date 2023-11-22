@@ -10,6 +10,7 @@ const {
   updateUpload,
   deleteUpload,
   getUploadPath,
+  removeUploadByPath
 } = require("../../controllers/upload");
 const router = express.Router();
 
@@ -34,6 +35,12 @@ router.delete(
   jwtAuthMiddleware,
   checkRole("admin"),
   deleteUpload
+);
+router.delete(
+  "/upload/path/:path",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  removeUploadByPath
 );
 
 module.exports = router;
