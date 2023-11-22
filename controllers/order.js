@@ -7,7 +7,6 @@ const OrderItems = require("../model/orderItems");
 const axios = require("axios");
 async function checkOutCart(req, res) {
   try {
-    const user = req.user;
     const userPhone = req.user.phone;
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
@@ -15,6 +14,7 @@ async function checkOutCart(req, res) {
     const courseRepository = connection.getRepository(Courses);
     const orderRepository = connection.getRepository(Order);
     const orderItemsRepository = connection.getRepository(OrderItems);
+
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
@@ -38,7 +38,9 @@ async function checkOutCart(req, res) {
         });
 
         if (course) {
-          totalPrice += course.price * cartItem.quantity;
+          // Calculate discounted price if applicable
+          const discountedPrice = course.discountPrice || course.price;
+          totalPrice += discountedPrice * cartItem.quantity;
         }
       }
     }
@@ -55,12 +57,14 @@ async function checkOutCart(req, res) {
 
 
 
+
 async function createPayment(req, res) {
   try {
     const userPhone = req.user.phone;
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
 
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -71,6 +75,24 @@ async function createPayment(req, res) {
     }
 
     const cartItems = await getCartItems(cartItemsRepository, userCart.id);
+
+    // Calculate discounted total price
+    let totalPrice = 0;
+    for (const cartItem of cartItems) {
+      if (cartItem.courseId) {
+        const course = await courseRepository.findOne({
+          where: { id: cartItem.courseId },
+        });
+    
+        if (course) {
+          const discountedPrice = course.discountPrice || course.price;
+          console.log(`Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`);
+          totalPrice += discountedPrice * cartItem.quantity;
+        }
+      }
+    }
+    console.log(`Total Price: ${totalPrice}`);
+
     const savedOrder = await createOrder(userPhone);
     const updatedTotalPrice = await createOrderItemsAndCalculateTotalPrice(
       cartItems,
@@ -110,6 +132,7 @@ async function createPayment(req, res) {
       .json({ error: "An error occurred while preparing the createPayment." });
   }
 }
+
 
 async function getCartItems(cartItemsRepository, cartId) {
   return await cartItemsRepository
