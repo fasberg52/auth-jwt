@@ -46,20 +46,10 @@ async function addCourse(req, res) {
     });
 
     const saveCourse = await courseRepository.save(newCourse);
-
+    console.log(`saveCourse >>> ${saveCourse}`);
     // Prepare a response object
-    const response = {};
 
-    if (saveCourse) {
-      // Send a success message for course creation
-      response.courseMessage = "Course created successfully";
-      response.course = saveCourse;
-    } else {
-      // Send a failure message for course creation
-      response.courseMessage = "Course creation failed";
-    }
-
-    res.status(201).json(response);
+    res.status(201).json({ saveCourse, status: 200 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
     res

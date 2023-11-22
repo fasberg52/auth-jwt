@@ -66,11 +66,7 @@ async function createCartItem(req, res) {
 }
 async function getUserCart(req, res) {
   try {
-    const user = req.user;
-    console.log(user);
-
     const userPhone = req.user.phone;
-    console.log("userPhone: " + userPhone);
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
@@ -79,7 +75,7 @@ async function getUserCart(req, res) {
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
-    console.log(`>>> userCart: ${JSON.stringify(userCart)}`);
+
     if (!userCart) {
       return res.status(404).json({ error: "Cart not found for the user" });
     }
@@ -89,7 +85,7 @@ async function getUserCart(req, res) {
       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
       .getMany();
 
-    console.log(`>>> cartItems: ${JSON.stringify(cartItems)}`);
+    let totalCartPrice = 0;
 
     const cartDataPromises = cartItems.map(async (cartItem) => {
       console.log("Processing cartItem: ", cartItem);
@@ -101,11 +97,19 @@ async function getUserCart(req, res) {
           });
           console.log("Fetched course data: ", course);
           if (course) {
+            // Calculate discounted price if applicable
+            const discountedPrice = course.discountPrice || course.price;
+            const itemPrice = discountedPrice * cartItem.quantity;
+
+            // Accumulate the total price
+            totalCartPrice += itemPrice;
+
             return {
               courseId: course.id,
               quantity: cartItem.quantity,
-              price: course.price,
+              price: discountedPrice,
               title: course.title,
+              itemPrice,
             };
           }
         } catch (error) {
@@ -116,12 +120,14 @@ async function getUserCart(req, res) {
 
     const cartData = await Promise.all(cartDataPromises);
     console.log("Final cartData: ", cartData);
-    res.status(200).json(cartData);
+
+    res.status(200).json({ cartData, totalCartPrice });
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 // async function checkOutCart(req, res) {
 //   try {
 //     const user = req.user; // Retrieve user information from the request
