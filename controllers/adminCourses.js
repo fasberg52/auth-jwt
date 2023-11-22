@@ -3,18 +3,35 @@ const Courses = require("../model/Course");
 const Category = require("../model/Category");
 const { getManager } = require("typeorm");
 const upload = require("../utils/multerUtils");
+const jalaliMoment = require("jalali-moment");
 async function addCourse(req, res) {
   try {
     console.log("Request Body:", req.body);
-    const { title, description, price, videoUrl, categoryId } = req.body;
+    const {
+      title,
+      description,
+      price,
+      videoUrl,
+      categoryId,
+      imageUrl,
+      discountPrice,
+      discountStart,
+      discountExpiration,
+    } = req.body;
 
-    const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
+    // const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
     const category = await getManager()
       .getRepository(Category)
       .findOne({ where: { id: categoryId } });
     if (!category) {
       return res.status(400).json({ error: "Category not found" });
     }
+
+    // Use jalaliMoment to parse the Jalali date strings
+    const startMoment = jalaliMoment(discountStart, "jYYYY-jM-jD");
+    const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jM-jD");
+
+    // Corrected entity name from Courses to Course
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
@@ -23,20 +40,15 @@ async function addCourse(req, res) {
       imageUrl,
       videoUrl,
       category,
+      discountPrice,
+      discountStart: startMoment.toDate(), // Convert Jalali to JavaScript Date
+      discountExpiration: expirationMoment.toDate(), // Convert Jalali to JavaScript Date
     });
+
     const saveCourse = await courseRepository.save(newCourse);
 
     // Prepare a response object
     const response = {};
-
-    if (imageUrl) {
-      // Send a success message for image upload
-      response.imageMessage = "Image uploaded successfully";
-      response.imageUrl = imageUrl;
-    } else {
-      // Send a failure message for image upload
-      response.imageMessage = "Image upload failed";
-    }
 
     if (saveCourse) {
       // Send a success message for course creation

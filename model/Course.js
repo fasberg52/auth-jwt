@@ -24,6 +24,10 @@ const Course = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    discountStart: {
+      type: "timestamp",
+      nullable: true,
+    },
     discountExpiration: {
       type: "timestamp", // Assuming your database supports timestamp
       nullable: true,
