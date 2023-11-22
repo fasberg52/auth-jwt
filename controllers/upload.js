@@ -154,12 +154,13 @@ async function getAllUploads(req, res) {
   }
 }
 
-async function getUploadByPath(req, res) {
+async function removeUploadByPath(req, res) {
   try {
     const uploadPath = req.params.path;
 
     const uploadRepository = getManager().getRepository(Upload);
 
+    // Find the upload by path
     const upload = await uploadRepository.findOne({
       where: { path: uploadPath },
     });
@@ -171,29 +172,25 @@ async function getUploadByPath(req, res) {
       });
     }
 
-    const filePath = path.resolve(__dirname, `../uploads/${upload.path}`);
+    // Remove the file from the uploads folder
+    const subdirectory = createSubdirectory();
+    const filePath = path.resolve(
+      __dirname,
+      `../uploads/${subdirectory}`,
+      upload.path
+    );
 
-    let fileContent;
-    try {
-      fileContent = await fs.readFile(filePath, "utf-8");
-    } catch (error) {
-      fileContent = "Unable to read file content";
-    }
+    await fs.unlink(filePath);
 
-    const uploadWithContent = {
-      ...upload,
-      createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-      updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-      content: fileContent,
-    };
+    // Remove the record from the database
+    await uploadRepository.remove(upload);
 
     res.status(200).json({
-      message: "Upload retrieved successfully",
-      upload: uploadWithContent,
+      message: "فایل با موفقیت پاک شد",
       status: 200,
     });
   } catch (error) {
-    console.error("Error getting upload by Path:", error);
+    console.error("Error removing upload by path:", error);
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
@@ -329,4 +326,5 @@ module.exports = {
   getUploadPath,
   updateUpload,
   deleteUpload,
+  removeUploadByPath,
 };
