@@ -11,6 +11,7 @@ const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
 const Upload = require("../model/Upload");
 const OrderItems = require("../model/orderItems");
+const Tags = require("../model/Tags");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -36,7 +37,8 @@ async function setupDatabase() {
         Chapter,
         Part,
         Upload,
-        OrderItems
+        OrderItems,
+        Tags
       ],
       synchronize: true,
     });
