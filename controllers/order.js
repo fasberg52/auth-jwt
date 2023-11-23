@@ -333,19 +333,27 @@ async function clearUserCart(userPhone) {
 
 async function getAllOrders(req, res) {
   try {
+    const sortBy = req.query.sortBy || "orderDate";
+    const sortOrder = req.query.sortOrder || "ASC";
     const orderRepository = getRepository(Order);
 
     const orders = await orderRepository
-    .createQueryBuilder("order")
-    .leftJoin("order.user", "user")
-    .addSelect(["user.id", "user.firstName", "user.lastName"])
-    .addSelect("order.orderDate")
-    .addSelect(
-      `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
-      "jalaliDate"
-    )
-    .orderBy("order.orderDate", "DESC")
-    .getMany();
+      .createQueryBuilder("order")
+      .leftJoin("order.user", "user")
+      .select([
+        "order.id",
+        "order.orderStatus",
+        "order.orderDate",
+        "order.totalPrice",
+      ])
+      .addSelect(["user.id", "user.firstName", "user.lastName"])
+      .addSelect(`order.${sortBy}`, sortOrder)
+      .addSelect(
+        `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
+        "jalaliDate"
+      )
+      .orderBy(`order.${sortBy}`, sortOrder)
+      .getMany();
     console.log(
       orderRepository
         .createQueryBuilder("order")
