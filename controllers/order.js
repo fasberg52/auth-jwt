@@ -375,10 +375,39 @@ async function getAllOrders(req, res) {
     res.status(500).json({ error: "Internal server error on getAllOrders" });
   }
 }
+
+async function getOrderById(req, res) {
+  try {
+    const orderId = req.params.id;
+    const orderRepository = getRepository(Order);
+    const orderItemsRepository = getRepository(OrderItems);
+
+    const order = await orderRepository
+      .createQueryBuilder("order")
+      .leftJoin("order.user", "user")
+      .leftJoin("order.orderItems", "orderItems")
+      .leftJoinAndSelect("orderItems.course", "course")
+      .select(["order"])
+      .addSelect(["user.firstName", "user.lastName"])
+      .addSelect(["orderItems.courseId", "course.title"])
+      .where("order.id = :orderId", { orderId })
+      .getOne();
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.status(200).json({ order });
+  } catch (error) {
+    console.error(`getOrderById error: ${error}`);
+    res.status(500).json({ error: "Internal server error on getOrderById" });
+  }
+}
 module.exports = {
   checkOutCart,
   createPayment,
   verifyPayment,
   clearUserCart,
   getAllOrders,
+  getOrderById,
 };

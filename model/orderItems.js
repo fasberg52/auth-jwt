@@ -29,6 +29,12 @@ const OrderItem = new EntitySchema({
       joinColumn: true,
       joinColumn: { name: "orderId", referencedColumnName: "id" }, // Join column details
     },
+    course: {
+      target: "Course",
+      type: "many-to-one",
+      inverseSide: "orderItems",
+      joinColumn: { name: "courseId", referencedColumnName: "id" },
+    },
   },
 });
 

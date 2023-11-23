@@ -121,6 +121,13 @@ router.get(
   orderController.getAllOrders
 );
 
+router.get(
+  "/order/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getOrderById
+);
+
 module.exports = router;
 
 /**
