@@ -389,7 +389,12 @@ async function getOrderById(req, res) {
       .leftJoinAndSelect("orderItems.course", "course")
       .select(["order"])
       .addSelect(["user.firstName", "user.lastName"])
-      .addSelect(["orderItems.courseId", "course.title"])
+      .addSelect([
+        "orderItems.courseId",
+        "course.title",
+        "course.price",
+        "course.discountPrice",
+      ])
       .where("order.id = :orderId", { orderId })
       .getOne();
 
