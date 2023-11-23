@@ -91,7 +91,7 @@ async function createPayment(req, res) {
         }
       }
     }
-    console.log(`Total Price: ${totalPrice}`);
+    console.log(`Total Price: ${totalPrice}`);  
 
     const savedOrder = await createOrder(userPhone);
     const updatedTotalPrice = await createOrderItemsAndCalculateTotalPrice(
