@@ -99,6 +99,7 @@ async function getUserCart(req, res) {
           if (course) {
             // Calculate discounted price if applicable
             const discountedPrice = course.discountPrice || course.price;
+            console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
             // Accumulate the total price

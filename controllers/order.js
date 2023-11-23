@@ -5,6 +5,8 @@ const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const OrderItems = require("../model/orderItems");
 const axios = require("axios");
+const moment = require("jalali-moment");
+
 async function checkOutCart(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -55,9 +57,6 @@ async function checkOutCart(req, res) {
   }
 }
 
-
-
-
 async function createPayment(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -75,23 +74,6 @@ async function createPayment(req, res) {
     }
 
     const cartItems = await getCartItems(cartItemsRepository, userCart.id);
-
-    // Calculate discounted total price
-    let totalPrice = 0;
-    for (const cartItem of cartItems) {
-      if (cartItem.courseId) {
-        const course = await courseRepository.findOne({
-          where: { id: cartItem.courseId },
-        });
-    
-        if (course) {
-          const discountedPrice = course.discountPrice || course.price;
-          console.log(`Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`);
-          totalPrice += discountedPrice * cartItem.quantity;
-        }
-      }
-    }
-    console.log(`Total Price: ${totalPrice}`);  
 
     const savedOrder = await createOrder(userPhone);
     const updatedTotalPrice = await createOrderItemsAndCalculateTotalPrice(
@@ -133,7 +115,6 @@ async function createPayment(req, res) {
   }
 }
 
-
 async function getCartItems(cartItemsRepository, cartId) {
   return await cartItemsRepository
     .createQueryBuilder("cartItem")
@@ -154,14 +135,20 @@ async function createOrder(userPhone) {
 
 async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
   const orderItemsRepository = getRepository(OrderItems);
+  const courseRepository = getRepository(Courses);
   let totalPrice = 0;
-
   for (const cartItem of cartItems) {
     if (cartItem.courseId) {
-      const course = await getCourseById(cartItem.courseId);
+      const course = await courseRepository.findOne({
+        where: { id: cartItem.courseId },
+      });
 
       if (course) {
-        totalPrice += course.price * cartItem.quantity;
+        const discountedPrice = course.discountPrice || course.price;
+        console.log(
+          `Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`
+        );
+        totalPrice += discountedPrice * cartItem.quantity;
         const newOrderItem = orderItemsRepository.create({
           order: savedOrder,
           courseId: cartItem.courseId,
@@ -171,11 +158,12 @@ async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
       }
     }
   }
+  console.log(`Total Price: ${totalPrice}`);
 
   savedOrder.totalPrice = totalPrice;
   const orderRepository = getRepository(Order);
   await orderRepository.save(savedOrder);
-
+  console.log(totalPrice);
   return totalPrice;
 }
 
@@ -260,41 +248,52 @@ async function verifyPayment(req, res) {
         const orderRepository = getManager().getRepository(Order);
         const phone = req.query.Phone || "UNKNOWN";
 
-        // Find the existing order with the orderId
-        const newOrder = orderRepository.create({
-          userPhone: phone,
-          totalPrice: req.query.Amount,
-          orderStatus: "success",
-          refId: refID,
+        const existingOrder = await orderRepository.findOne({
+          where: { id: OrderId, userPhone: phone, orderStatus: "pending" },
         });
+        if (!existingOrder) {
+          return res
+            .status(400)
+            .json({ error: "Invalid order or order is not pending" });
+        }
+        existingOrder.userPhone = phone;
+        existingOrder.totalPrice = req.query.Amount;
+        existingOrder.orderStatus = "success";
+        existingOrder.refId = refID;
+        const updateOrder = await orderRepository.save(existingOrder);
+        // Find the existing order with the orderId
 
-        const updatedOrder = await orderRepository.save(newOrder);
         console.log(`existingOrder >> ${existingOrder}`);
-        console.log(`Order updated successfully. Order ID: ${updatedOrder.id}`);
+        console.log(`Order updated successfully. Order ID: ${updateOrder.id}`);
 
         // Clear the user's shopping cart (You can implement this function)
         //await clearUserCart(userPhone);
 
         return res
           .status(200)
-          .json({ message: "Payment verification succeeded", refID });
+          .json({ message: "Payment verification succeeded", updateOrder });
       }
     } else if (Status === "NOK") {
       // Payment was not successful
       console.log("hereeeee");
       const orderRepository = getManager().getRepository(Order);
       const phone = req.query.Phone || "UNKNOWN";
+
+      const existingOrder = await orderRepository.findOne({
+        where: { id: OrderId, userPhone: phone, orderStatus: "pending" },
+      });
+      if (!existingOrder) {
+        return res
+          .status(400)
+          .json({ error: "Invalid order or order is not pending" });
+      }
+      existingOrder.userPhone = phone;
+      existingOrder.totalPrice = req.query.Amount;
+      existingOrder.orderStatus = "cancelled";
+      const updateOrder = await orderRepository.save(existingOrder);
       console.log("phone : " + phone);
 
-      const newOrder = orderRepository.create({
-        userPhone: phone,
-        totalPrice: req.query.Amount,
-        orderStatus: "cancelled",
-      });
-
-      // Save the new order to the database
-      const updatedOrder = await orderRepository.save(newOrder);
-      console.log(`Order created successfully. Order ID: ${updatedOrder.id}`);
+      console.log(`Order created successfully. Order ID: ${updateOrder.id}`);
       return res.status(400).json({ error: "Payment was not successful" });
     } else {
       // Handle other Status values if needed
@@ -331,9 +330,47 @@ async function clearUserCart(userPhone) {
     await cartRepository.remove(userCart);
   }
 }
+
+async function getAllOrders(req, res) {
+  try {
+    const orderRepository = getRepository(Order);
+
+    const orders = await orderRepository
+    .createQueryBuilder("order")
+    .leftJoin("order.user", "user")
+    .addSelect(["user.id", "user.firstName", "user.lastName"])
+    .addSelect("order.orderDate")
+    .addSelect(
+      `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
+      "jalaliDate"
+    )
+    .orderBy("order.orderDate", "DESC")
+    .getMany();
+    console.log(
+      orderRepository
+        .createQueryBuilder("order")
+        .leftJoinAndSelect("order.user", "user")
+        .addSelect(["user.firstName", "user.lastName"])
+        .addSelect("order.orderDate")
+        .addSelect(
+          `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
+          "jalaliDate"
+        )
+        .orderBy("order.orderDate", "DESC")
+        .getSql()
+    );
+    const totalCount = await orderRepository.count();
+
+    res.status(200).json({ orders, totalCount });
+  } catch (error) {
+    console.error(`getAllOrders error: ${error}`);
+    res.status(500).json({ error: "Internal server error on getAllOrders" });
+  }
+}
 module.exports = {
   checkOutCart,
   createPayment,
   verifyPayment,
   clearUserCart,
+  getAllOrders,
 };

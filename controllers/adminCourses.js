@@ -41,8 +41,8 @@ async function addCourse(req, res) {
       videoUrl,
       category,
       discountPrice,
-      discountStart: startMoment.toDate(), // Convert Jalali to JavaScript Date
-      discountExpiration: expirationMoment.toDate(), // Convert Jalali to JavaScript Date
+      discountStart: startMoment.toDate(), 
+      discountExpiration: expirationMoment.toDate(), 
     });
 
     const saveCourse = await courseRepository.save(newCourse);

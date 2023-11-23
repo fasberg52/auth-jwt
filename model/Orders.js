@@ -35,9 +35,10 @@ const Order = new EntitySchema({
   },
   relations: {
     user: {
-      target: User,
       type: "many-to-one",
-      joinColumn: true,
+      target: User,
+
+      joinColumn: { name: "userPhone", referencedColumnName: "phone" },
     },
     orderItems: {
       type: "one-to-many",

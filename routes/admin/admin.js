@@ -7,6 +7,8 @@ const usersController = require("../../controllers/admin");
 const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
 const tagController = require("../../controllers/tag");
+const orderController = require("../../controllers/order");
+
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
@@ -111,6 +113,14 @@ router.get(
   checkRole("admin"),
   tagController.getAllTags
 );
+
+router.get(
+  "/orders",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getAllOrders
+);
+
 module.exports = router;
 
 /**
