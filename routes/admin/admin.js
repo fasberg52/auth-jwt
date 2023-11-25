@@ -168,6 +168,18 @@ module.exports = router;
  *                 type: string
  *                 format: date
  *                 description: The expiration date of the discount in Jalali calendar (YYYY-MM-DD)
+ *           examples:
+ *             application/json:
+ *               value:
+ *                 title: "Example Course"
+ *                 description: "This is an example course."
+ *                 price: 19.99
+ *                 videoUrl: "https://example.com/video"
+ *                 categoryId: "exampleCategoryId"
+ *                 imageUrl: "https://example.com/image"
+ *                 discountPrice: 15.99
+ *                 discountStart: "1400-01-01"
+ *                 discountExpiration: "1400-02-01"
  *     responses:
  *       '201':
  *         description: دوره با موفقیت ایجاد شد
@@ -183,9 +195,9 @@ module.exports = router;
  *                   type: number
  *                   description: The HTTP status code (200)
  *       '400':
- *         description: Category not found or other client errors
+ *         description: دسته بندی پیدا نشد 
  *       '500':
- *         description: Internal server error on adding a course
+ *         description: Internal server error 
  */
 
 /**
@@ -222,9 +234,16 @@ module.exports = router;
  *               videoUrl:
  *                 type: string
  *                 description: The updated URL of the course video
+ *           examples:
+ *             application/json:
+ *               value:
+ *                 title: "Updated Course Title"
+ *                 description: "This is an updated course description."
+ *                 price: 29.99
+ *                 videoUrl: "https://updated-example.com/video"
  *     responses:
  *       '200':
- *         description: Course edited successfully
+ *         description: دوره بروز رسانی شد
  *         content:
  *           application/json:
  *             schema:
@@ -234,10 +253,11 @@ module.exports = router;
  *                   type: object
  *                   description: The updated course information
  *       '404':
- *         description: Course not found
+ *         description: دوره پیدا نشد
  *       '500':
- *         description: Internal server error on editing a course
+ *         description: Internal server error
  */
+
 
 /**
  * @swagger
@@ -256,7 +276,7 @@ module.exports = router;
  *         description: The ID of the course to be deleted
  *     responses:
  *       '200':
- *         description: Course deleted successfully
+ *         description: دوره پاک شد
  *         content:
  *           application/json:
  *             schema:
@@ -266,7 +286,7 @@ module.exports = router;
  *                   type: string
  *                   description: Success message
  *       '404':
- *         description: Course not found
+ *         description: دوره پیدا نشد
  *       '500':
- *         description: Internal server error on deleting a course
+ *         description: Internal server error
  */

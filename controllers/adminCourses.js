@@ -90,7 +90,9 @@ async function editCourse(req, res) {
       existingCourse.lastModified = new Date();
       const editCourse = await courseRepository.save(existingCourse);
 
-      res.json(editCourse);
+      res
+        .status(200)
+        .json({ message: "دوره بروز رسانی شد", editCourse, status: 200 });
     } else {
       // Move the 404 response here
       res.status(404).json({ error: "دوره ای پیدا نشد" });

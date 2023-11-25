@@ -5,9 +5,9 @@ const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-const multer = require("multer");
+
 const bodyParser = require("body-parser");
-const path = require("path");
+
 
 const dotenv = require("dotenv").config();
 const app = express();
