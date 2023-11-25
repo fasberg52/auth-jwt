@@ -11,18 +11,13 @@ async function createUpload(req, res) {
     if (!req.file) {
       // Check if file upload was successful
       return res.status(400).json({
-        message: "File upload failed",
+        message: "آپلود شکست خورد",
         status: 400,
       });
     }
 
     const sizeFile = req.file.size;
-    console.log(`sizeFile ${sizeFile}`);
-    if (sizeFile > 5 * 1024 * 1024) {
-      res.status(400).json({
-        error: "حداکثر تا 5 مگابایت آپلود",
-      });
-    }
+
     const originalFilename = req.file.originalname;
 
     const uploadRepository = getManager().getRepository(Upload);
@@ -110,37 +105,40 @@ async function createUpload(req, res) {
 async function getAllUploads(req, res) {
   try {
     const uploadRepository = getManager().getRepository(Upload);
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder || "DESC";
 
     const page = req.query.page || 1;
     const pageSize = req.query.pageSize || 10;
-
     const skip = (page - 1) * pageSize;
 
     const [uploads, totalCount] = await uploadRepository.findAndCount({
       skip,
       take: pageSize,
+      order: {
+        [sortBy]: sortOrder,
+      },
     });
 
     // Convert dates to Jalali format and include file paths
     const uploadsData = uploads.map((upload) => {
       const subdirectory = createSubdirectory();
-      const filePath = path.resolve(
-        __dirname,
-        `../uploads/${subdirectory}`,
-        upload.path
-      );
+
+      // Check if upload.path is null before resolving the path
+      const filePath = upload.path
+        ? path.resolve(__dirname, `../uploads/${subdirectory}`, upload.path)
+        : null;
 
       return {
         id: upload.id,
         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        // Add more date fields if necessary
-        filePath: filePath,
+        filePath: filePath, // This may be null if upload.path is null
       };
     });
 
     res.status(200).json({
-      message: "All uploads retrieved successfully",
+      //  message: "All uploads retrieved successfully",
       uploads: uploadsData,
       totalCount,
       status: 200,
@@ -167,7 +165,7 @@ async function removeUploadByPath(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -208,7 +206,7 @@ async function getUploadById(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -220,7 +218,7 @@ async function getUploadById(req, res) {
     };
 
     res.status(200).json({
-      message: "Upload retrieved successfully",
+      //    message: "Upload retrieved successfully",
       upload: uploadWithJalaliDates,
       status: 200,
     });
@@ -289,7 +287,7 @@ async function getUploadPath(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -303,7 +301,7 @@ async function getUploadPath(req, res) {
     console.log(`filePath >>>> ${filePath}`);
 
     res.status(200).json({
-      message: "File path retrieved successfully",
+      // message: "File path retrieved successfully",
       id: upload.id,
       createdAt: upload.createdAt,
 

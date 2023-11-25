@@ -35,6 +35,7 @@ async function getAllCourse(req, res) {
     const jalaliCourses = courses.map((course) => ({
       ...course,
       createdAt: convertToJalaliDate(course.createdAt),
+      lastModified: convertToJalaliDate(course.lastModified),
     }));
 
     res.json({
@@ -65,7 +66,7 @@ async function getProductById(req, res) {
     console.log(`>>>>${error}`);
     res
       .status(500)
-      .json({ error: "An error occurred while creating the getProductById." });
+      .json({ error: "An error occurred while creating the getProductByIdd." });
   }
 }
 

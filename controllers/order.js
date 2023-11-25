@@ -175,7 +175,7 @@ async function getCourseById(courseId) {
 }
 
 function buildCallbackUrl(totalPrice, userPhone, orderId) {
-  return `http://localhost:3000/verify-payment?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
+  return `http://localhost:3000/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
 }
 
 function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
@@ -333,19 +333,27 @@ async function clearUserCart(userPhone) {
 
 async function getAllOrders(req, res) {
   try {
+    const sortBy = req.query.sortBy || "orderDate";
+    const sortOrder = req.query.sortOrder || "ASC";
     const orderRepository = getRepository(Order);
 
     const orders = await orderRepository
-    .createQueryBuilder("order")
-    .leftJoin("order.user", "user")
-    .addSelect(["user.id", "user.firstName", "user.lastName"])
-    .addSelect("order.orderDate")
-    .addSelect(
-      `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
-      "jalaliDate"
-    )
-    .orderBy("order.orderDate", "DESC")
-    .getMany();
+      .createQueryBuilder("order")
+      .leftJoin("order.user", "user")
+      .select([
+        "order.id",
+        "order.orderStatus",
+        "order.orderDate",
+        "order.totalPrice",
+      ])
+      .addSelect(["user.id", "user.firstName", "user.lastName"])
+      .addSelect(`order.${sortBy}`, sortOrder)
+      .addSelect(
+        `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
+        "jalaliDate"
+      )
+      .orderBy(`order.${sortBy}`, sortOrder)
+      .getMany();
     console.log(
       orderRepository
         .createQueryBuilder("order")
@@ -367,10 +375,44 @@ async function getAllOrders(req, res) {
     res.status(500).json({ error: "Internal server error on getAllOrders" });
   }
 }
+
+async function getOrderById(req, res) {
+  try {
+    const orderId = req.params.id;
+    const orderRepository = getRepository(Order);
+    const orderItemsRepository = getRepository(OrderItems);
+
+    const order = await orderRepository
+      .createQueryBuilder("order")
+      .leftJoin("order.user", "user")
+      .leftJoin("order.orderItems", "orderItems")
+      .leftJoinAndSelect("orderItems.course", "course")
+      .select(["order"])
+      .addSelect(["user.firstName", "user.lastName"])
+      .addSelect([
+        "orderItems.courseId",
+        "course.title",
+        "course.price",
+        "course.discountPrice",
+      ])
+      .where("order.id = :orderId", { orderId })
+      .getOne();
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    res.status(200).json({ order });
+  } catch (error) {
+    console.error(`getOrderById error: ${error}`);
+    res.status(500).json({ error: "Internal server error on getOrderById" });
+  }
+}
 module.exports = {
   checkOutCart,
   createPayment,
   verifyPayment,
   clearUserCart,
   getAllOrders,
+  getOrderById,
 };

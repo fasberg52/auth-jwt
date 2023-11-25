@@ -10,8 +10,9 @@ const {
   updateUpload,
   deleteUpload,
   getUploadPath,
-  removeUploadByPath
+  removeUploadByPath,
 } = require("../../controllers/upload");
+const { handleMulterErrors } = require("../../middleware/multerMiddleware");
 const router = express.Router();
 
 router.post(
@@ -19,6 +20,7 @@ router.post(
   jwtAuthMiddleware,
   checkRole("admin"),
   upload.single("path"),
+  handleMulterErrors,
   createUpload
 );
 
@@ -26,7 +28,6 @@ router.get("/upload", jwtAuthMiddleware, checkRole("admin"), getAllUploads);
 
 router.get("/upload/:id", jwtAuthMiddleware, checkRole("admin"), getUploadById);
 router.get("/upload/path/:path", getUploadPath);
-
 
 router.put("/upload", jwtAuthMiddleware, checkRole("admin"), updateUpload);
 

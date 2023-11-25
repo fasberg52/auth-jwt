@@ -40,20 +40,20 @@ router.delete(
 );
 // admin route course
 router.post(
-  "/add/newcourse",
+  "/course",
   jwtAuthMiddleware,
   checkRole("admin"),
   upload.single("courseImage"),
   courseController.addCourse
 );
 router.put(
-  "/editcourse/:id",
+  "/course/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
   courseController.editCourse
 );
 router.delete(
-  "/deletecourse/:id",
+  "/course/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
   courseController.deleteCourse
@@ -93,12 +93,6 @@ router.post(
   categoryController.createCategory
 );
 
-// router.post(
-//   "/uploads",
-//   upload.single("courseImage"),
-//   courseController.addCourse
-// );
-
 router.post(
   "/tag/:id/category",
   jwtAuthMiddleware,
@@ -121,280 +115,178 @@ router.get(
   orderController.getAllOrders
 );
 
+router.get(
+  "/order/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getOrderById
+);
+
 module.exports = router;
 
 /**
  * @swagger
- * /admin/allusers:
- *   get:
- *     summary: Get all users
- *     description: Retrieve a list of all users.
- *     tags:
- *       - Admin
+ * /course:
+ *   post:
+ *     summary: Add a new course
+ *     tags: [Admin Courses]
  *     security:
- *       - jwt: []
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 users:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/User'  # Define the User schema in components
- *       401:
- *         description: Unauthorized
- */
-
-/**
- * @swagger
- * /admin/user/{phone}:
- *   get:
- *     summary: Get user by phone
- *     description: Retrieve a user by phone number.
- *     tags:
- *       - Admin
- *     parameters:
- *       - in: path
- *         name: phone
- *         description: Phone number of the user
- *         required: true
- *         schema:
- *           type: string
- *     security:
- *       - jwt: []
- *     responses:
- *       200:
- *         description: Successful response
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
- *       401:
- *         description: Unauthorized
- */
-
-/**
- * @swagger
- * /admin/update/{phone}:
- *   put:
- *     summary: Update user by phone
- *     description: Update a user's information by phone number.
- *     tags:
- *       - Admin
- *     parameters:
- *       - in: path
- *         name: phone
- *         description: Phone number of the user
- *         required: true
- *         schema:
- *           type: string
- *     security:
- *       - jwt: []
+ *       - bearerAuth: []
  *     requestBody:
- *       description: Updated user information
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'  # Define the User schema in components
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The title of the course
+ *               description:
+ *                 type: string
+ *                 description: The description of the course
+ *               price:
+ *                 type: number
+ *                 description: The price of the course
+ *               videoUrl:
+ *                 type: string
+ *                 description: The URL of the course video
+ *               categoryId:
+ *                 type: string
+ *                 description: The ID of the category for the course
+ *               imageUrl:
+ *                 type: string
+ *                 description: The URL of the course image
+ *               discountPrice:
+ *                 type: number
+ *                 description: The discounted price of the course
+ *               discountStart:
+ *                 type: string
+ *                 format: date
+ *                 description: The start date of the discount in Jalali calendar (YYYY-MM-DD)
+ *               discountExpiration:
+ *                 type: string
+ *                 format: date
+ *                 description: The expiration date of the discount in Jalali calendar (YYYY-MM-DD)
+ *           examples:
+ *             application/json:
+ *               value:
+ *                 title: "Example Course"
+ *                 description: "This is an example course."
+ *                 price: 19.99
+ *                 videoUrl: "https://example.com/video"
+ *                 categoryId: "exampleCategoryId"
+ *                 imageUrl: "https://example.com/image"
+ *                 discountPrice: 15.99
+ *                 discountStart: "1400-01-01"
+ *                 discountExpiration: "1400-02-01"
  *     responses:
- *       200:
- *         description: User updated successfully
+ *       '201':
+ *         description: دوره با موفقیت ایجاد شد
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'  # Define the User schema in components
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
+ *               type: object
+ *               properties:
+ *                 saveCourse:
+ *                   type: object
+ *                   description: The saved course information
+ *                 status:
+ *                   type: number
+ *                   description: The HTTP status code (200)
+ *       '400':
+ *         description: دسته بندی پیدا نشد 
+ *       '500':
+ *         description: Internal server error 
  */
 
 /**
  * @swagger
- * /admin/delete/{phone}:
- *   delete:
- *     summary: Delete user by phone
- *     description: Delete a user by phone number.
- *     tags:
- *       - Admin
+ * /course/{id}:
+ *   put:
+ *     summary: Edit an existing course
+ *     tags: [Admin Courses]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: phone
- *         description: Phone number of the user to delete
- *         required: true
+ *         name: id
  *         schema:
  *           type: string
- *     security:
- *       - jwt: []
- *     responses:
- *       204:
- *         description: User deleted successfully
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: User not found
- */
-
-/**
- * @swagger
- * /admin/create-category:
- *   post:
- *     summary: Create a new category
- *     description: Create a new category with a name, description, and an optional icon.
- *     tags:
- *       - Categories
- *     parameters:
- *       - name: body
- *         in: body
  *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             name:
- *               type: string
- *             description:
- *               type: string
- *         example:
- *           name: "Category Name"
- *           description: "Category Description"
- *       - name: icon
- *         in: formData
- *         type: file
- *         required: false
- *         description: Category icon (optional)
+ *         description: The ID of the course to be edited
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: The updated title of the course
+ *               description:
+ *                 type: string
+ *                 description: The updated description of the course
+ *               price:
+ *                 type: number
+ *                 description: The updated price of the course
+ *               videoUrl:
+ *                 type: string
+ *                 description: The updated URL of the course video
+ *           examples:
+ *             application/json:
+ *               value:
+ *                 title: "Updated Course Title"
+ *                 description: "This is an updated course description."
+ *                 price: 29.99
+ *                 videoUrl: "https://updated-example.com/video"
  *     responses:
- *       201:
- *         description: Category created successfully
- *         schema:
- *           type: object
- *           properties:
- *             message:
- *               type: string
- *             savedCategory:
+ *       '200':
+ *         description: دوره بروز رسانی شد
+ *         content:
+ *           application/json:
+ *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
- *                 name:
- *                   type: string
- *                 description:
- *                   type: string
- *                 icon:
- *                   type: string
- *             status:
- *               type: integer
- *         examples:
- *           success:
- *             value: { message: "success", savedCategory: { id: 1, name: "Category Name", description: "Category Description", icon: "icon_filename.jpg" }, status: 201 }
- *       500:
- *         description: Internal Server Error
- *         schema:
- *           type: object
- *           properties:
- *             error:
- *               type: string
- *         examples:
- *           error:
- *             value: { error: "An error occurred while creating the category." }
- *     security:
- *       - jwt_auth: []
- *
- * securityDefinitions:
- *   jwt_auth:
- *     type: apiKey
- *     name: Authorization
- *     in: header
+ *                 editCourse:
+ *                   type: object
+ *                   description: The updated course information
+ *       '404':
+ *         description: دوره پیدا نشد
+ *       '500':
+ *         description: Internal server error
  */
+
 
 /**
  * @swagger
- * /admin/update-category/{categoryId}:
- *   put:
- *     summary: Update a category
- *     description: Update an existing category with a new name and description, and an optional icon.
- *     tags:
- *       - Categories
- *     consumes:
- *       - multipart/form-data
- *     produces:
- *       - application/json
+ * /course/{id}:
+ *   delete:
+ *     summary: Delete an existing course
+ *     tags: [Admin Courses]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: categoryId
- *         type: integer
- *         required: true
- *         description: ID of the category to update
- *       - in: formData
- *         name: name
- *         type: string
- *         required: true
- *         description: New name for the category
- *       - in: formData
- *         name: description
- *         type: string
- *         required: true
- *         description: New description for the category
- *       - in: formData
- *         name: icon
- *         type: file
- *         required: false
- *         description: Category icon (optional)
- *     responses:
- *       200:
- *         description: Category updated successfully
+ *         name: id
  *         schema:
- *           type: object
- *           properties:
- *             message:
- *               type: string
- *             updatedCategory:
+ *           type: string
+ *         required: true
+ *         description: The ID of the course to be deleted
+ *     responses:
+ *       '200':
+ *         description: دوره پاک شد
+ *         content:
+ *           application/json:
+ *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
- *                 name:
+ *                 message:
  *                   type: string
- *                 description:
- *                   type: string
- *                 icon:
- *                   type: string
- *             status:
- *               type: integer
- *         examples:
- *           success:
- *             value: { message: "success", updatedCategory: { id: 1, name: "Updated Category Name", description: "Updated Category Description", icon: "updated_icon.jpg" }, status: 200 }
- *       404:
- *         description: Category not found
- *         schema:
- *           type: object
- *           properties:
- *             error:
- *               type: string
- *             status:
- *               type: integer
- *         examples:
- *           not_found:
- *             value: { error: "Category not found.", status: 404 }
- *       500:
- *         description: Internal Server Error
- *         schema:
- *           type: object
- *           properties:
- *             error:
- *               type: string
- *         examples:
- *           error:
- *             value: { error: "An error occurred while updating the category." }
- *     security:
- *       - jwt_auth: []
- *
- * securityDefinitions:
- *   jwt_auth:
- *     type: apiKey
- *     name: Authorization
- *     in: header
+ *                   description: Success message
+ *       '404':
+ *         description: دوره پیدا نشد
+ *       '500':
+ *         description: Internal server error
  */

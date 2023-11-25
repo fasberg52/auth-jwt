@@ -7,7 +7,7 @@ function createToken(user) {
     { sub: user.id, lastLogin: user.lastLogin, phone: user.phone, role: user.roles },
     process.env.JWT_SECRET,
     {
-      expiresIn: "24h",
+      expiresIn: "72h",
     }
   );
 }
