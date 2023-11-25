@@ -110,32 +110,35 @@ async function createUpload(req, res) {
 async function getAllUploads(req, res) {
   try {
     const uploadRepository = getManager().getRepository(Upload);
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder || "DESC";
 
     const page = req.query.page || 1;
     const pageSize = req.query.pageSize || 10;
-
     const skip = (page - 1) * pageSize;
 
     const [uploads, totalCount] = await uploadRepository.findAndCount({
       skip,
       take: pageSize,
+      order: {
+        [sortBy]: sortOrder,
+      },
     });
 
     // Convert dates to Jalali format and include file paths
     const uploadsData = uploads.map((upload) => {
       const subdirectory = createSubdirectory();
-      const filePath = path.resolve(
-        __dirname,
-        `../uploads/${subdirectory}`,
-        upload.path
-      );
+      
+      // Check if upload.path is null before resolving the path
+      const filePath = upload.path
+        ? path.resolve(__dirname, `../uploads/${subdirectory}`, upload.path)
+        : null;
 
       return {
         id: upload.id,
         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        // Add more date fields if necessary
-        filePath: filePath,
+        filePath: filePath, // This may be null if upload.path is null
       };
     });
 
@@ -153,6 +156,7 @@ async function getAllUploads(req, res) {
     });
   }
 }
+
 
 async function removeUploadByPath(req, res) {
   try {

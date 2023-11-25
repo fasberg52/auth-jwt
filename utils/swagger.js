@@ -8,7 +8,7 @@ const options = {
       description: "State One Project",
     },
   },
-  apis: ["./routes/admin/admin.js","./routes/auth/auth.js","./routes/shop/*.js"], // Make the path absolute
+  apis: ["./routes/admin/*.js","./routes/auth/*.js","./routes/shop/*.js"], // Make the path absolute
 };
 
 const swaggerSpec = swaggerJSDoc(options);

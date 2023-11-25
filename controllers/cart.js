@@ -4,18 +4,6 @@ const { getManager, getConnection } = require("typeorm");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
-const Order = require("../model/Orders");
-const OrderItems = require("../model/orderItems");
-const axios = require("axios");
-
-const ZARINPAL_API = "https://api.zarinpal.com/pg/v4/payment/request.json";
-const ZARINPAL_VERIFICATION_API =
-  "https://api.zarinpal.com/pg/v4/payment/verify.json";
-
-// var zarinpal = ZarinpalCheckout.create(
-//   "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-//   true
-// );
 
 async function createCartItem(req, res) {
   try {
@@ -58,7 +46,7 @@ async function createCartItem(req, res) {
       await cartItemsRepository.save(newCartItem);
     }
 
-    res.status(200).json({ message: "Item added to cart successfully" });
+    res.status(201).json({ message: "آیتم با موفقیت اضافه شد" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -122,7 +110,7 @@ async function getUserCart(req, res) {
     const cartData = await Promise.all(cartDataPromises);
     console.log("Final cartData: ", cartData);
 
-    res.status(200).json({ cartData, totalCartPrice });
+    res.status(200).json({ cartData, totalCartPrice, status: 200 });
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
@@ -178,7 +166,6 @@ async function getUserCart(req, res) {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // }
-
 
 // async function saveOrder(req, res) {
 //   try {
@@ -245,19 +232,17 @@ async function removeCartItem(req, res) {
     });
 
     if (!cartItemToRemove) {
-      return res.status(404).json({ error: "Cart item not found" });
+      return res.status(404).json({ error: "آیتم های سبدخرید پیدا نشد" });
     }
 
     await cartItemsRepository.remove(cartItemToRemove);
 
-    res.status(200).json({ message: "Cart item removed successfully" });
+    res.status(200).json({ message: "آیتم حذف شد" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-
 
 module.exports = {
   createCartItem,
@@ -265,5 +250,4 @@ module.exports = {
   removeCartItem,
   // saveOrder,
   // orderDetails,
-  
 };
