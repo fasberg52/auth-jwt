@@ -4,24 +4,52 @@ const { getManager } = require("typeorm");
 const Category = require("../model/Category");
 const fs = require("fs");
 const multer = require("multer");
+const moment = require("jalali-moment");
 const upload = multer({ dest: "uploads/" });
 
 async function getAllCategories(req, res) {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const skip = (page - 1) * pageSize;
+
+    const sortBy = req.query.sortBy || "id";
+    const sortOrder = req.query.sortOrder || "DESC";
+
     const categoryRepository = getManager().getRepository(Category);
-    const categories = await categoryRepository.find();
-    res.json(categories);
+    const [categories, totalCount] = await categoryRepository.findAndCount({
+      skip,
+      take: pageSize,
+      order: {
+        [sortBy]: sortOrder,
+      },
+    });
+
+    const data = categories.map((category) => {
+      return {
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        icon: category.icon,
+        createdAt: category.createdAt
+          ? moment(category.createdAt).format("jYYYY/jMM/jDD")
+          : null,
+        lastModified: category.lastModified
+          ? moment(category.lastModified).format("jYYYY/jMM/jDD")
+          : null,
+      };
+    });
+
+    res.status(200).json({ data, totalCount, status: 200 });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching categories." });
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
 async function createCategory(req, res) {
   try {
-    const { name, description } = req.body;
-    const icon = req.file ? req.file.filename : null;
+    const { name, description, icon } = req.body;
     const categoryRepository = getManager().getRepository(Category);
     const newCategory = categoryRepository.create({ name, description, icon });
     const savedCategory = await categoryRepository.save(newCategory);
