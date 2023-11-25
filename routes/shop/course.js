@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 router.get("/allcourses", courseController.getAllCourse);
-router.get("/onecourse/:courseId", courseController.getProductById);
+router.get("/:courseId", courseController.getProductById);
 router.get("/all-category", categoryController.getAllCategories);
 
 module.exports = router;

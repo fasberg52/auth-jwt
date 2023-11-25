@@ -24,7 +24,7 @@ async function addCourse(req, res) {
       .getRepository(Category)
       .findOne({ where: { id: categoryId } });
     if (!category) {
-      return res.status(400).json({ error: "Category not found" });
+      return res.status(400).json({ error: "دسته بندی پیدا نشد" });
     }
 
     // Use jalaliMoment to parse the Jalali date strings
@@ -41,20 +41,20 @@ async function addCourse(req, res) {
       videoUrl,
       category,
       discountPrice,
-      discountStart: startMoment.toDate(), 
-      discountExpiration: expirationMoment.toDate(), 
+      discountStart: startMoment.toDate(),
+      discountExpiration: expirationMoment.toDate(),
     });
 
     const saveCourse = await courseRepository.save(newCourse);
     console.log(`saveCourse >>> ${saveCourse}`);
     // Prepare a response object
 
-    res.status(201).json({ saveCourse, status: 200 });
+    res
+      .status(201)
+      .json({ message: "دوره با موفقیت ایجاد شد", saveCourse, status: 200 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the Course." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -93,13 +93,11 @@ async function editCourse(req, res) {
       res.json(editCourse);
     } else {
       // Move the 404 response here
-      res.status(404).json({ error: "Course not found." });
+      res.status(404).json({ error: "دوره ای پیدا نشد" });
     }
   } catch (error) {
     console.log(`Error editCourse: ${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while editing the course." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -112,14 +110,12 @@ async function deleteCourse(req, res) {
     });
     if (existingCourse) {
       await courseRepository.remove(existingCourse);
-      res.json({ message: "course deleted successfully." });
+      res.status(200).json({ message: "دوره پاک شد" });
     } else {
-      res.status(404).json({ error: "course not found." });
+      res.status(404).json({ error: "دوره ای پیدا نشد" });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while editing the deleteCourse." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
