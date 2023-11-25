@@ -11,18 +11,13 @@ async function createUpload(req, res) {
     if (!req.file) {
       // Check if file upload was successful
       return res.status(400).json({
-        message: "File upload failed",
+        message: "آپلود شکست خورد",
         status: 400,
       });
     }
 
     const sizeFile = req.file.size;
-    console.log(`sizeFile ${sizeFile}`);
-    if (sizeFile > 5 * 1024 * 1024) {
-      res.status(400).json({
-        error: "حداکثر تا 5 مگابایت آپلود",
-      });
-    }
+
     const originalFilename = req.file.originalname;
 
     const uploadRepository = getManager().getRepository(Upload);
@@ -128,7 +123,7 @@ async function getAllUploads(req, res) {
     // Convert dates to Jalali format and include file paths
     const uploadsData = uploads.map((upload) => {
       const subdirectory = createSubdirectory();
-      
+
       // Check if upload.path is null before resolving the path
       const filePath = upload.path
         ? path.resolve(__dirname, `../uploads/${subdirectory}`, upload.path)
@@ -143,7 +138,7 @@ async function getAllUploads(req, res) {
     });
 
     res.status(200).json({
-      message: "All uploads retrieved successfully",
+      //  message: "All uploads retrieved successfully",
       uploads: uploadsData,
       totalCount,
       status: 200,
@@ -156,7 +151,6 @@ async function getAllUploads(req, res) {
     });
   }
 }
-
 
 async function removeUploadByPath(req, res) {
   try {
@@ -171,7 +165,7 @@ async function removeUploadByPath(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -212,7 +206,7 @@ async function getUploadById(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -224,7 +218,7 @@ async function getUploadById(req, res) {
     };
 
     res.status(200).json({
-      message: "Upload retrieved successfully",
+      //    message: "Upload retrieved successfully",
       upload: uploadWithJalaliDates,
       status: 200,
     });
@@ -293,7 +287,7 @@ async function getUploadPath(req, res) {
 
     if (!upload) {
       return res.status(404).json({
-        message: "Upload not found",
+        message: "فایلی پیدا نشد",
         status: 404,
       });
     }
@@ -307,7 +301,7 @@ async function getUploadPath(req, res) {
     console.log(`filePath >>>> ${filePath}`);
 
     res.status(200).json({
-      message: "File path retrieved successfully",
+      // message: "File path retrieved successfully",
       id: upload.id,
       createdAt: upload.createdAt,
 
