@@ -25,10 +25,12 @@ async function createCategory(req, res) {
     const categoryRepository = getManager().getRepository(Category);
     const newCategory = categoryRepository.create({ name, description, icon });
     const savedCategory = await categoryRepository.save(newCategory);
-    res.status(201).json({ message: "success", savedCategory, status: 201 });
+    res
+      .status(201)
+      .json({ message: "با موفقیت ساخته شد", savedCategory, status: 201 });
   } catch (error) {
     res.status(500).json({
-      error: "An error occurred while creating the category."
+      error: "Internal Server Error",
     });
   }
 }
@@ -43,9 +45,7 @@ async function updateCategory(req, res) {
     });
 
     if (!existingCategory) {
-      return res
-        .status(404)
-        .json({ error: "Category not found.", status: 404 });
+      return res.status(404).json({ error: "دسته ای پیدا نشد", status: 404 });
     }
 
     existingCategory.name = name;
@@ -58,12 +58,14 @@ async function updateCategory(req, res) {
     existingCategory.lastModified = new Date();
 
     const updatedCategory = await categoryRepository.save(existingCategory);
-    res.json({ message: "success", updatedCategory, status: 200 });
+    res.json({
+      message: "با موفقیت بروز رسانی شد",
+      updatedCategory,
+      status: 200,
+    });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the category." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -76,9 +78,7 @@ async function deleteCategory(req, res) {
     });
 
     if (!existingCategory) {
-      return res
-        .status(404)
-        .json({ error: "Category not found.", status: 404 });
+      return res.status(404).json({ error: "دسته ای پیدا نشد", status: 404 });
     }
 
     if (existingCategory.icon) {
@@ -89,12 +89,10 @@ async function deleteCategory(req, res) {
     }
 
     await categoryRepository.remove(existingCategory);
-    res.json({ message: "Category deleted successfully.", status: 200 });
+    res.json({ message: "دسته پاک شد", status: 200 });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while deleting the category." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
