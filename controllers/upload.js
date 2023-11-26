@@ -8,6 +8,8 @@ const Upload = require("../model/Upload");
 const moment = require("jalali-moment");
 async function createUpload(req, res) {
   try {
+    console.log("Received file upload request");
+
     if (!req.file) {
       // Check if file upload was successful
       return res.status(400).json({
@@ -42,10 +44,15 @@ async function createUpload(req, res) {
       "jYYYY/jM/jD HH:mm:ss"
     );
 
+    console.log("File successfully saved to database:", saveNewUpload);
+
+    const subdirectory = createSubdirectory(); // Adjust this based on your storage structure
+    const filePath = path.resolve(__dirname, "../uploads", subdirectory, filename);
+    console.log(`filePath >> ${filePath}`);
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
       saveNewUpload: {
-        path: saveNewUpload.path,
+        path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,

@@ -9,6 +9,7 @@ async function getAllCourse(req, res) {
     const pageSize = parseInt(req.query.pageSize) || 10;
     const sortBy = req.query.sortBy || "id"; // Default to sorting by title
     const sortOrder = req.query.sortOrder || "ASC"; // Default to ascending order
+    const search=req.query.search || ""
 
     const offset = (page - 1) * pageSize;
 
@@ -26,6 +27,8 @@ async function getAllCourse(req, res) {
         "course.lastModified",
       ])
       .addSelect(["category.name"]) // Include category.name in the select
+      .where("course.title LIKE :search", { search: `%${search}%` }) // Search by course title
+
       .orderBy(`course.${sortBy}`, sortOrder) // Add sorting
       .skip(offset)
       .take(pageSize)
