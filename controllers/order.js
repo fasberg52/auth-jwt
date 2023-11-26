@@ -80,15 +80,15 @@ async function createPayment(req, res) {
       cartItems,
       savedOrder
     );
-
+    const updatedTotalPriceInRials = updatedTotalPrice * 10;
     const callbackUrl = buildCallbackUrl(
-      updatedTotalPrice,
+      updatedTotalPriceInRials,
       userPhone,
       savedOrder.id
     );
     const requestData = buildRequestData(
       process.env.MERCHANT_ID,
-      updatedTotalPrice,
+      updatedTotalPriceInRials,
       callbackUrl,
       userPhone
     );
@@ -212,8 +212,7 @@ async function verifyPayment(req, res) {
     if (Status === "OK") {
       // Payment was successful
       const amount = Amount;
-
-      // Replace with your Zarinpal merchant_id
+      const amountInTomans = Amount / 10;
       const merchant_id = process.env.MERCHANT_ID;
 
       // Construct the request data for verification
@@ -257,7 +256,7 @@ async function verifyPayment(req, res) {
             .json({ error: "Invalid order or order is not pending" });
         }
         existingOrder.userPhone = phone;
-        existingOrder.totalPrice = req.query.Amount;
+        existingOrder.totalPrice = amountInTomans;
         existingOrder.orderStatus = "success";
         existingOrder.refId = refID;
         const updateOrder = await orderRepository.save(existingOrder);
@@ -278,6 +277,7 @@ async function verifyPayment(req, res) {
       console.log("hereeeee");
       const orderRepository = getManager().getRepository(Order);
       const phone = req.query.Phone || "UNKNOWN";
+      const amountInTomans = Amount / 10;
 
       const existingOrder = await orderRepository.findOne({
         where: { id: OrderId, userPhone: phone, orderStatus: "pending" },
@@ -288,7 +288,7 @@ async function verifyPayment(req, res) {
           .json({ error: "Invalid order or order is not pending" });
       }
       existingOrder.userPhone = phone;
-      existingOrder.totalPrice = req.query.Amount;
+      existingOrder.totalPrice = amountInTomans;
       existingOrder.orderStatus = "cancelled";
       const updateOrder = await orderRepository.save(existingOrder);
       console.log("phone : " + phone);

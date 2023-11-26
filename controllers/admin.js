@@ -1,6 +1,6 @@
 const Users = require("../model/users");
 const Order = require("../model/Orders");
-const { getManager } = require("typeorm");
+const { getManager, ILike } = require("typeorm");
 
 const moment = require("jalali-moment");
 
@@ -10,7 +10,14 @@ async function getUsers(req, res) {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
+    const searchInput = req.query.search;
+
     const [users, totalUsers] = await userRepository.findAndCount({
+      where: [
+        { firstName: ILike(`%${searchInput}%`) },
+        { lastName: ILike(`%${searchInput}%`) },
+        { phone: ILike(`%${searchInput}%`) },
+      ],
       skip: (page - 1) * pageSize,
       take: pageSize,
       order: {
@@ -35,10 +42,11 @@ async function getUsers(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred while getting the users." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while getting the users." });
   }
 }
-
 
 async function getUserByPhone(req, res) {
   try {

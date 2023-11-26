@@ -13,6 +13,7 @@ async function createCartItem(req, res) {
     const connection = getConnection();
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
 
     let userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -25,6 +26,15 @@ async function createCartItem(req, res) {
       await cartRepository.save(userCart);
     }
     console.log(`userCart.id before findOne: ${userCart.id}`);
+
+    const course = await courseRepository.findOne({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      // If courseId is not found, return a 400 Bad Request response
+      return res.status(400).json({ error: "دوره پیدا نشد" });
+    }
 
     const existingCartItem = await cartItemsRepository
       .createQueryBuilder("cartItem")
