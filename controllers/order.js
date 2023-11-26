@@ -334,10 +334,18 @@ async function clearUserCart(userPhone) {
 async function getAllOrders(req, res) {
   try {
     const sortBy = req.query.sortBy || "orderDate";
-    const sortOrder = req.query.sortOrder || "ASC";
+    const sortOrder = req.query.sortOrder || "DESC";
+
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const offset = (page - 1) * pageSize;
     const orderRepository = getRepository(Order);
 
-    const orders = await orderRepository
+    const searchId = req.query.searchId;
+    const searchName = req.query.searchName;
+    const searchOrderDate = req.query.searchOrderDate;
+
+    const queryBuilder = orderRepository
       .createQueryBuilder("order")
       .leftJoin("order.user", "user")
       .select([
@@ -347,27 +355,39 @@ async function getAllOrders(req, res) {
         "order.totalPrice",
       ])
       .addSelect(["user.id", "user.firstName", "user.lastName"])
-      .addSelect(`order.${sortBy}`, sortOrder)
       .addSelect(
         `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
         "jalaliDate"
       )
       .orderBy(`order.${sortBy}`, sortOrder)
-      .getMany();
-    console.log(
-      orderRepository
-        .createQueryBuilder("order")
-        .leftJoinAndSelect("order.user", "user")
-        .addSelect(["user.firstName", "user.lastName"])
-        .addSelect("order.orderDate")
-        .addSelect(
-          `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
-          "jalaliDate"
-        )
-        .orderBy("order.orderDate", "DESC")
-        .getSql()
-    );
+      .skip(offset)
+      .take(pageSize);
+
+    // Add search conditions if search parameters are provided
+    if (searchId) {
+      queryBuilder.andWhere("order.id = :searchId", {
+        searchId: parseInt(searchId),
+      });
+    }
+
+    if (searchName) {
+      const fullNameSearch = `%${searchName}%`;
+      queryBuilder.andWhere(
+        "CONCAT(user.firstName, ' ', user.lastName) ILIKE :fullNameSearch",
+        { fullNameSearch }
+      );
+    }
+
+    if (searchOrderDate) {
+      queryBuilder.andWhere("order.orderDate::text ILIKE :searchOrderDate", {
+        searchOrderDate: `%${searchOrderDate}%`,
+      });
+    }
+
+    const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
+
+    console.log(queryBuilder.getSql());
 
     res.status(200).json({ orders, totalCount });
   } catch (error) {

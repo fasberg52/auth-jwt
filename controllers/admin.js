@@ -12,18 +12,18 @@ async function getUsers(req, res) {
 
     const searchInput = req.query.search;
 
-    const [users, totalUsers] = await userRepository.findAndCount({
-      where: [
-        { firstName: ILike(`%${searchInput}%`) },
-        { lastName: ILike(`%${searchInput}%`) },
-        { phone: ILike(`%${searchInput}%`) },
-      ],
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      order: {
-        id: "ASC",
-      },
-    });
+    const [users, totalUsers] = await userRepository
+      .createQueryBuilder("user")
+      .where("CONCAT(user.firstName, ' ', user.lastName) ILIKE :searchInput", {
+        searchInput: `%${searchInput}%`,
+      })
+      .orWhere("user.phone ILIKE :searchInput", {
+        searchInput: `%${searchInput}%`,
+      })
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .orderBy("user.id", "ASC")
+      .getManyAndCount();
 
     const usersWithJalaliDates = users.map((user) => {
       return {
