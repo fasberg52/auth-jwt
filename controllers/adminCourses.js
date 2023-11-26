@@ -20,13 +20,13 @@ async function addCourse(req, res) {
     } = req.body;
 
     // const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
-    const category = await getManager()
-      .getRepository(Category)
-      .findOne({ where: { id: categoryId } });
-    if (!category) {
-      return res.status(400).json({ error: "دسته بندی پیدا نشد" });
-    }
 
+    let category = null;
+    if (categoryId !== undefined && categoryId !== null) {
+      category = await getManager()
+        .getRepository(Category)
+        .findOne({ where: { id: categoryId } });
+    }
     // Use jalaliMoment to parse the Jalali date strings
     const startMoment = jalaliMoment(discountStart, "jYYYY-jM-jD");
     const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jM-jD");
@@ -51,7 +51,7 @@ async function addCourse(req, res) {
 
     res
       .status(201)
-      .json({ message: "دوره با موفقیت ایجاد شد", saveCourse, status: 200 });
+      .json({ message: "دوره با موفقیت ایجاد شد", saveCourse, status: 201 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });

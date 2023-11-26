@@ -29,7 +29,7 @@ const Course = new EntitySchema({
       nullable: true,
     },
     discountExpiration: {
-      type: "timestamp", // Assuming your database supports timestamp
+      type: "timestamp", 
       nullable: true,
     },
     imageUrl: {
@@ -38,6 +38,7 @@ const Course = new EntitySchema({
     },
     videoUrl: {
       type: "text",
+      nullable: true,
     },
     createdAt: {
       type: "timestamp",
@@ -52,8 +53,8 @@ const Course = new EntitySchema({
   relations: {
     category: {
       type: "many-to-one",
-      target: "Category", // Target entity name
-      joinColumn: { name: "categoryId", referencedColumnName: "id" }, // Specify the join column
+      target: "Category", 
+      joinColumn: { name: "categoryId", referencedColumnName: "id" },
     },
 
     users: {
