@@ -36,6 +36,10 @@ const Course = new EntitySchema({
       type: "text",
       nullable: true,
     },
+    bannerUrl: {
+      type: "text",
+      nullable: true,
+    },
     videoUrl: {
       type: "text",
       nullable: true,
