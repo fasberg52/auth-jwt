@@ -9,6 +9,7 @@ const { sendOTP, verifyOTP } = require("../services/otpService");
 const { getManager } = require("typeorm");
 const { createToken } = require("../utils/jwtUtils");
 const jwt = require("jsonwebtoken");
+const logger = require("../services/logger");
 
 require("dotenv").config();
 
@@ -72,7 +73,7 @@ async function loginUsers(req, res) {
         password: req.body.password,
       });
       const savedUser = await userRepository.save(newUser);
-
+      logger.info("User registered successfully");
       return res.json({ message: "User registered successfully" });
     }
     const passwordMatch = await bcrypt.compare(
@@ -81,6 +82,8 @@ async function loginUsers(req, res) {
     );
 
     if (!passwordMatch) {
+      logger.info("Invalid password");
+
       res.status(401).json({ error: "Invalid password" });
       return;
     }
@@ -91,9 +94,12 @@ async function loginUsers(req, res) {
     await userRepository.save(verifyUser);
 
     const token = createToken(verifyUser);
-
+    logger.info(
+      `token: ${token}, username: ${verifyUser.phone}, role: ${verifyUser.roles}`
+    );
     res.json({ token, username: verifyUser.phone, role: verifyUser.roles });
   } catch (error) {
+    logger.error("error in loginUser auth controller");
     res.status(500).json({ error: "An error occurred while logging in." });
   }
 }
@@ -220,11 +226,6 @@ async function verifyWithOTP(req, res) {
     res.status(500).json({ error: "An error occurred while verifying OTP" });
   }
 }
-
-
-
-
-
 
 module.exports = {
   loginUsers,

@@ -1,6 +1,7 @@
 // chapterController.js
 const { getManager } = require("typeorm");
-const Chapter = require("../model/Chapter"); // Import the Chapter Entity
+const Chapter = require("../model/Chapter"); 
+const logger = require("../services/logger")
 async function createChapter(req, res) {
   try {
     const { courseId, title } = req.body;
@@ -33,10 +34,11 @@ async function createChapter(req, res) {
     }
 
     const savedChapter = await chapterRepository.save(newChapter);
-
-    res.status(201).json({ message: "success", savedChapter, status: 200 });
+    logger.info(`message: success, ${savedChapter}, status: 201`);
+    res.status(201).json({ message: "success", savedChapter, status: 201 });
   } catch (error) {
-    console.error(`Error creating chapter: ${error}`);
+    logger.error(`Error creating chapter: ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while creating the chapter." });
@@ -68,9 +70,14 @@ async function editChapter(req, res) {
     existingChapter.lastModified = new Date();
     const updatedChapter = await chapterRepository.save(existingChapter);
 
+    logger.info("Chapter edited", {
+      chapterId,
+      title,
+      icon: req.file ? req.file.filename : null,
+    });
     res.json({ message: "success", updatedChapter, status: 200 });
   } catch (error) {
-    console.error(`Error editing chapter: ${error}`);
+    logger.error(`Error editing chapter: ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while editing the chapter." });
@@ -88,12 +95,13 @@ async function deleteChapter(req, res) {
 
     if (existingChapter) {
       await chapterRepository.remove(existingChapter);
+      logger.info("Chapter deleted", { chapterId });
       res.json({ message: "Chapter deleted successfully." });
     } else {
       res.status(404).json({ error: "Chapter not found." });
     }
   } catch (error) {
-    console.error(`Error deleting chapter: ${error}`);
+    logger.error(`Error deleting chapter: ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while deleting the chapter." });
@@ -113,26 +121,39 @@ async function getAllChpters(req, res) {
       },
     });
     const totalCount = chapters.length;
-    console.log("Chapters:", chapters); // Add this line for logging
+    logger.info("All chapters retrieved", { courseId, totalCount });
 
     res.json({ chapters, totalCount, status: 200 });
   } catch (error) {
-    console.error(`Error getAllChapter : ${error}`);
+    logger.error(`Error getAllChapter: ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while getAllChapter the chapter." });
   }
 }
 async function getChapterById(req, res) {
-  const { chapterId } = req.body;
-  const chapterRepository = getManager().getRepository(Chapter);
-  const existingChapterId = await chapterRepository.findOne({
-    where: { id: chapterId },
-  });
-  if (!existingChapterId) {
-    res.json({ message: "این سرفصل وجود ندارد", chapterId: false });
+  try {
+    const { chapterId } = req.body;
+    const chapterRepository = getManager().getRepository(Chapter);
+    const existingChapterId = await chapterRepository.findOne({
+      where: { id: chapterId },
+    });
+    if (!existingChapterId) {
+      res.json({ message: "این سرفصل وجود ندارد", chapterId: false });
+    }
+    logger.info(`Chapter retrieved by ID: ${chapterId}`, { existingChapterId });
+
+    res.json({ existingChapterId, chapterId: true });
+  } catch (error) {
+    logger.error(
+      `Error in  getChapterById for chapterId ${req.params.chapterId}`,
+      { error }
+    );
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the getProductByIdd." });
   }
-  res.json({ existingChapterId, chapterId: true });
 }
 
 module.exports = {
