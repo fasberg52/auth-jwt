@@ -1,7 +1,7 @@
 const Courses = require("../model/Course");
 const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
-
+const logger = require("../services/logger");
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
@@ -44,6 +44,13 @@ async function getAllCourse(req, res) {
       createdAt: convertToJalaliDate(course.createdAt),
       lastModified: convertToJalaliDate(course.lastModified),
     }));
+    logger.info("getAllCourse successful", {
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+      search,
+    });
 
     res.json({
       courses: jalaliCourses,
@@ -51,6 +58,8 @@ async function getAllCourse(req, res) {
     });
   } catch (error) {
     console.log(error);
+    logger.error("Error in getAllCourse", { error });
+
     res
       .status(500)
       .json({ error: "An error occurred while creating the getAllCourse." });
@@ -69,7 +78,13 @@ async function getCourseById(req, res) {
     } else {
       res.status(404).json({ error: "course not found." });
     }
+    logger.info(`getCourseById successful for courseId ${courseId}`);
+    res.status(200).json({ existingCourse, status: 200 });
   } catch (error) {
+    logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
+      error,
+    });
+
     console.log(`>>>>${error}`);
     res
       .status(500)

@@ -1,14 +1,20 @@
 // chapterController.js
 const { getManager } = require("typeorm");
 const Chapter = require("../model/Chapter"); // Import the Chapter Entity
-const Courses = require("../model/Course");
 async function createChapter(req, res) {
   try {
     const { courseId, title } = req.body;
     const icon = req.file ? req.file.filename : null;
 
     const chapterRepository = getManager().getRepository(Chapter);
-    const chapterCount = await chapterRepository.count({ courseId: courseId });
+
+    const [result] = await chapterRepository.query(
+      'SELECT COUNT(*) FROM chapters WHERE "courseId" = $1',
+      [courseId]
+    );
+
+    const chapterCount = parseInt(result.count);
+
     console.log(`>> chapterCount ${chapterCount}`);
     // Step 2: Set the orderIndex for the new chapter to the current chapterCount
     const orderIndex = chapterCount;
