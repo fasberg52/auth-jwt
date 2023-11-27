@@ -26,7 +26,7 @@ router.put(
 );
 
 router.get(
-  "/chapter",
+  "/:courseId/chapter",
   jwtAuthMiddleware,
   chapterController.getAllChpters
 );

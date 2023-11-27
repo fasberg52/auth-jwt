@@ -57,7 +57,7 @@ async function getAllCourse(req, res) {
   }
 }
 
-async function getProductById(req, res) {
+async function getCourseById(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
     const courseId = req.params.courseId;
@@ -79,5 +79,5 @@ async function getProductById(req, res) {
 
 module.exports = {
   getAllCourse,
-  getProductById,
+  getCourseById,
 };

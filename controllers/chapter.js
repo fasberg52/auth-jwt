@@ -1,18 +1,24 @@
 // chapterController.js
 const { getManager } = require("typeorm");
 const Chapter = require("../model/Chapter"); // Import the Chapter Entity
-
+const Courses = require("../model/Course");
 async function createChapter(req, res) {
   try {
     const { courseId, title } = req.body;
     const icon = req.file ? req.file.filename : null;
 
     const chapterRepository = getManager().getRepository(Chapter);
+    const chapterCount = await chapterRepository.count({ courseId: courseId });
+    console.log(`>> chapterCount ${chapterCount}`);
+    // Step 2: Set the orderIndex for the new chapter to the current chapterCount
+    const orderIndex = chapterCount;
+    console.log(`>> orderIndex ${orderIndex}`);
 
     const newChapter = chapterRepository.create({
       courseId,
       title,
       icon,
+      orderIndex,
     });
 
     // Access the related course through the chapter's relationship
@@ -90,14 +96,19 @@ async function deleteChapter(req, res) {
 
 async function getAllChpters(req, res) {
   try {
+    const { courseId } = req.params;
     const chapterRepository = getManager().getRepository(Chapter);
 
     const chapters = await chapterRepository.find({
+      where: { courseId: courseId },
+
       order: {
         orderIndex: "ASC",
       },
     });
     const totalCount = chapters.length;
+    console.log("Chapters:", chapters); // Add this line for logging
+
     res.json({ chapters, totalCount, status: 200 });
   } catch (error) {
     console.error(`Error getAllChapter : ${error}`);
