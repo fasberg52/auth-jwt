@@ -21,6 +21,10 @@ const Chapter = new EntitySchema({
     icon: {
       type: "varchar",
     },
+    orderIndex: {
+      type: "int", 
+      default: 0, 
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,

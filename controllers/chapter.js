@@ -92,9 +92,13 @@ async function getAllChpters(req, res) {
   try {
     const chapterRepository = getManager().getRepository(Chapter);
 
-    const [chapters] = await chapterRepository.find();
-
-    res.json({ chapters, status: 200 });
+    const chapters = await chapterRepository.find({
+      order: {
+        orderIndex: "ASC",
+      },
+    });
+    const totalCount = chapters.length;
+    res.json({ chapters, totalCount, status: 200 });
   } catch (error) {
     console.error(`Error getAllChapter : ${error}`);
     res
