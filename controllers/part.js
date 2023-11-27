@@ -1,7 +1,9 @@
 // partController.js
 const { getManager } = require("typeorm");
-const Part = require("../model/Part"); // Import the Part Entity
+const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
+const logger = require("../services/logger");
+
 async function createPart(req, res) {
   try {
     const { chapterId, title, description, videoPath } = req.body;
@@ -10,7 +12,6 @@ async function createPart(req, res) {
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
 
-    // Check if the chapter exists
     const chapterExists = await chapterRepository.findOne({
       where: { id: chapterId },
     });
@@ -22,15 +23,23 @@ async function createPart(req, res) {
       chapterId,
       title,
       description,
-     // icon,
+      // icon,
       videoPath,
     });
 
     const savedPart = await partRepository.save(newPart);
 
+    logger.info("Part created", {
+      chapterId,
+      title,
+      description,
+      videoPath,
+    });
+
     res.status(201).json(savedPart);
   } catch (error) {
-    console.error(`Error creating part: ${error}`);
+    logger.error(`Error creating part: ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while creating the part." });
@@ -57,12 +66,20 @@ async function editPart(req, res) {
       existingPart.lastModified = new Date();
       const updatedPart = await partRepository.save(existingPart);
 
+      logger.info("Part edited", {
+        partId,
+        title,
+        description,
+        icon,
+        videoPath,
+      });
+
       res.json(updatedPart);
     } else {
       res.status(404).json({ error: "Part not found." });
     }
   } catch (error) {
-    console.error(`Error editing part: ${error}`);
+    logger.error(`Error editing part: ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while editing the part." });
@@ -96,9 +113,18 @@ async function editPartWithChapterId(req, res) {
     existingPart.lastModified = new Date();
     const updatedPart = await partRepository.save(existingPart);
 
+    logger.info("Part edited with chapter ID", {
+      partId,
+      chapterId,
+      title,
+      description,
+      videoPath,
+    });
+
     res.json({ updatedPart, status: 200 });
   } catch (error) {
-    console.error(`Error editing part with chapter ID: ${error}`);
+    logger.error(`Error editing part with chapter ID: ${error}`);
+
     res.status(500).json({
       error: "An error occurred while editing the part with chapter ID.",
     });
@@ -116,22 +142,35 @@ async function deletePart(req, res) {
 
     if (existingPart) {
       await partRepository.remove(existingPart);
+
+      logger.info("Part deleted successfully", { partId });
+
       res.json({ message: "Part deleted successfully." });
     } else {
       res.status(404).json({ error: "Part not found." });
     }
   } catch (error) {
-    console.error(`Error deleting part: ${error}`);
+    logger.error(`Error deleting part: ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while deleting the part." });
   }
 }
 async function gatAllPart(req, res) {
-  const partRepository = getManager().getRepository(Part);
-  const parts = await partRepository.find();
-  console.log(parts);
-  res.json({ parts, status: 200 });
+  try {
+    const partRepository = getManager().getRepository(Part);
+    const parts = await partRepository.find();
+
+    logger.info("All parts retrieved", { parts });
+
+    res.json({ parts, status: 200 });
+  } catch (error) {
+    logger.error(`Error retrieving all parts: ${error}`);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving all parts." });
+  }
 }
 async function getAllPartsWithChapterId(req, res) {
   try {
@@ -143,12 +182,17 @@ async function getAllPartsWithChapterId(req, res) {
     });
 
     if (parts.length === 0) {
+      logger.warn("No parts found for the specified chapter ID", { chapterId });
+
       return res.status(404).json({ error: "پارت یافت نشد برای سرفصل" });
     }
 
+    logger.info("All parts retrieved for chapter ID", { chapterId, parts });
+
     res.json({ parts, status: 200 });
   } catch (error) {
-    console.error(`Error retrieving parts with chapter ID: ${error}`);
+    logger.error(`Error retrieving parts with chapter ID: ${error}`);
+
     res.status(500).json({
       error: "An error occurred while retrieving parts with chapter ID.",
     });
@@ -163,6 +207,3 @@ module.exports = {
   gatAllPart,
   getAllPartsWithChapterId,
 };
-
-
-
