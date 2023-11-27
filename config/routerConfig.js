@@ -18,7 +18,7 @@ async function routerConfig(app) {
   app.use("/admin", adminRouter);
   app.use("/course", courseRouter);
   app.use("/", cartRouter);
-  app.use("/admin", courseAdminrouter);
+  app.use("/course", courseAdminrouter);
   app.use("/", uploadRouter);
   app.use("/", orderRouter);
 }

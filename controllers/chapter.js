@@ -90,6 +90,9 @@ async function deleteChapter(req, res) {
 
 async function getAllChpters(req, res) {
   try {
+
+    
+
     const chapterRepository = getManager().getRepository(Chapter);
 
     const chapters = await chapterRepository.find();

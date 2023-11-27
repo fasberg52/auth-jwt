@@ -9,7 +9,7 @@ const {upload} = require("../../utils/multerUtils");
 const router = express.Router();
 
 router.post(
-  "/course/chapter",
+  "/chapter",
   jwtAuthMiddleware,
   checkRole("admin"),
   
@@ -18,7 +18,7 @@ router.post(
 );
 
 router.put(
-  "/course/chapter/:id",
+  "/chapter/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
   upload.single("icon"),
@@ -26,18 +26,18 @@ router.put(
 );
 
 router.get(
-  "/course/chapters",
+  "/chapter",
   jwtAuthMiddleware,
   chapterController.getAllChpters
 );
 router.get(
-  "/course/chapter-id",
+  "/chapter/:chapterId",
   jwtAuthMiddleware,
   chapterController.getChapterById
 );
 
 router.post(
-  "/course/part",
+  "/part",
   jwtAuthMiddleware,
   checkRole("admin"),
   ajvMiddlerware.validParts,
@@ -45,22 +45,22 @@ router.post(
   partController.createPart
 );
 router.put(
-  "/course/part/:id",
+  "/part/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
   upload.single("icon"),
   partController.editPart
 );
 router.put(
-  "/course/:courseId/chapter/:chapterId/part/:partId",
+  "/:courseId/chapter/:chapterId/part/:partId",
   jwtAuthMiddleware,
   checkRole("admin"),
   upload.single("icon"),
   partController.editPartWithChapterId
 );
-router.get("/course/parts", jwtAuthMiddleware, partController.gatAllPart);
+router.get("/parts", jwtAuthMiddleware, partController.gatAllPart);
 router.get(
-  "/course/chapters/:chapterId/parts",
+  "/chapters/:chapterId/parts",
   jwtAuthMiddleware,
   partController.getAllPartsWithChapterId
 );
