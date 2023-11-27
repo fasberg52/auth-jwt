@@ -1,6 +1,6 @@
 const Users = require("../model/users");
 const Order = require("../model/Orders");
-const { getManager, ILike } = require("typeorm");
+const { getManager } = require("typeorm");
 
 const moment = require("jalali-moment");
 
@@ -12,18 +12,31 @@ async function getUsers(req, res) {
 
     const searchInput = req.query.search;
 
-    const [users, totalUsers] = await userRepository
+    const queryBuilder = userRepository
       .createQueryBuilder("user")
-      .where("CONCAT(user.firstName, ' ', user.lastName) ILIKE :searchInput", {
-        searchInput: `%${searchInput}%`,
-      })
-      .orWhere("user.phone ILIKE :searchInput", {
-        searchInput: `%${searchInput}%`,
-      })
+      .select([
+        "user.id",
+        "user.firstName",
+        "user.lastName",
+        "user.phone",
+        "user.roles",
+        "user.grade"
+      ])
       .skip((page - 1) * pageSize)
       .take(pageSize)
-      .orderBy("user.id", "ASC")
-      .getManyAndCount();
+      .orderBy("user.id", "DESC");
+
+    if (searchInput) {
+      queryBuilder
+        .where("CONCAT(user.firstName, ' ', user.lastName) ILIKE :searchInput", {
+          searchInput: `%${searchInput}%`,
+        })
+        .orWhere("user.phone ILIKE :searchInput", {
+          searchInput: `%${searchInput}%`,
+        });
+    }
+
+    const [users, totalUsers] = await queryBuilder.getManyAndCount();
 
     const usersWithJalaliDates = users.map((user) => {
       return {
