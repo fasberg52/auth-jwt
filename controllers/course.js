@@ -8,8 +8,8 @@ async function getAllCourse(req, res) {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const sortBy = req.query.sortBy || "id"; // Default to sorting by title
-    const sortOrder = req.query.sortOrder || "ASC"; // Default to ascending order
-    const search=req.query.search || ""
+    const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
+    const search = req.query.search || "";
 
     const offset = (page - 1) * pageSize;
 
@@ -22,7 +22,11 @@ async function getAllCourse(req, res) {
         "course.description",
         "course.price",
         "course.imageUrl",
+        "course.bannerUrl",
         "course.videoUrl",
+        "course.discountPrice",
+        "course.discountStart",
+        "course.discountExpiration",
         "course.createdAt",
         "course.lastModified",
       ])

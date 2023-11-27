@@ -90,12 +90,9 @@ async function deleteChapter(req, res) {
 
 async function getAllChpters(req, res) {
   try {
-
-    
-
     const chapterRepository = getManager().getRepository(Chapter);
 
-    const chapters = await chapterRepository.find();
+    const [chapters] = await chapterRepository.find();
 
     res.json({ chapters, status: 200 });
   } catch (error) {
@@ -116,7 +113,6 @@ async function getChapterById(req, res) {
   }
   res.json({ existingChapterId, chapterId: true });
 }
-
 
 module.exports = {
   createChapter,
