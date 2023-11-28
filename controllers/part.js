@@ -3,11 +3,16 @@ const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
 const logger = require("../services/logger");
+const ffmpeg = require("fluent-ffmpeg");
+const dotenv = require("dotenv").config();
+//ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
+ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
 
 async function createPart(req, res) {
   try {
     const { chapterId, title, description, videoPath } = req.body;
     //const icon = req.file ? req.file.filename : null;
+    const videoDuration = await getVideoDuration(videoPath);
 
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
@@ -25,6 +30,7 @@ async function createPart(req, res) {
       description,
       // icon,
       videoPath,
+      videoDuration,
     });
 
     const savedPart = await partRepository.save(newPart);
@@ -34,6 +40,7 @@ async function createPart(req, res) {
       title,
       description,
       videoPath,
+      videoDuration,
     });
 
     res.status(201).json(savedPart);
@@ -197,6 +204,31 @@ async function getAllPartsWithChapterId(req, res) {
       error: "An error occurred while retrieving parts with chapter ID.",
     });
   }
+}
+
+async function getVideoDuration(videoPath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(videoPath, (err, metadata) => {
+      if (err) {
+        console.error(`Error getting video duration: ${err}`);
+        reject(err);
+      } else {
+        const durationInSeconds = metadata.format.duration;
+        const formattedDuration = formatVideoDuration(durationInSeconds);
+        resolve(formattedDuration);
+      }
+    });
+  });
+}
+
+function formatVideoDuration(durationInSeconds) {
+  const hours = Math.floor(durationInSeconds / 3600);
+  const minutes = Math.floor((durationInSeconds % 3600) / 60);
+  const seconds = Math.floor(durationInSeconds % 60);
+
+  return `${hours}:${String(minutes).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
 }
 
 module.exports = {
