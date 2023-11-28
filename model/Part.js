@@ -28,6 +28,10 @@ const Part = new EntitySchema({
     videoPath: {
       type: "varchar",
     },
+    videoDuration:{
+      type:"varchar",
+      nullable:true
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,
