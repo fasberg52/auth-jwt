@@ -2,29 +2,22 @@
 
 const { getManager } = require("typeorm");
 const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the path accordingly
-const fs = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const Upload = require("../model/Upload");
 const moment = require("jalali-moment");
+const { exists } = require("fs-extra");
+
 async function createUpload(req, res) {
   try {
     console.log("Received file upload request");
-
-    if (!req.file) {
-      // Check if file upload was successful
-      return res.status(400).json({
-        message: "آپلود شکست خورد",
-        status: 400,
-      });
-    }
+    console.log("req.file : " + JSON.stringify(req.file));
 
     const sizeFile = req.file.size;
-
     const originalFilename = req.file.originalname;
 
     const uploadRepository = getManager().getRepository(Upload);
 
-    // Check if a file with the same name already exists
     let filename = originalFilename;
     let counter = 1;
     while (await uploadRepository.findOne({ where: { path: filename } })) {
@@ -34,6 +27,24 @@ async function createUpload(req, res) {
       counter++;
     }
 
+    const subdirectory = createSubdirectory();
+    const filePath = path.resolve(
+      __dirname,
+      "../uploads",
+      subdirectory,
+      filename
+    );
+
+    if (!filePath) {
+      return res.status(400).json("آپلود شکست خورد");
+    }
+
+    // Create a database entry for the uploaded {file
+    const existingPath = fs.existsSync(filePath);
+
+    if (!existingPath) {
+      throw Error("error file path not exist");
+    }
     const newUpload = uploadRepository.create({
       path: filename,
     });
@@ -46,22 +57,21 @@ async function createUpload(req, res) {
 
     console.log("File successfully saved to database:", saveNewUpload);
 
-    const subdirectory = createSubdirectory(); // Adjust this based on your storage structure
-    const filePath = path.resolve(__dirname, "../uploads", subdirectory, filename);
-    console.log(`filePath >> ${filePath}`);
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
+
       saveNewUpload: {
         path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
-        createdAt: jalaliCreatedAt, // Use Jalali date
+        createdAt: jalaliCreatedAt,
       },
       status: 200,
     });
   } catch (error) {
     console.log("createUpload error " + error);
+    // If an error occurs, you can handle it appropriately
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,

@@ -28,6 +28,10 @@ const Part = new EntitySchema({
     videoPath: {
       type: "varchar",
     },
+    videoDuration:{
+      type:"varchar",
+      nullable:true
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,
@@ -37,9 +41,10 @@ const Part = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+  
   },
   relations: {
-    chapter: {
+    chapter: { 
       type: "many-to-one",
       target: "Chapter",
       joinColumn: true,
