@@ -1,6 +1,7 @@
 const multer = require("multer");
 
 function handleMulterErrors(err, req, res, next) {
+  console.log(`err fail multer >>>>> ${err}`);
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       // Multer error: File size exceeded
