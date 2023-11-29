@@ -41,9 +41,10 @@ const Part = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+  
   },
   relations: {
-    chapter: {
+    chapter: { 
       type: "many-to-one",
       target: "Chapter",
       joinColumn: true,
