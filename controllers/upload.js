@@ -6,7 +6,8 @@ const fs = require("fs");
 const path = require("path");
 const Upload = require("../model/Upload");
 const moment = require("jalali-moment");
-const { exists } = require("fs-extra");
+const { existsSync } = require("fs-extra");
+const { json } = require("body-parser");
 
 async function createUpload(req, res) {
   try {
@@ -15,38 +16,18 @@ async function createUpload(req, res) {
 
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
-
-    const uploadRepository = getManager().getRepository(Upload);
-
-    let filename = originalFilename;
-    let counter = 1;
-    while (await uploadRepository.findOne({ where: { path: filename } })) {
-      const extension = path.extname(originalFilename);
-      const baseName = path.basename(originalFilename, extension);
-      filename = `${baseName}-${counter}${extension}`;
-      counter++;
-    }
-
     const subdirectory = createSubdirectory();
     const filePath = path.resolve(
       __dirname,
       "../uploads",
       subdirectory,
-      filename
+      originalFilename
     );
 
-    if (!filePath) {
-      return res.status(400).json("آپلود شکست خورد");
-    }
+    const uploadRepository = getManager().getRepository(Upload);
 
-    // Create a database entry for the uploaded {file
-    const existingPath = fs.existsSync(filePath);
-
-    if (!existingPath) {
-      throw Error("error file path not exist");
-    }
     const newUpload = uploadRepository.create({
-      path: filename,
+      path: req.uploadFilename, // Use req.uploadFilename directly here
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
@@ -78,6 +59,7 @@ async function createUpload(req, res) {
     });
   }
 }
+
 
 // async function getAllUploads(req, res) {
 //   try {
