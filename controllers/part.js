@@ -2,8 +2,10 @@
 const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
+const SecureLink = require("../model/secureLink")
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
+const crypto = require("crypto");
 const dotenv = require("dotenv").config();
 //ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
 ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
@@ -34,6 +36,9 @@ async function createPart(req, res) {
     });
 
     const savedPart = await partRepository.save(newPart);
+
+    const secureLink = await createSecureLink(videoPath);
+    savedPart.secureLink = secureLink;
 
     logger.info("Part created", {
       chapterId,
@@ -229,6 +234,20 @@ function formatVideoDuration(durationInSeconds) {
   return `${hours}:${String(minutes).padStart(2, "0")}:${String(
     seconds
   ).padStart(2, "0")}`;
+}
+
+async function createSecureLink(originalLink) {
+  const token = crypto.randomBytes(16).toString("hex");
+
+  const secureLinkRepository = getManager().getRepository(SecureLink);
+  const secureLink = secureLinkRepository.create({
+    originalLink,
+    token,
+  });
+
+  await secureLinkRepository.save(secureLink);
+
+  return token;
 }
 
 module.exports = {

@@ -34,3 +34,5 @@ ffmpeg version 2023-11-27-git-0ea9e26636-full_build-www.gyan.dev Copyright (c) 2
 Unrecognized option 'show_streams'.
 Error splitting the argument list: Option not found
 
+2023-11-30T12:32:52.211Z error: Error creating part: ReferenceError: crypto is not defined
+2023-11-30T12:33:57.383Z error: Error creating part: ReferenceError: SecureLink is not defined

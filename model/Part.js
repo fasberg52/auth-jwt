@@ -11,8 +11,8 @@ const Part = new EntitySchema({
       generated: true,
       primary: true,
     },
-    chapterId:{
-      type:"int"
+    chapterId: {
+      type: "int",
     },
     title: {
       type: "varchar",
@@ -22,15 +22,15 @@ const Part = new EntitySchema({
     },
     icon: {
       type: "varchar",
-      nullable:true
+      nullable: true,
     },
 
     videoPath: {
       type: "varchar",
     },
-    videoDuration:{
-      type:"varchar",
-      nullable:true
+    videoDuration: {
+      type: "varchar",
+      nullable: true,
     },
     createdAt: {
       type: "timestamp",
@@ -41,13 +41,23 @@ const Part = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
-  
   },
   relations: {
-    chapter: { 
+    chapter: {
       type: "many-to-one",
       target: "Chapter",
       joinColumn: true,
+    },
+    secureLinkId: {
+      type: "int",
+      nullable: true,
+    },
+  },
+  relations: {
+    secureLink: {
+      type: "many-to-one",
+      target: "SecureLink", // Assuming SecureLink is the correct name of your entity
+      joinColumn: { name: "secureLinkId", referencedColumnName: "id" },
     },
   },
 });
