@@ -4,8 +4,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 
-let uploadCounter = {}; // Maintain a counter object to track each file
-
 const createSubdirectory = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -14,38 +12,56 @@ const createSubdirectory = () => {
   return subdirectory;
 };
 
-const generateUniqueFilename = (originalname) => {
-  const baseName = path.basename(originalname, path.extname(originalname));
+const generateUniqueFilename = (originalname, counter) => {
   const extension = path.extname(originalname);
-
-  if (!uploadCounter[originalname]) {
-    // First upload of this file
-    uploadCounter[originalname] = 1;
-    return `${baseName}${extension}`;
-  } else {
-    // Subsequent uploads, increment the counter
-    const count = uploadCounter[originalname]++;
-    return `${baseName}-${count}${extension}`;
-  }
+  const baseName = path.basename(originalname, extension);
+  return `${baseName}-${counter}${extension}`;
 };
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    
     const subdirectory = createSubdirectory();
-    const uploadDir = path.join(__dirname, "../uploads", subdirectory);
+    req.uploadDir = path.join(__dirname, "../uploads", subdirectory);
 
-    fs.ensureDir(uploadDir)
+    fs.ensureDir(req.uploadDir)
       .then(() => {
-        cb(null, uploadDir);
+        cb(null, req.uploadDir);
       })
       .catch((err) => {
         cb(err);
       });
   },
-  filename: (req, file, cb) => {
+  filename: async (req, file, cb) => {
     const originalname = file.originalname;
-    const filename = generateUniqueFilename(originalname);
+
+    let counter = req.fileCounter || 0;
+    let filename;
+    let baseName; // Declare baseName here to make it accessible in both branches
+    let extension; // Declare extension here to make it accessible in the entire function
+
+    if (counter === 0) {
+      // For the first upload, use the original filename
+      filename = originalname;
+      baseName = path.basename(originalname, path.extname(originalname));
+      extension = path.extname(originalname);
+    } else {
+      // For subsequent uploads, append the counter to the original filename
+      extension = path.extname(originalname);
+      baseName = path.basename(originalname, extension);
+      filename = `${baseName}-${counter}${extension}`;
+    }
+
+    // Check if the filename already exists, increment counter if needed
+    while (fs.existsSync(path.join(req.uploadDir, filename))) {
+      counter++;
+      filename = `${baseName}-${counter}${extension}`;
+    }
+
+    // Pass the updated counter to the next upload
+    req.fileCounter = counter + 1;
+
+    // Pass the uploadRepository to generateUniqueFilename
+    req.uploadFilename = filename;
     cb(null, filename);
   },
 });
@@ -56,7 +72,6 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
-   
     const allowedFileTypes = [
       "image/jpeg",
       "image/png",
@@ -77,11 +92,7 @@ const upload = multer({
           "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
       });
     }
- 
   },
-  
 });
 
-
 module.exports = { upload, createSubdirectory };
-
