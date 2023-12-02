@@ -78,6 +78,7 @@ const upload = multer({
       "image/webp",
       "video/mp4",
       "video/avi",
+      "video/m4v"
     ];
     if (file.size > 5 * 1024 * 1024) {
       return cb(null, false, {

@@ -36,3 +36,23 @@ Error splitting the argument list: Option not found
 
 2023-11-30T12:32:52.211Z error: Error creating part: ReferenceError: crypto is not defined
 2023-11-30T12:33:57.383Z error: Error creating part: ReferenceError: SecureLink is not defined
+2023-11-30T13:41:02.548Z error: Error creating part: Error: spawn undefined ENOENT
+2023-11-30T13:58:04.978Z error: Error creating part: Error: spawn undefined ENOENT
+2023-11-30T13:58:06.223Z error: Error creating part: Error: spawn undefined ENOENT
+2023-11-30T13:58:46.565Z error: Error creating part: Error: ffprobe exited with code 1
+ffprobe version 2023-11-28-git-47e214245b-full_build-www.gyan.dev Copyright (c) 2007-2023 the FFmpeg developers
+  built with gcc 12.2.0 (Rev10, Built by MSYS2 project)
+  configuration: --enable-gpl --enable-version3 --enable-static --pkg-config=pkgconf --disable-w32threads --disable-autodetect --enable-fontconfig --enable-iconv --enable-gnutls --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libuavs3d --enable-libzvbi --enable-librav1e --enable-libsvtav1 --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxvid --enable-libaom --enable-libjxl --enable-libopenjpeg --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-ffnvcodec --enable-nvdec --enable-nvenc --enable-dxva2 --enable-d3d11va --enable-libvpl --enable-libshaderc --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint
+  libavutil      58. 32.100 / 58. 32.100
+  libavcodec     60. 35.100 / 60. 35.100
+  libavformat    60. 18.100 / 60. 18.100
+  libavdevice    60.  4.100 / 60.  4.100
+  libavfilter     9. 14.100 /  9. 14.100
+  libswscale      7.  6.100 /  7.  6.100
+  libswresample   4. 13.100 /  4. 13.100
+  libpostproc    57.  4.100 / 57.  4.100
+dl3.baclass.online/sarsalari/05-Sarsalari-1402-08-17-1.m4v: No such file or directory
+
+2023-11-30T19:33:32.522Z error: Error in getCourseById for courseId 1
+2023-11-30T19:35:49.573Z error: Error in getCourseById for courseId 10
+2023-11-30T19:49:28.861Z error: Error creating chapter: QueryFailedError: null value in column "icon" of relation "chapters" violates not-null constraint

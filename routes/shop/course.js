@@ -10,6 +10,6 @@ router.get("/allcourses", courseController.getAllCourse);
 router.get("/:courseId", courseController.getCourseById);
 router.get("/category", categoryController.getAllCategories);
 
-router.get("/play/:token", secureLink.createSecureLink);
+router.get("/play/:secureLink", secureLink.createSecureLink);
 
 module.exports = router;

@@ -74,12 +74,12 @@ async function getCourseById(req, res) {
       where: { id: courseId },
     });
     if (existingCourse) {
-      res.json(existingCourse);
+      logger.info(`getCourseById successful for courseId ${courseId}`);
+      res.json(existingCourse); // send the response here
     } else {
-      res.status(404).json({ error: "course not found." });
+      logger.info(`getCourseById successful for courseId ${courseId}`);
+      res.status(404).json({ error: "course not found." }); // send the response here
     }
-    logger.info(`getCourseById successful for courseId ${courseId}`);
-    res.status(200).json({ existingCourse, status: 200 });
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
