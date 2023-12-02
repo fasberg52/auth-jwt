@@ -70,15 +70,19 @@ async function getCourseById(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
     const courseId = req.params.courseId;
+
+    // Fetch the course with related chapters and parts
     const existingCourse = await courseRepository.findOne({
       where: { id: courseId },
     });
+
     if (existingCourse) {
       logger.info(`getCourseById successful for courseId ${courseId}`);
-      res.json(existingCourse); // send the response here
+
+      res.json(existingCourse);
     } else {
       logger.info(`getCourseById successful for courseId ${courseId}`);
-      res.status(404).json({ error: "course not found." }); // send the response here
+      res.status(404).json({ error: "course not found." });
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
@@ -88,7 +92,7 @@ async function getCourseById(req, res) {
     console.log(`>>>>${error}`);
     res
       .status(500)
-      .json({ error: "An error occurred while creating the getProductByIdd." });
+      .json({ error: "An error occurred while retrieving the course." });
   }
 }
 

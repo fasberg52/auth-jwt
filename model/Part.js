@@ -1,6 +1,6 @@
 // courseBuilder Entity
 
-const { EntitySchema, PrimaryColumn } = require("typeorm");
+const { EntitySchema } = require("typeorm");
 
 const Part = new EntitySchema({
   name: "Part",
@@ -32,6 +32,10 @@ const Part = new EntitySchema({
       type: "varchar",
       nullable: true,
     },
+    isFree: {
+      type: "boolean",
+      default: false,
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,
@@ -41,6 +45,14 @@ const Part = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+    secureLinkId: {
+      type: "int",
+      nullable: true,
+    },
+    courseId: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     chapter: {
@@ -48,15 +60,14 @@ const Part = new EntitySchema({
       target: "Chapter",
       joinColumn: true,
     },
-    secureLinkId: {
-      type: "int",
-      nullable: true,
+    course: {
+      type: "many-to-one",
+      target: "Course",
+      joinColumn: { name: "courseId", referencedColumnName: "id" },
     },
-  },
-  relations: {
     secureLink: {
       type: "many-to-one",
-      target: "SecureLink", // Assuming SecureLink is the correct name of your entity
+      target: "SecureLink",
       joinColumn: { name: "secureLinkId", referencedColumnName: "id" },
     },
   },

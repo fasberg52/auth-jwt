@@ -2,7 +2,7 @@
 const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
-const SecureLink = require("../model/secureLink")
+const SecureLink = require("../model/secureLink");
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
@@ -12,7 +12,7 @@ ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
 
 async function createPart(req, res) {
   try {
-    const { chapterId, title, description, videoPath } = req.body;
+    const { courseId, chapterId, title, description, videoPath } = req.body;
     //const icon = req.file ? req.file.filename : null;
     const videoDuration = await getVideoDuration(videoPath);
 
@@ -27,10 +27,11 @@ async function createPart(req, res) {
     }
 
     const newPart = partRepository.create({
+      courseId,
       chapterId,
       title,
       description,
-      // icon,
+
       videoPath,
       videoDuration,
     });
@@ -41,6 +42,7 @@ async function createPart(req, res) {
     savedPart.secureLink = secureLink;
 
     logger.info("Part created", {
+      courseId,
       chapterId,
       title,
       description,
@@ -48,7 +50,7 @@ async function createPart(req, res) {
       videoDuration,
     });
 
-    res.status(201).json(savedPart);
+    res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
   } catch (error) {
     logger.error(`Error creating part: ${error}`);
 
@@ -169,24 +171,37 @@ async function deletePart(req, res) {
       .json({ error: "An error occurred while deleting the part." });
   }
 }
-async function gatAllPart(req, res) {
+async function gatAllPartwithCourseId(req, res) {
   try {
+    const { courseId } = req.params;
+
     const partRepository = getManager().getRepository(Part);
-    const parts = await partRepository.find();
 
-    logger.info("All parts retrieved", { parts });
+    // Retrieve parts and count
+    const [parts, totalCount] = await partRepository.findAndCount({
+      where: { courseId },
+    });
 
-    res.json({ parts, status: 200 });
+    if (parts.length === 0) {
+      logger.warn("No parts found for the specified course ID", { courseId });
+
+      return res.status(404).json({ error: "پارت یافت نشد برای دوره" });
+    }
+
+    logger.info("All parts retrieved for course ID", { courseId, parts });
+
+    res.json({ parts, totalCount, status: 200 });
   } catch (error) {
-    logger.error(`Error retrieving all parts: ${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving all parts." });
+    logger.error(`Error retrieving parts with course ID: ${error}`);
+
+    res.status(500).json({
+      error: "An error occurred while retrieving parts with course ID.",
+    });
   }
 }
 async function getAllPartsWithChapterId(req, res) {
   try {
-    const chapterId = req.params.chapterId;
+    const { chapterId, courseId } = req.params;
 
     const partRepository = getManager().getRepository(Part);
     const parts = await partRepository.find({
@@ -255,6 +270,6 @@ module.exports = {
   editPart,
   editPartWithChapterId,
   deletePart,
-  gatAllPart,
+  gatAllPartwithCourseId,
   getAllPartsWithChapterId,
 };

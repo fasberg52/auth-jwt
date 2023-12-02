@@ -18,12 +18,10 @@ const Chapter = new EntitySchema({
       type: "varchar",
     },
 
-    icon: {
-      type: "varchar",
-    },
+
     orderIndex: {
-      type: "int", 
-      default: 0, 
+      type: "int",
+      default: 0,
     },
     createdAt: {
       type: "timestamp",
@@ -41,6 +39,12 @@ const Chapter = new EntitySchema({
       target: "Course",
       joinColumn: true,
     },
+  },
+  parts: {
+    type: "one-to-many",
+    target: "Part", 
+    inverseSide: "chapter",
+  
   },
 });
 

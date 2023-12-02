@@ -16,7 +16,10 @@ async function createUpload(req, res) {
 
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
-    const subdirectory = createSubdirectory();
+    
+    // Pass the current date to createSubdirectory
+    const subdirectory = createSubdirectory(new Date());
+    
     const filePath = path.resolve(
       __dirname,
       "../uploads",
@@ -119,25 +122,23 @@ async function getAllUploads(req, res) {
       },
     });
 
-    // Convert dates to Jalali format and include file paths
     const uploadsData = uploads.map((upload) => {
-      const subdirectory = createSubdirectory();
+      // Use the original upload date for creating the subdirectory
+      const subdirectory = createSubdirectory(upload.createdAt);
 
-      // Check if upload.path is null before resolving the path
       const filePath = upload.path
         ? path.resolve(__dirname, `../uploads/${subdirectory}`, upload.path)
         : null;
 
       return {
         id: upload.id,
-        createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        filePath: filePath, // This may be null if upload.path is null
+        createdAt: moment(upload.createdAt).format("jYYYY/jMMMM/jDD HH:mm:ss"),
+        updatedAt: moment(upload.updatedAt).format("jYYYY/jMMMM/jDD HH:mm:ss"),
+        filePath: filePath,
       };
     });
 
     res.status(200).json({
-      //  message: "All uploads retrieved successfully",
       uploads: uploadsData,
       totalCount,
       status: 200,

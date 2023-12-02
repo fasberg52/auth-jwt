@@ -14,7 +14,8 @@ const Course = new EntitySchema({
       type: "varchar",
     },
     description: {
-      type: "varchar",
+      type: "text",
+      nullable:true
     },
     price: {
       type: "int",
