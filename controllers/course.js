@@ -74,31 +74,12 @@ async function getCourseById(req, res) {
     // Fetch the course with related chapters and parts
     const existingCourse = await courseRepository.findOne({
       where: { id: courseId },
-      relations: ['chapters', 'chapters.parts'],
     });
 
     if (existingCourse) {
       logger.info(`getCourseById successful for courseId ${courseId}`);
 
-      // Map the chapters and parts to include only relevant information
-      const chapters = existingCourse.chapters.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        parts: chapter.parts.map((part) => ({
-          id: part.id,
-          title: part.title,
-          // Include other relevant part properties
-        })),
-      }));
-
-      const response = {
-        id: existingCourse.id,
-        title: existingCourse.title,
-        // Include other relevant course properties
-        chapters,
-      };
-
-      res.json(response);
+      res.json(existingCourse);
     } else {
       logger.info(`getCourseById successful for courseId ${courseId}`);
       res.status(404).json({ error: "course not found." });
@@ -109,11 +90,11 @@ async function getCourseById(req, res) {
     });
 
     console.log(`>>>>${error}`);
-    res.status(500).json({ error: "An error occurred while retrieving the course." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving the course." });
   }
 }
-
-
 
 module.exports = {
   getAllCourse,

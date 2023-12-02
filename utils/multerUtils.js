@@ -4,10 +4,10 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 
-const createSubdirectory = () => {
+const createSubdirectory = (date) => {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const subdirectory = path.join(year.toString(), month);
   return subdirectory;
 };
@@ -20,7 +20,8 @@ const generateUniqueFilename = (originalname, counter) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const subdirectory = createSubdirectory();
+    const now = new Date()
+    const subdirectory = createSubdirectory(now);
     req.uploadDir = path.join(__dirname, "../uploads", subdirectory);
 
     fs.ensureDir(req.uploadDir)

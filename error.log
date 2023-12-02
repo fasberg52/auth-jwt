@@ -47,3 +47,7 @@ Error splitting the argument list: Option not found
 2023-12-02T08:38:40.458Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
 2023-12-02T08:40:45.982Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
 2023-12-02T08:41:49.215Z error: Error deleting chapter: ReferenceError: Part is not defined
+2023-12-02T11:21:52.105Z error: Error retrieving parts with course ID: EntityPropertyNotFoundError: Property "courseId" was not found in "Part". Make sure your query is correct.
+2023-12-02T11:23:19.560Z error: Error retrieving parts with course ID: EntityPropertyNotFoundError: Property "courseId" was not found in "Part". Make sure your query is correct.
+2023-12-02T12:27:31.435Z error: Error in getCourseById for courseId 23
+2023-12-02T12:28:29.389Z error: Error in getCourseById for courseId 23

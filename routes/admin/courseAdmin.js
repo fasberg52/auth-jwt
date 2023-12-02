@@ -69,9 +69,9 @@ router.put(
   upload.single("icon"),
   partController.editPartWithChapterId
 );
-router.get("/parts", jwtAuthMiddleware, partController.gatAllPart);
+router.get("/:courseId/part", jwtAuthMiddleware, partController.gatAllPartwithCourseId);
 router.get(
-  "/:courseId/chapters/:chapterId/parts",
+  "/:courseId/chapters/:chapterId/part",
   jwtAuthMiddleware,
   partController.getAllPartsWithChapterId
 );

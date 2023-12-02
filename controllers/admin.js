@@ -20,7 +20,7 @@ async function getUsers(req, res) {
         "user.lastName",
         "user.phone",
         "user.roles",
-        "user.grade"
+        "user.grade",
       ])
       .skip((page - 1) * pageSize)
       .take(pageSize)
@@ -28,9 +28,12 @@ async function getUsers(req, res) {
 
     if (searchInput) {
       queryBuilder
-        .where("CONCAT(user.firstName, ' ', user.lastName) ILIKE :searchInput", {
-          searchInput: `%${searchInput}%`,
-        })
+        .where(
+          "CONCAT(user.firstName, ' ', user.lastName) ILIKE :searchInput",
+          {
+            searchInput: `%${searchInput}%`,
+          }
+        )
         .orWhere("user.phone ILIKE :searchInput", {
           searchInput: `%${searchInput}%`,
         });
@@ -129,10 +132,10 @@ async function updateUsers(req, res) {
 
 async function deleteUsers(req, res) {
   try {
-    const phone = req.params.phone; // Extract the phone number from the request parameters
+    const phone = req.params.phone; 
 
     await getManager().transaction(async (transactionalEntityManager) => {
-      // Find the user you want to delete
+      
       const user = await transactionalEntityManager.findOne(Users, {
         where: { phone: phone },
       });
@@ -141,12 +144,12 @@ async function deleteUsers(req, res) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // Set the user reference to null for associated orders
+      
       await transactionalEntityManager
         .createQueryBuilder()
         .update(Order)
         .set({ user: null })
-        .where("user.phone = :phone", { phone: phone }) // Use phone: phone to pass the parameter
+        .where("user.phone = :phone", { phone: phone }) 
         .execute();
 
       // Delete the user
@@ -164,7 +167,6 @@ async function deleteUsers(req, res) {
 
 module.exports = {
   getUsers,
-
   getUserByPhone,
   updateUsers,
   deleteUsers,

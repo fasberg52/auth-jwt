@@ -1,6 +1,6 @@
 // courseBuilder Entity
 
-const { EntitySchema, PrimaryColumn } = require("typeorm");
+const { EntitySchema } = require("typeorm");
 
 const Part = new EntitySchema({
   name: "Part",
@@ -49,12 +49,21 @@ const Part = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    courseId: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     chapter: {
       type: "many-to-one",
       target: "Chapter",
       joinColumn: true,
+    },
+    course: {
+      type: "many-to-one",
+      target: "Course",
+      joinColumn: { name: "courseId", referencedColumnName: "id" },
     },
     secureLink: {
       type: "many-to-one",
