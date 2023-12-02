@@ -51,3 +51,14 @@ Error splitting the argument list: Option not found
 2023-12-02T11:23:19.560Z error: Error retrieving parts with course ID: EntityPropertyNotFoundError: Property "courseId" was not found in "Part". Make sure your query is correct.
 2023-12-02T12:27:31.435Z error: Error in getCourseById for courseId 23
 2023-12-02T12:28:29.389Z error: Error in getCourseById for courseId 23
+2023-12-02T15:25:08.791Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:25:32.982Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:26:25.431Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:27:19.644Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:27:50.962Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:28:58.347Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:29:40.668Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:29:51.172Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:30:34.000Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:31:07.215Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:32:03.115Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
