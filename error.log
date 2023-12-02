@@ -36,3 +36,14 @@ Error splitting the argument list: Option not found
 
 2023-11-30T12:32:52.211Z error: Error creating part: ReferenceError: crypto is not defined
 2023-11-30T12:33:57.383Z error: Error creating part: ReferenceError: SecureLink is not defined
+2023-12-02T05:53:51.088Z error: Error in getCourseById for courseId 23
+2023-12-02T05:57:54.441Z error: Error in getCourseById for courseId 23
+2023-12-02T06:02:55.120Z error: Error in getCourseById for courseId part
+2023-12-02T06:06:10.217Z error: Error in getCourseById for courseId parts
+2023-12-02T06:21:45.139Z error: Error in getCourseById for courseId 23
+2023-12-02T07:48:46.696Z error: Error in getChpaterWithParts: TypeORMError: Relation with property path parts in entity was not found.
+2023-12-02T07:51:43.445Z error: Error in getChpaterWithParts: TypeORMError: Relation with property path parts in entity was not found.
+2023-12-02T08:32:21.612Z error: Error deleting chapter: QueryFailedError: update or delete on table "chapters" violates foreign key constraint "FK_64cb2e279bbfc2ec860a75137ad" on table "parts"
+2023-12-02T08:38:40.458Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
+2023-12-02T08:40:45.982Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
+2023-12-02T08:41:49.215Z error: Error deleting chapter: ReferenceError: Part is not defined

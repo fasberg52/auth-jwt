@@ -2,7 +2,7 @@
 const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
-const SecureLink = require("../model/secureLink")
+const SecureLink = require("../model/secureLink");
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
@@ -186,7 +186,7 @@ async function gatAllPart(req, res) {
 }
 async function getAllPartsWithChapterId(req, res) {
   try {
-    const chapterId = req.params.chapterId;
+    const { chapterId, courseId } = req.params;
 
     const partRepository = getManager().getRepository(Part);
     const parts = await partRepository.find({
@@ -201,7 +201,7 @@ async function getAllPartsWithChapterId(req, res) {
 
     logger.info("All parts retrieved for chapter ID", { chapterId, parts });
 
-    res.json({ parts, status: 200 });
+    res.json({ parts, status: 200, courseId });
   } catch (error) {
     logger.error(`Error retrieving parts with chapter ID: ${error}`);
 
