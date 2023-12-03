@@ -89,7 +89,7 @@ async function getCourseById(req, res) {
         "course.createdAt",
         "course.lastModified",
       ])
-      .addSelect(["category.name"])
+      .addSelect(["category.id", "category.name"])
       .where("course.id = :courseId", { courseId })
       .getOne();
 

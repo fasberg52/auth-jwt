@@ -274,8 +274,20 @@ async function getAllChaptersAndParts(req, res) {
     const chapters = await chapterRepository
       .createQueryBuilder("chapter")
       .leftJoin("chapter.parts", "part")
-      .select(["chapter.id", "chapter.title","chapter.orderIndex"])
-      .addSelect(["part.id", "part.title", "part.description"])
+      .select([
+        "chapter.id",
+        "chapter.title",
+        "chapter.orderIndex",
+        "chapter.courseId",
+      ])
+      .addSelect([
+        "part.id",
+        "part.title",
+        "part.description",
+        "part.videoDuration",
+        "part.isFree",
+        "CASE WHEN part.isFree THEN part.videoPath ELSE '' END AS videoPath", // Include videoPath only when isFree is true
+      ])
       .where("chapter.courseId = :courseId", { courseId })
       .getMany();
 
@@ -286,23 +298,6 @@ async function getAllChaptersAndParts(req, res) {
 
       return res.status(404).json({ error: "فصلی یافت نشد برای دوره" });
     }
-
-    // Create a map to group parts by chapter
-    // const chaptersWithParts = new Map();
-    // chapters.forEach((chapter) => {
-    //   const { id, title } = chapter;
-    //   if (!chaptersWithParts.has(id)) {
-    //     chaptersWithParts.set(id, { id, title, parts: [] });
-    //   }
-    //   const chapterWithParts = chaptersWithParts.get(id);
-    //   chapterWithParts.parts.push({
-    //     id: chapter.parts.id,
-    //     title: chapter.parts.title,
-    //     description: chapter.parts.description,
-    //   });
-    // });
-
-    // const result = Array.from(chaptersWithParts.values());
 
     logger.info("All chapters and parts retrieved for course ID", {
       courseId,
@@ -321,6 +316,8 @@ async function getAllChaptersAndParts(req, res) {
     });
   }
 }
+
+
 
 module.exports = {
   createPart,

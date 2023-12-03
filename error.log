@@ -61,3 +61,6 @@ Error splitting the argument list: Option not found
 2023-12-03T08:06:02.566Z error: Error retrieving chapters and parts with course ID: TypeORMError: Relation with property path parts in entity was not found.
 2023-12-03T08:11:46.454Z error: Error retrieving parts and parts with course ID: TypeError: partRepository.createQueryBuilder(...).rightJoin is not a function
 2023-12-03T08:13:25.854Z error: Error retrieving chapters and parts with course ID: TypeORMError: Relation with property path parts in entity was not found.
+2023-12-03T11:45:06.906Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column part.videodouration does not exist
+2023-12-03T11:52:35.260Z error: Error retrieving chapters and parts with course ID: ReferenceError: part is not defined
+2023-12-03T11:53:08.776Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at or near ":"

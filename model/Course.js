@@ -71,6 +71,16 @@ const Course = new EntitySchema({
         inverseJoinColumn: { name: "userId", referencedColumnName: "phone" },
       },
     },
+    chapters: {
+      type: "one-to-many",
+      target: "Chapter",
+      inverseSide: "course",
+    },
+    parts: {
+      type: "one-to-many",
+      target: "Part",
+      inverseSide: "course",
+    },
   },
 });
 

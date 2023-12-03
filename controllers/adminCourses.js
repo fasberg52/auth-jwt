@@ -3,6 +3,7 @@ const Courses = require("../model/Course");
 const Category = require("../model/Category");
 const { getManager } = require("typeorm");
 const upload = require("../utils/multerUtils");
+const logger = require("../services/logger");
 const jalaliMoment = require("jalali-moment");
 async function addCourse(req, res) {
   try {
@@ -20,16 +21,20 @@ async function addCourse(req, res) {
       discountExpiration,
     } = req.body;
 
-    // const imageUrl = req.file ? "/uploads/" + req.file.filename : null;
-
     let category = null;
     if (categoryId !== undefined && categoryId !== null) {
       category = await getManager()
         .getRepository(Category)
         .findOne({ where: { id: categoryId } });
     }
-    const startMoment = jalaliMoment(discountStart, "jYYYY-jM-jD");
-    const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jM-jD");
+
+    // Check if discountStart and discountExpiration are provided
+    const startMoment = discountStart
+      ? jalaliMoment(discountStart, "jYYYY-jM-jD")
+      : null;
+    const expirationMoment = discountExpiration
+      ? jalaliMoment(discountExpiration, "jYYYY-jM-jD")
+      : null;
 
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
@@ -41,14 +46,14 @@ async function addCourse(req, res) {
       videoUrl,
       category,
       discountPrice,
-      discountStart: startMoment.toDate(),
-      discountExpiration: expirationMoment.toDate(),
+      discountStart: startMoment ? startMoment.toDate() : null,
+      discountExpiration: expirationMoment ? expirationMoment.toDate() : null,
     });
 
     const saveCourse = await courseRepository.save(newCourse);
     console.log(`saveCourse >>> ${saveCourse}`);
-    // Prepare a response object
 
+    // Prepare a response object
     res
       .status(201)
       .json({ message: "دوره با موفقیت ایجاد شد", saveCourse, status: 201 });
@@ -87,14 +92,19 @@ async function editCourse(req, res) {
       existingCourse.bannerUrl = bannerUrl;
       existingCourse.videoUrl = videoUrl;
       existingCourse.discountPrice = discountPrice;
-      existingCourse.discountStart = discountStart;
-      existingCourse.discountExpiration = discountExpiration;
 
-      const startMoment = jalaliMoment(discountStart, "jYYYY-jMMMM-jD");
-      const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jMMMM-jD");
+      // Check if discountStart and discountExpiration are provided
+      const startMoment = discountStart
+        ? jalaliMoment(discountStart, "jYYYY-jMMMM-jD")
+        : null;
+      const expirationMoment = discountExpiration
+        ? jalaliMoment(discountExpiration, "jYYYY-jMMMM-jD")
+        : null;
 
-      existingCourse.discountStart = startMoment.toDate();
-      existingCourse.discountExpiration = expirationMoment.toDate();
+      existingCourse.discountStart = startMoment ? startMoment.toDate() : null;
+      existingCourse.discountExpiration = expirationMoment
+        ? expirationMoment.toDate()
+        : null;
 
       if (categoryId !== undefined && categoryId !== null) {
         const category = await getManager()
@@ -139,8 +149,67 @@ async function deleteCourse(req, res) {
   }
 }
 
+async function getAdminCourseById(req, res) {
+  try {
+    const courseRepository = getManager().getRepository(Courses);
+    const courseId = req.params.courseId;
+
+    // Fetch the course with related chapters, parts, and category
+    const existingCourse = await courseRepository
+      .createQueryBuilder("course")
+      .leftJoin("course.category", "category")
+      .leftJoin("course.chapters", "chapter")
+      .leftJoin("chapter.parts", "part")
+      .select([
+        "course.id",
+        "course.title",
+        "course.description",
+        "course.price",
+        "course.discountPrice",
+        "course.discountStart",
+        "course.discountExpiration",
+        "course.imageUrl",
+        "course.bannerUrl",
+        "course.videoUrl",
+        "course.createdAt",
+        "course.lastModified",
+      ])
+      .addSelect(["category.id", "category.name"])
+      .addSelect(["chapter.id", "chapter.title", "chapter.orderIndex"])
+      .addSelect([
+        "part.id",
+        "part.title",
+        "part.description",
+        "part.videoDuration",
+        "part.isFree",
+        "part.videoPath",
+      ])
+      .where("course.id = :courseId", { courseId })
+      .getOne();
+
+    if (existingCourse) {
+      logger.info(`getCourseById successful for courseId ${courseId}`);
+
+      res.json(existingCourse);
+    } else {
+      logger.info(`getCourseById failed for courseId ${courseId}`);
+      res.status(404).json({ error: "Course not found." });
+    }
+  } catch (error) {
+    // logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
+    //   error,
+    // });
+
+    console.log(`>>>>${error}`);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving the course." });
+  }
+}
+
 module.exports = {
   addCourse,
   editCourse,
   deleteCourse,
+  getAdminCourseById,
 };

@@ -50,6 +50,7 @@ router.put(
   "/course/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
+
   courseController.editCourse
 );
 router.delete(
@@ -57,6 +58,13 @@ router.delete(
   jwtAuthMiddleware,
   checkRole("admin"),
   courseController.deleteCourse
+);
+
+router.get(
+  "/course/:courseId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  courseController.getAdminCourseById
 );
 
 //category
