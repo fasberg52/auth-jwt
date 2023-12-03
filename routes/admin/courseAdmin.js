@@ -44,7 +44,7 @@ router.get(
 router.get(
   "/:courseId/chapters",
   jwtAuthMiddleware,
-  chapterController.getChpaterWithParts
+  chapterController.getAllChpaterWithParts
 );
 
 router.post(
@@ -69,11 +69,17 @@ router.put(
   upload.single("icon"),
   partController.editPartWithChapterId
 );
-router.get("/:courseId/part", jwtAuthMiddleware, partController.gatAllPartwithCourseId);
+router.get(
+  "/:courseId/part",
+  jwtAuthMiddleware,
+  partController.gatAllPartwithCourseId
+);
 router.get(
   "/:courseId/chapters/:chapterId/part",
   jwtAuthMiddleware,
   partController.getAllPartsWithChapterId
 );
+
+router.get("/:courseId/allChpter", partController.getAllChaptersAndParts);
 
 module.exports = router;

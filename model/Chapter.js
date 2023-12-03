@@ -1,6 +1,5 @@
-// courseBuilder Entity
-
 const { EntitySchema, PrimaryColumn } = require("typeorm");
+const Part = require("../model/Part"); // Make sure the path is correct
 
 const Chapter = new EntitySchema({
   name: "Chapter",
@@ -17,8 +16,6 @@ const Chapter = new EntitySchema({
     title: {
       type: "varchar",
     },
-
-
     orderIndex: {
       type: "int",
       default: 0,
@@ -39,12 +36,11 @@ const Chapter = new EntitySchema({
       target: "Course",
       joinColumn: true,
     },
-  },
-  parts: {
-    type: "one-to-many",
-    target: "Part", 
-    inverseSide: "chapter",
-  
+    parts: {
+      type: "one-to-many",
+      target: "Part",
+      inverseSide: "chapter",
+    },
   },
 });
 

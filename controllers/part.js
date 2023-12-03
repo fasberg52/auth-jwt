@@ -264,6 +264,63 @@ async function createSecureLink(originalLink) {
 
   return token;
 }
+async function getAllChaptersAndParts(req, res) {
+  try {
+    const { courseId } = req.params;
+
+    const chapterRepository = getManager().getRepository(Chapter);
+    const partRepository = getManager().getRepository(Part);
+
+    const chapters = await chapterRepository
+      .createQueryBuilder("chapter")
+      .leftJoin("chapter.parts", "part")
+      .select(["chapter.id", "chapter.title","chapter.orderIndex"])
+      .addSelect(["part.id", "part.title", "part.description"])
+      .where("chapter.courseId = :courseId", { courseId })
+      .getMany();
+
+    if (chapters.length === 0) {
+      logger.warn("No chapters found for the specified course ID", {
+        courseId,
+      });
+
+      return res.status(404).json({ error: "فصلی یافت نشد برای دوره" });
+    }
+
+    // Create a map to group parts by chapter
+    // const chaptersWithParts = new Map();
+    // chapters.forEach((chapter) => {
+    //   const { id, title } = chapter;
+    //   if (!chaptersWithParts.has(id)) {
+    //     chaptersWithParts.set(id, { id, title, parts: [] });
+    //   }
+    //   const chapterWithParts = chaptersWithParts.get(id);
+    //   chapterWithParts.parts.push({
+    //     id: chapter.parts.id,
+    //     title: chapter.parts.title,
+    //     description: chapter.parts.description,
+    //   });
+    // });
+
+    // const result = Array.from(chaptersWithParts.values());
+
+    logger.info("All chapters and parts retrieved for course ID", {
+      courseId,
+      chapters,
+    });
+
+    res.json({ chapters, status: 200 });
+  } catch (error) {
+    logger.error(
+      `Error retrieving chapters and parts with course ID: ${error}`
+    );
+
+    res.status(500).json({
+      error:
+        "An error occurred while retrieving chapters and parts with course ID.",
+    });
+  }
+}
 
 module.exports = {
   createPart,
@@ -272,4 +329,5 @@ module.exports = {
   deletePart,
   gatAllPartwithCourseId,
   getAllPartsWithChapterId,
+  getAllChaptersAndParts,
 };

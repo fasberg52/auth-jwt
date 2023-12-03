@@ -6,7 +6,6 @@ const logger = require("../services/logger");
 async function createChapter(req, res) {
   try {
     const { courseId, title } = req.body;
-   
 
     const chapterRepository = getManager().getRepository(Chapter);
 
@@ -94,16 +93,13 @@ async function deleteChapter(req, res) {
       .where("part.chapterId = :chapterId", { chapterId })
       .getMany();
 
-
     await getManager().transaction(async (transactionalEntityManager) => {
-
       await transactionalEntityManager
         .createQueryBuilder()
         .delete()
         .from(Part)
         .where("chapterId = :chapterId", { chapterId })
         .execute();
-
 
       await transactionalEntityManager
         .createQueryBuilder()
@@ -170,7 +166,7 @@ async function getChapterById(req, res) {
       .json({ error: "An error occurred while creating the getProductByIdd." });
   }
 }
-async function getChpaterWithParts(req, res) {
+async function getAllChpaterWithParts(req, res) {
   try {
     const { courseId } = req.params;
 
@@ -202,11 +198,13 @@ async function getChpaterWithParts(req, res) {
     });
   }
 }
+
 module.exports = {
   createChapter,
   editChapter,
   deleteChapter,
   getAllChpters,
   getChapterById,
-  getChpaterWithParts,
+  getAllChpaterWithParts,
+  
 };
