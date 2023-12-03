@@ -71,18 +71,35 @@ async function getCourseById(req, res) {
     const courseRepository = getManager().getRepository(Courses);
     const courseId = req.params.courseId;
 
-    // Fetch the course with related chapters and parts
-    const existingCourse = await courseRepository.findOne({
-      where: { id: courseId },
-    });
+    // Fetch the course with related chapters, parts, and category
+    const existingCourse = await courseRepository
+      .createQueryBuilder("course")
+      .leftJoin("course.category", "category")
+      .select([
+        "course.id",
+        "course.title",
+        "course.description",
+        "course.price",
+        "course.discountPrice",
+        "course.discountStart",
+        "course.discountExpiration",
+        "course.imageUrl",
+        "course.bannerUrl",
+        "course.videoUrl",
+        "course.createdAt",
+        "course.lastModified",
+      ])
+      .addSelect(["category.name"])
+      .where("course.id = :courseId", { courseId })
+      .getOne();
 
     if (existingCourse) {
       logger.info(`getCourseById successful for courseId ${courseId}`);
 
       res.json(existingCourse);
     } else {
-      logger.info(`getCourseById successful for courseId ${courseId}`);
-      res.status(404).json({ error: "course not found." });
+      logger.info(`getCourseById failed for courseId ${courseId}`);
+      res.status(404).json({ error: "Course not found." });
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
