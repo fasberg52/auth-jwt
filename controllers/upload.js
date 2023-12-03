@@ -64,46 +64,6 @@ async function createUpload(req, res) {
 }
 
 
-// async function getAllUploads(req, res) {
-//   try {
-//     const uploadRepository = getManager().getRepository(Upload);
-
-//     const page = req.query.page || 1;
-//     const pageSize = req.query.pageSize || 10;
-
-//     const skip = (page - 1) * pageSize;
-
-//     const [uploads, totalCount] = await uploadRepository.findAndCount({
-//       skip,
-//       take: pageSize,
-//     });
-
-//     // Convert dates to Jalali format before sending the response
-//     const uploadsWithJalaliDates = uploads.map((upload) => {
-//       return {
-//         ...upload,
-//         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-//         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-
-//         // Add more date fields if necessary
-//       };
-//     });
-
-//     res.status(200).json({
-//       message: "All uploads retrieved successfully",
-//       uploads: uploadsWithJalaliDates,
-//       totalCount,
-//       status: 200,
-//     });
-//   } catch (error) {
-//     console.error("Error getting all uploads:", error);
-//     res.status(500).json({
-//       message: "Internal Server Error",
-//       status: 500,
-//     });
-//   }
-// }
-
 async function getAllUploads(req, res) {
   try {
     const uploadRepository = getManager().getRepository(Upload);
