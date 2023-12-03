@@ -9,11 +9,19 @@ const SecureLink = new EntitySchema({
       primary: true,
       generated: true,
     },
-    originalLink: { 
-      type: "varchar",
+    partId: {
+      type: "int",
+      nullable: true,
     },
     token: {
-      type: "varchar", 
+      type: "varchar",
+    },
+  },
+  relations: {
+    part: {
+      type: "many-to-one",
+      target: "Part",
+      joinColumn: { name: "partId", referencedColumnName: "id" },
     },
   },
 });

@@ -3,36 +3,39 @@ const axios = require("axios");
 const crypto = require("crypto");
 const { getManager } = require("typeorm");
 const SecureLink = require("../model/secureLink");
-async function createSecureLink(originalLink) {
+async function createSecureLink(req, res) {
   try {
-    // Download the video from the original link
-    const response = await axios.get(originalLink, {
-      responseType: "arraybuffer",
-    });
+    const { secureLink } = req.params;
 
-    // Generate a random token for the secure link
-    const token = crypto.randomBytes(16).toString("hex");
-
-    // Save the downloaded video to a temporary file
-    const tempFilePath = `./temp/${token}.m4v`; // Adjust the path as needed
-    await fs.writeFile(tempFilePath, Buffer.from(response.data));
-
-    // Save the secure link to the database
+    // Check if the secure link is valid
     const secureLinkRepository = getManager().getRepository(SecureLink);
-    const secureLink = secureLinkRepository.create({
-      originalLink,
-      token,
-      filePath: tempFilePath, // Store the path to the temporary file
+    const isValid = await secureLinkRepository.findOne({
+      where: { token: secureLink },
     });
 
-    await secureLinkRepository.save(secureLink);
-    console.log("response>>>>>>>" + response);
-    return token;
+    if (isValid) {
+      // Secure link is valid, serve the video
+      const videoPath =
+        "https://dl3.baclass.online/sarsalari/01-Sarsalari-1402-07-12-1.m4v";
+      const stat = fs.statSync(videoPath);
+
+      // Set the response headers
+      res.writeHead(200, {
+        "Content-Type": "video/mp4",
+        "Content-Length": stat.size,
+      });
+
+      // Create a readable stream from the video file and pipe it to the response
+      const stream = fs.createReadStream(videoPath);
+      stream.pipe(res);
+    } else {
+      // Secure link is not valid, respond with an error
+      res.status(403).send("Invalid secure link");
+    }
   } catch (error) {
-    console.error(`Error creating secure link: ${error.message}`);
-    throw error;
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
-  
 }
 
 module.exports = {

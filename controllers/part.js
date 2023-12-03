@@ -178,27 +178,32 @@ async function gatAllPartwithCourseId(req, res) {
     const partRepository = getManager().getRepository(Part);
 
     // Retrieve parts and count
-    const [parts, totalCount] = await partRepository.findAndCount({
+    const parts = await partRepository.find({
       where: { courseId },
     });
 
     if (parts.length === 0) {
       logger.warn("No parts found for the specified course ID", { courseId });
-
       return res.status(404).json({ error: "پارت یافت نشد برای دوره" });
     }
 
-    logger.info("All parts retrieved for course ID", { courseId, parts });
+    const totalDuration = calculateTotalDuration(parts);
 
-    res.json({ parts, totalCount, status: 200 });
+    logger.info("All parts retrieved for course ID", {
+      courseId,
+      parts,
+      totalDuration,
+    });
+
+    res.json({ parts, totalDuration, status: 200 });
   } catch (error) {
     logger.error(`Error retrieving parts with course ID: ${error}`);
-
     res.status(500).json({
       error: "An error occurred while retrieving parts with course ID.",
     });
   }
 }
+
 async function getAllPartsWithChapterId(req, res) {
   try {
     const { chapterId, courseId } = req.params;
@@ -249,6 +254,22 @@ function formatVideoDuration(durationInSeconds) {
   return `${hours}:${String(minutes).padStart(2, "0")}:${String(
     seconds
   ).padStart(2, "0")}`;
+}
+
+function calculateTotalDuration(parts) {
+  let totalDurationInSeconds = 0;
+
+  parts.forEach((part) => {
+    totalDurationInSeconds += parseDurationToSeconds(part.videoDuration);
+  });
+
+  const totalDuration = formatVideoDuration(totalDurationInSeconds);
+  return totalDuration;
+}
+
+function parseDurationToSeconds(duration) {
+  const [hours, minutes, seconds] = duration.split(":").map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
 }
 
 async function createSecureLink(originalLink) {
