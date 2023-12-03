@@ -28,11 +28,9 @@ async function addCourse(req, res) {
         .getRepository(Category)
         .findOne({ where: { id: categoryId } });
     }
-    // Use jalaliMoment to parse the Jalali date strings
     const startMoment = jalaliMoment(discountStart, "jYYYY-jM-jD");
     const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jM-jD");
 
-    // Corrected entity name from Courses to Course
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
@@ -62,7 +60,18 @@ async function addCourse(req, res) {
 
 async function editCourse(req, res) {
   try {
-    const { title, description, price, videoUrl } = req.body;
+    const {
+      title,
+      description,
+      price,
+      videoUrl,
+      categoryId,
+      imageUrl,
+      bannerUrl,
+      discountPrice,
+      discountStart,
+      discountExpiration,
+    } = req.body;
     const courseRepository = getManager().getRepository(Courses);
     const idCourse = req.params.id;
 
@@ -70,23 +79,30 @@ async function editCourse(req, res) {
       where: { id: idCourse },
     });
 
-    //  // Handle image upload
-    //  if (req.file) {
-    //   // Delete the previous image if it exists
-    //   if (existingCourse.imageUrl) {
-    //     fs.unlinkSync(existingCourse.imageUrl);
-    //   }
-
-    //   // Set the new image URL
-    //   existingCourse.imageUrl = "/uploads/" + req.file.filename;
-    // }
-
     if (existingCourse) {
       existingCourse.title = title;
       existingCourse.description = description;
       existingCourse.price = price;
-
+      existingCourse.imageUrl = imageUrl;
+      existingCourse.bannerUrl = bannerUrl;
       existingCourse.videoUrl = videoUrl;
+      existingCourse.discountPrice = discountPrice;
+      existingCourse.discountStart = discountStart;
+      existingCourse.discountExpiration = discountExpiration;
+
+      const startMoment = jalaliMoment(discountStart, "jYYYY-jMMMM-jD");
+      const expirationMoment = jalaliMoment(discountExpiration, "jYYYY-jMMMM-jD");
+
+      existingCourse.discountStart = startMoment.toDate();
+      existingCourse.discountExpiration = expirationMoment.toDate();
+
+      if (categoryId !== undefined && categoryId !== null) {
+        const category = await getManager()
+          .getRepository(Category)
+          .findOne({ where: { id: categoryId } });
+
+        existingCourse.category = category;
+      }
 
       // Save the updated course
       existingCourse.lastModified = new Date();

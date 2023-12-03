@@ -34,11 +34,11 @@ const Course = new EntitySchema({
       nullable: true,
     },
     imageUrl: {
-      type: "text",
+      type: "varchar",
       nullable: true,
     },
     bannerUrl: {
-      type: "text",
+      type: "varchar",
       nullable: true,
     },
     videoUrl: {

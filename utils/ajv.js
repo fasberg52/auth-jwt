@@ -73,15 +73,29 @@ const createPartSchema = {
   },
 };
 
+const courseSchema = {
+  type: "object",
+  properties: {
+    title: { type: "string", minLength: 1 },
+  },
+  required: ["title"],
+  errorMessage: {
+    properties: {
+      title: "شما باید عنوان را وارد کنید",
+    },
+
+  },
+};
 
 const phoneValidator = ajv.compile(phoneSchema);
 const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
 const signUpValidator = ajv.compile(signUpSchema);
 const partValidator = ajv.compile(createPartSchema);
+const courseValidator = ajv.compile(courseSchema);
 module.exports = {
   phoneValidator,
   loginWithOTPValidator,
   signUpValidator,
   partValidator,
-  
+  courseValidator,
 };

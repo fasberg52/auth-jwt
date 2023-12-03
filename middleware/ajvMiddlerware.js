@@ -5,8 +5,19 @@ const {
   loginWithOTPValidator,
   signUpValidator,
   partValidator,
-  
+  courseValidator,
 } = require("../utils/ajv");
+
+function validCourse(req, res, next) {
+  const valid = courseValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: courseValidator.errors[0].message,
+    });
+  }
+}
 
 function validParts(req, res, next) {
   const valid = partValidator(req.body);
@@ -57,7 +68,8 @@ module.exports = {
   validateLoginUsers,
   validateOTP,
   validateSignUp,
-  validParts
+  validParts,
+  validCourse,
 
   // Other validation functions
 };

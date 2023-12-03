@@ -8,7 +8,7 @@ const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
 const tagController = require("../../controllers/tag");
 const orderController = require("../../controllers/order");
-
+const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
@@ -43,7 +43,7 @@ router.post(
   "/course",
   jwtAuthMiddleware,
   checkRole("admin"),
-  upload.single("courseImage"),
+  ajvMiddlerware.validCourse,
   courseController.addCourse
 );
 router.put(
@@ -195,9 +195,9 @@ module.exports = router;
  *                   type: number
  *                   description: The HTTP status code (200)
  *       '400':
- *         description: دسته بندی پیدا نشد 
+ *         description: دسته بندی پیدا نشد
  *       '500':
- *         description: Internal server error 
+ *         description: Internal server error
  */
 
 /**
@@ -257,7 +257,6 @@ module.exports = router;
  *       '500':
  *         description: Internal server error
  */
-
 
 /**
  * @swagger

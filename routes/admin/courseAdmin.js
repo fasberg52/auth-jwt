@@ -80,6 +80,6 @@ router.get(
   partController.getAllPartsWithChapterId
 );
 
-router.get("/:courseId/allChpter", partController.getAllChaptersAndParts);
+router.get("/:courseId/course-content", partController.getAllChaptersAndParts);
 
 module.exports = router;
