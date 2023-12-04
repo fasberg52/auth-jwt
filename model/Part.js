@@ -53,6 +53,11 @@ const Part = new EntitySchema({
       type: "int",
       nullable: true,
     },
+
+    orderIndex: {
+      type: "int",
+      default: 0,
+    },
   },
   relations: {
     chapter: {
