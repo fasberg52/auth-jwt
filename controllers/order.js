@@ -3,7 +3,7 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const OrderItems = require("../model/orderItems");
+const Enrollment = require("../model/Enrollment");
 const axios = require("axios");
 const moment = require("jalali-moment");
 
@@ -15,7 +15,7 @@ async function checkOutCart(req, res) {
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
     const orderRepository = connection.getRepository(Order);
-    const orderItemsRepository = connection.getRepository(OrderItems);
+    const enrollmentRepository = connection.getRepository(Enrollment);
 
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -76,7 +76,7 @@ async function createPayment(req, res) {
     const cartItems = await getCartItems(cartItemsRepository, userCart.id);
 
     const savedOrder = await createOrder(userPhone);
-    const updatedTotalPrice = await createOrderItemsAndCalculateTotalPrice(
+    const updatedTotalPrice = await createEnrollmentAndCalculateTotalPrice(
       cartItems,
       savedOrder
     );
@@ -133,8 +133,8 @@ async function createOrder(userPhone) {
   return await orderRepository.save(newOrder);
 }
 
-async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
-  const orderItemsRepository = getRepository(OrderItems);
+async function createEnrollmentAndCalculateTotalPrice(cartItems, savedOrder) {
+  const enrollmentRepository = getRepository(Enrollment);
   const courseRepository = getRepository(Courses);
   let totalPrice = 0;
   for (const cartItem of cartItems) {
@@ -149,12 +149,12 @@ async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
           `Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`
         );
         totalPrice += discountedPrice * cartItem.quantity;
-        const newOrderItem = orderItemsRepository.create({
+        const newEnrollment = enrollmentRepository.create({
           order: savedOrder,
           courseId: cartItem.courseId,
           quantity: cartItem.quantity,
         });
-        await orderItemsRepository.save(newOrderItem);
+        await enrollmentRepository.save(newEnrollment);
       }
     }
   }
@@ -400,17 +400,17 @@ async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
     const orderRepository = getRepository(Order);
-    const orderItemsRepository = getRepository(OrderItems);
+    const enrollmentRepository = getRepository(Enrollment);
 
     const order = await orderRepository
       .createQueryBuilder("order")
       .leftJoin("order.user", "user")
-      .leftJoin("order.orderItems", "orderItems")
-      .leftJoinAndSelect("orderItems.course", "course")
+      .leftJoin("order.enrollments", "enrollments")
+      .leftJoinAndSelect("enrollments.course", "course")
       .select(["order"])
       .addSelect(["user.firstName", "user.lastName"])
       .addSelect([
-        "orderItems.courseId",
+        "enrollments.courseId",
         "course.title",
         "course.price",
         "course.discountPrice",
