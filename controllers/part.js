@@ -26,12 +26,24 @@ async function createPart(req, res) {
       return res.status(400).json({ error: "Chapter not found." });
     }
 
+    const [result] = await partRepository.query(
+      'SELECT COUNT(*) FROM parts WHERE "chapterId" = $1',
+      [chapterId]
+    );
+    const partCount = parseInt(result.count);
+
+    console.log(`>> partCount ${partCount}`);
+
+    // Step 2: Set the orderIndex for the new part to the current partCount
+    const orderIndex = partCount;
+    console.log(`>> orderIndex ${orderIndex}`);
+
     const newPart = partRepository.create({
       courseId,
       chapterId,
       title,
       description,
-
+      orderIndex,
       videoPath,
       videoDuration,
     });
@@ -48,6 +60,7 @@ async function createPart(req, res) {
       description,
       videoPath,
       videoDuration,
+      orderIndex,
     });
 
     res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
