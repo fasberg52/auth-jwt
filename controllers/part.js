@@ -300,17 +300,25 @@ async function getAllChaptersAndParts(req, res) {
         "chapter.title",
         "chapter.orderIndex",
         "chapter.courseId",
-      ])
-      .addSelect([
         "part.id",
         "part.title",
         "part.description",
         "part.videoDuration",
         "part.isFree",
-        "CASE WHEN part.isFree THEN part.videoPath ELSE '' END AS videoPath", // Include videoPath only when isFree is true
+        "part.videoPath",
       ])
       .where("chapter.courseId = :courseId", { courseId })
       .getMany();
+
+    const modifiedChapters = chapters.map((chapter) => {
+      chapter.parts = chapter.parts.map((part) => {
+        if (!part.isFree) {
+          delete part.videoPath;
+        }
+        return part;
+      });
+      return chapter;
+    });
 
     if (chapters.length === 0) {
       logger.warn("No chapters found for the specified course ID", {
@@ -322,10 +330,10 @@ async function getAllChaptersAndParts(req, res) {
 
     logger.info("All chapters and parts retrieved for course ID", {
       courseId,
-      chapters,
+      modifiedChapters,
     });
 
-    res.json({ chapters, status: 200 });
+    res.json({ chapters: modifiedChapters, status: 200 });
   } catch (error) {
     logger.error(
       `Error retrieving chapters and parts with course ID: ${error}`
@@ -337,8 +345,6 @@ async function getAllChaptersAndParts(req, res) {
     });
   }
 }
-
-
 
 module.exports = {
   createPart,
