@@ -183,6 +183,7 @@ async function getAdminCourseById(req, res) {
         "part.videoDuration",
         "part.isFree",
         "part.videoPath",
+        "part.orderIndex"
       ])
       .where("course.id = :courseId", { courseId })
       .orderBy("chapter.orderIndex", "ASC")

@@ -80,3 +80,4 @@ Error splitting the argument list: Option not found
 2023-12-04T06:53:45.907Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
 2023-12-04T06:54:25.029Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
 2023-12-04T06:55:26.855Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T08:21:33.093Z error: Error creating part: ReferenceError: id is not defined

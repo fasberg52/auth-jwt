@@ -12,7 +12,8 @@ ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
 
 async function createPart(req, res) {
   try {
-    const { courseId, chapterId, title, description, videoPath } = req.body;
+    const { courseId, chapterId, title, description, videoPath, isFree } =
+      req.body;
     //const icon = req.file ? req.file.filename : null;
     const videoDuration = await getVideoDuration(videoPath);
 
@@ -39,6 +40,7 @@ async function createPart(req, res) {
     console.log(`>> orderIndex ${orderIndex}`);
 
     const newPart = partRepository.create({
+      
       courseId,
       chapterId,
       title,
@@ -46,6 +48,7 @@ async function createPart(req, res) {
       orderIndex,
       videoPath,
       videoDuration,
+      isFree
     });
 
     const savedPart = await partRepository.save(newPart);
@@ -61,6 +64,7 @@ async function createPart(req, res) {
       videoPath,
       videoDuration,
       orderIndex,
+      isFree
     });
 
     res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
@@ -75,7 +79,7 @@ async function createPart(req, res) {
 
 async function editPart(req, res) {
   try {
-    const { title, description, icon, videoPath } = req.body;
+    const { title, description, icon, videoPath, orderIndex, isFree } = req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
 
@@ -88,6 +92,8 @@ async function editPart(req, res) {
       existingPart.description = description;
       existingPart.icon = icon;
       existingPart.videoPath = videoPath;
+      existingPart.orderIndex = orderIndex; // Add this line
+      existingPart.isFree = isFree; // Add this line
 
       // Save the updated part
       existingPart.lastModified = new Date();
@@ -99,9 +105,11 @@ async function editPart(req, res) {
         description,
         icon,
         videoPath,
+        orderIndex,
+        isFree,
       });
 
-      res.json(updatedPart);
+      res.json({ message: "Part updated successfully", updatedPart });
     } else {
       res.status(404).json({ error: "Part not found." });
     }
@@ -112,6 +120,7 @@ async function editPart(req, res) {
       .json({ error: "An error occurred while editing the part." });
   }
 }
+
 async function editPartWithChapterId(req, res) {
   try {
     const { title, description, videoPath } = req.body;
