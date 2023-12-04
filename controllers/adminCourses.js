@@ -187,6 +187,8 @@ async function getAdminCourseById(req, res) {
       ])
       .where("course.id = :courseId", { courseId })
       .orderBy("chapter.orderIndex", "ASC")
+      .addOrderBy("part.orderIndex", "ASC")
+
       .getOne();
 
     if (existingCourse) {
