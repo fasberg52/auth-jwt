@@ -82,4 +82,7 @@ router.get(
 
 router.get("/:courseId/course-content", partController.getAllChaptersAndParts);
 
+
+
+
 module.exports = router;
