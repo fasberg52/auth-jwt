@@ -2,7 +2,7 @@
 const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
-const SecureLink = require("../model/secureLink");
+// const SecureLink = require("../model/secureLink");
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
@@ -38,8 +38,8 @@ async function createPart(req, res) {
 
     const savedPart = await partRepository.save(newPart);
 
-    const secureLink = await createSecureLink(videoPath);
-    savedPart.secureLink = secureLink;
+    // const secureLink = await createSecureLink(videoPath);
+    // savedPart.secureLink = secureLink;
 
     logger.info("Part created", {
       courseId,
@@ -272,53 +272,65 @@ function parseDurationToSeconds(duration) {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
-async function createSecureLink(originalLink) {
-  const token = crypto.randomBytes(16).toString("hex");
+// async function createSecureLink(originalLink) {
+//   const token = crypto.randomBytes(16).toString("hex");
 
-  const secureLinkRepository = getManager().getRepository(SecureLink);
-  const secureLink = secureLinkRepository.create({
-    originalLink,
-    token,
-  });
+//   const secureLinkRepository = getManager().getRepository(SecureLink);
+//   const secureLink = secureLinkRepository.create({
+//     originalLink,
+//     token,
+//   });
 
-  await secureLinkRepository.save(secureLink);
+//   await secureLinkRepository.save(secureLink);
 
-  return token;
-}
+//   return token;
+// }
 async function getAllChaptersAndParts(req, res) {
   try {
     const { courseId } = req.params;
 
-    const chapterRepository = getManager().getRepository(Chapter);
-    const partRepository = getManager().getRepository(Part);
-
-    const chapters = await chapterRepository
-      .createQueryBuilder("chapter")
+    const chapters = await getManager()
+      .createQueryBuilder(Chapter, "chapter")
       .leftJoin("chapter.parts", "part")
       .select([
         "chapter.id",
         "chapter.title",
         "chapter.orderIndex",
         "chapter.courseId",
+      ])
+      .addSelect([
         "part.id",
         "part.title",
         "part.description",
         "part.videoDuration",
         "part.isFree",
-        "part.videoPath",
+        "CASE WHEN COALESCE(part.isFree, false) THEN part.videoPath ELSE null END as videoPath",
       ])
       .where("chapter.courseId = :courseId", { courseId })
-      .getMany();
+      .getRawMany();
 
-    const modifiedChapters = chapters.map((chapter) => {
-      chapter.parts = chapter.parts.map((part) => {
-        if (!part.isFree) {
-          delete part.videoPath;
-        }
-        return part;
-      });
-      return chapter;
-    });
+    // //     const chapters = await getManager().query(
+    // //       `
+    // //   SELECT
+    // //     c.id as chapter_id,
+    // //     c.title as chapter_title,
+    // //     c."orderIndex" as chapter_orderIndex,
+    // //     c."courseId" as chapter_courseId,
+    // //     p.id as part_id,
+    // //     p.title as part_title,
+    // //     p.description as part_description,
+    // //     p."videoDuration" as part_videoDuration,
+    // //     p."isFree" as part_isFree,
+    // //     CASE
+    // //       WHEN p."isFree" THEN p."videoPath"
+    // //       ELSE null
+    // //     END as part_videoPath
+    // //   FROM chapters c
+    // //   LEFT JOIN parts p ON c.id = p."chapterId"  -- Update this line with the correct case
+    // //   WHERE c."courseId" = $1
+    // // `,
+    //       [courseId]
+    //     );
 
     if (chapters.length === 0) {
       logger.warn("No chapters found for the specified course ID", {
@@ -328,12 +340,7 @@ async function getAllChaptersAndParts(req, res) {
       return res.status(404).json({ error: "فصلی یافت نشد برای دوره" });
     }
 
-    logger.info("All chapters and parts retrieved for course ID", {
-      courseId,
-      modifiedChapters,
-    });
-
-    res.json({ chapters: modifiedChapters, status: 200 });
+    res.json({ chapters, status: 200 });
   } catch (error) {
     logger.error(
       `Error retrieving chapters and parts with course ID: ${error}`

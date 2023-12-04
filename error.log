@@ -62,3 +62,21 @@ Error splitting the argument list: Option not found
 2023-12-02T15:30:34.000Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
 2023-12-02T15:31:07.215Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
 2023-12-02T15:32:03.115Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-04T06:03:26.371Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at end of input
+2023-12-04T06:04:30.221Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-04T06:07:37.783Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:08:28.572Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:09:54.951Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:11:09.276Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.orderindex does not exist
+2023-12-04T06:11:41.815Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.courseid does not exist
+2023-12-04T06:11:55.206Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.videoduration does not exist
+2023-12-04T06:12:25.237Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.isfree does not exist
+2023-12-04T06:12:40.038Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.courseid does not exist
+2023-12-04T06:23:37.725Z error: Error retrieving chapters and parts with course ID: TypeORMError: "chapter" alias was not found. Maybe you forgot to join it?
+2023-12-04T06:49:45.081Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:50:37.536Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:52:48.464Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:53:28.935Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:53:45.907Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:54:25.029Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:55:26.855Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')

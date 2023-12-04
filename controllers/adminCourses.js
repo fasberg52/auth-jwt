@@ -185,6 +185,7 @@ async function getAdminCourseById(req, res) {
         "part.videoPath",
       ])
       .where("course.id = :courseId", { courseId })
+      .orderBy("chapter.orderIndex", "ASC")
       .getOne();
 
     if (existingCourse) {
