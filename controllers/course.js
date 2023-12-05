@@ -2,7 +2,11 @@ const Courses = require("../model/Course");
 const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const logger = require("../services/logger");
+const cacheService = require("../services/cacheService");
+
 async function getAllCourse(req, res) {
+  const cacheKey = "allCourse";
+
   try {
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;

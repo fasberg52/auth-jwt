@@ -1,3 +1,4 @@
+//config/routerConfig.js
 const authRouter = require("../routes/auth/auth");
 const adminRouter = require("../routes/admin/admin");
 const cartRouter = require("../routes/shop/cart");
