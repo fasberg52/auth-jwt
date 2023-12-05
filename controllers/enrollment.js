@@ -9,44 +9,97 @@ const logger = require("../services/logger");
 
 async function getAllEnrollment(req, res) {}
 
-async function getVideoPathAfterEnroll(req, res) {}
-
-async function getAllChapterAndPartAfterEnroll(req, res) {
+async function getVideoPathAfterEnroll(req, res) {
   try {
-    const { courseId } = req.body;
+    const courseId = req.params.courseId;
+    const userPhone = req.user.phone;
 
-    const user = req.user.phone;
-    const userRepositoy = getRepository(User);
-    const enrollmentRepository = getRepository(Enrollment);
-    const chapterRepository = getRepository(Chapter);
-    const partRepository = getRepository(Part);
-    const existingUser = await userRepositoy.findOne({
-      where: { phone: user },
-    });
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+    const partRepository = getManager().getRepository(Part);
 
-    const existingEnrollment = await enrollmentRepository.findOne({
-      where: { id: existingUser },
-    });
+    const enrollment = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoinAndSelect("enrollment.order", "order")
+      .innerJoinAndSelect("order.user", "user")
+      .where("enrollment.courseId = :courseId", { courseId })
+      .andWhere("user.phone = :phone", { phone: userPhone })
+      .getOne();
 
-    // Fetch chapters and parts based on courseId, you might want to add more conditions
-    const chapters = await chapterRepository.find({
-      where: { courseId },
-      order: { orderIndex: "ASC" },
-    });
+    if (
+      !enrollment ||
+      !enrollment.order ||
+      !enrollment.order.user ||
+      !enrollment.order.user.phone
+    ) {
+      return res.status(401).json({ error: "شما ثبت نام نکرده اید" });
+    }
 
-    const parts = await partRepository.find({
-      where: { courseId },
-      order: { orderIndex: "ASC" },
-    });
+    // Check if the orderStatus is successful
+    if (enrollment.order.orderStatus !== "success") {
+      return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
+    }
 
-    // Send the list of chapters and parts to the client
-    res.status(200).json({ chapters, parts });
+    // User is enrolled, order is successful, get video paths for the course using QueryBuilder
+    const videoPaths = await partRepository
+      .createQueryBuilder("part")
+      .select(["part.id as id", "part.videoPath as videoPath"])
+      .where("part.courseId = :courseId", { courseId })
+      .getRawMany();
+
+    res.status(200).json({ videoPaths });
   } catch (error) {
-    logger.error(`Error in getAllChapterAndPartAfterEnroll: ${error.message}`);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(`Error in getVideoPathAfterEnroll: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
+async function getVideoPathAfterEnrollWithPartId(req, res) {
+  try {
+    const courseId = req.params.courseId;
+    const partId = req.params.partId;
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+    const partRepository = getManager().getRepository(Part);
+
+    const enrollment = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoinAndSelect("enrollment.order", "order")
+      .innerJoinAndSelect("order.user", "user")
+      .where("enrollment.courseId = :courseId", { courseId })
+      .andWhere("user.phone = :phone", { phone: userPhone })
+      .getOne();
+
+    if (!enrollment || !enrollment.order || !enrollment.order.user || !enrollment.order.user.phone) {
+      return res.status(401).json({ error: "User is not enrolled in the course." });
+    }
+
+    // Check if the orderStatus is successful
+    if (enrollment.order.orderStatus !== 'success') {
+      return res.status(401).json({ error: "Order status is not successful." });
+    }
+
+    // User is enrolled, order is successful, get video path for the specific part using QueryBuilder
+    const videoPath = await partRepository
+      .createQueryBuilder("part")
+      .select("part.videoPath", "videoPath")
+      .where("part.courseId = :courseId", { courseId })
+      .andWhere("part.id = :partId", { partId })
+      .getRawOne();
+
+    if (!videoPath) {
+      return res.status(404).json({ error: "Video path not found for the specified part." });
+    }
+
+    res.status(200).json({ videoPath });
+  } catch (error) {
+    console.error(`Error in getVideoPathAfterEnrollWithPartId: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
 module.exports = {
-  getAllChapterAndPartAfterEnroll,
+  getVideoPathAfterEnrollWithPartId,
+  getVideoPathAfterEnroll,
 };

@@ -82,7 +82,7 @@ router.get(
   partController.getAllPartsWithChapterId
 );
 
-router.get("/:courseId/course-content", partController.getAllChaptersAndParts);
+router.get("/:courseId/course-content",jwtAuthMiddleware, partController.getAllChaptersAndParts);
 
 router.get("/part/:partId/video-path", partController.getVideoPathWithPartId);
 

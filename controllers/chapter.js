@@ -110,12 +110,12 @@ async function deleteChapter(req, res) {
     });
 
     logger.info("Chapter deleted", { chapterId });
-    res.json({ message: "Chapter deleted successfully." });
+    res.status(200).json({ message: "سرفصل با موفقیت پاک شد", status:200 });
   } catch (error) {
     logger.error(`Error deleting chapter: ${error}`);
     res
       .status(500)
-      .json({ error: "An error occurred while deleting the chapter." });
+      .json({ error: "Internal Server Error" });
   }
 }
 
