@@ -85,3 +85,4 @@ Error splitting the argument list: Option not found
 2023-12-04T12:34:08.837Z error: Error in getCourseById for courseId enroll
 2023-12-04T12:35:18.749Z error: Error in getCourseById for courseId enroll
 2023-12-04T12:38:04.856Z error: Error in getCourseById for courseId enroll
+2023-12-04T19:41:03.505Z error: Error creating part: QueryFailedError: insert or update on table "parts" violates foreign key constraint "FK_86d1a5f13511ffbe73bd12f7d57"
