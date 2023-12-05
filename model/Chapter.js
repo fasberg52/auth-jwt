@@ -42,6 +42,12 @@ const Chapter = new EntitySchema({
       inverseSide: "chapter",
     },
   },
+  methods: {
+    get videoPath() {
+      const freePart = this.parts.find(part => part.isFree);
+      return freePart ? freePart.videoPath : null;
+    },
+  },
 });
 
 module.exports = Chapter;

@@ -8,7 +8,7 @@ const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
 const dotenv = require("dotenv").config();
 //ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
-ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
+ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
 
 async function createPart(req, res) {
   try {
@@ -40,7 +40,6 @@ async function createPart(req, res) {
     console.log(`>> orderIndex ${orderIndex}`);
 
     const newPart = partRepository.create({
-      
       courseId,
       chapterId,
       title,
@@ -48,7 +47,7 @@ async function createPart(req, res) {
       orderIndex,
       videoPath,
       videoDuration,
-      isFree
+      isFree,
     });
 
     const savedPart = await partRepository.save(newPart);
@@ -64,7 +63,7 @@ async function createPart(req, res) {
       videoPath,
       videoDuration,
       orderIndex,
-      isFree
+      isFree,
     });
 
     res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
@@ -79,7 +78,8 @@ async function createPart(req, res) {
 
 async function editPart(req, res) {
   try {
-    const { title, description, icon, videoPath, orderIndex, isFree } = req.body;
+    const { title, description, icon, videoPath, orderIndex, isFree } =
+      req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
 
@@ -109,7 +109,13 @@ async function editPart(req, res) {
         isFree,
       });
 
-      res.json({ message: "Part updated successfully", updatedPart });
+      res
+        .status(200)
+        .json({
+          message: "پارت با موفقیت بروزرسانی شد",
+          updatedPart,
+          status: 200,
+        });
     } else {
       res.status(404).json({ error: "Part not found." });
     }
@@ -181,16 +187,14 @@ async function deletePart(req, res) {
 
       logger.info("Part deleted successfully", { partId });
 
-      res.json({ message: "Part deleted successfully." });
+      res.status(200).json({ message: "پارت با موفقیت پاک شد", status: 200 });
     } else {
-      res.status(404).json({ error: "Part not found." });
+      res.status(404).json({ error: "پارت پیدا نشد", status: 404 });
     }
   } catch (error) {
     logger.error(`Error deleting part: ${error}`);
 
-    res
-      .status(500)
-      .json({ error: "An error occurred while deleting the part." });
+    res.status(500).json({ error: "Internal Error Server" });
   }
 }
 async function gatAllPartwithCourseId(req, res) {
@@ -326,33 +330,10 @@ async function getAllChaptersAndParts(req, res) {
         "part.description",
         "part.videoDuration",
         "part.isFree",
-        "CASE WHEN COALESCE(part.isFree, false) THEN part.videoPath ELSE null END as videoPath",
+        //"CASE WHEN COALESCE(part.isFree, false) THEN part.videoPath ELSE null END as videoPath",
       ])
       .where("chapter.courseId = :courseId", { courseId })
-      .getRawMany();
-
-    // //     const chapters = await getManager().query(
-    // //       `
-    // //   SELECT
-    // //     c.id as chapter_id,
-    // //     c.title as chapter_title,
-    // //     c."orderIndex" as chapter_orderIndex,
-    // //     c."courseId" as chapter_courseId,
-    // //     p.id as part_id,
-    // //     p.title as part_title,
-    // //     p.description as part_description,
-    // //     p."videoDuration" as part_videoDuration,
-    // //     p."isFree" as part_isFree,
-    // //     CASE
-    // //       WHEN p."isFree" THEN p."videoPath"
-    // //       ELSE null
-    // //     END as part_videoPath
-    // //   FROM chapters c
-    // //   LEFT JOIN parts p ON c.id = p."chapterId"  -- Update this line with the correct case
-    // //   WHERE c."courseId" = $1
-    // // `,
-    //       [courseId]
-    //     );
+      .getMany();
 
     if (chapters.length === 0) {
       logger.warn("No chapters found for the specified course ID", {
@@ -375,6 +356,34 @@ async function getAllChaptersAndParts(req, res) {
   }
 }
 
+async function getVideoPathWithPartId(req, res) {
+  try {
+    const { partId } = req.params;
+
+    const partRepository = getManager().getRepository(Part);
+
+    const part = await partRepository.findOne({
+      where: { id: partId },
+    });
+
+    if (!part) {
+      logger.warn("Part not found for the specified part ID", { partId });
+      return res.status(404).json({ error: "پارت یافت نشد", status: 404 });
+    }
+
+    if (part.isFree) {
+      return res.status(200).json({ videoPath: part.videoPath, status: 200 });
+    } else {
+      return res.status(403).json({ error: "شما دسترسی ندارید", status: 403 });
+    }
+  } catch (error) {
+    logger.error(`Error retrieving video path with part ID: ${error}`);
+    res.status(500).json({
+      error: "An error occurred while retrieving video path with part ID.",
+    });
+  }
+}
+
 module.exports = {
   createPart,
   editPart,
@@ -383,4 +392,5 @@ module.exports = {
   gatAllPartwithCourseId,
   getAllPartsWithChapterId,
   getAllChaptersAndParts,
+  getVideoPathWithPartId,
 };

@@ -1,4 +1,5 @@
 const Courses = require("../model/Course");
+const jalaliMoment = require('jalali-moment');
 const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const logger = require("../services/logger");
@@ -73,33 +74,38 @@ async function getCourseById(req, res) {
 
     // Fetch the course with related chapters, parts, and category
     const existingCourse = await courseRepository
-      .createQueryBuilder("course")
-      .leftJoin("course.category", "category")
+      .createQueryBuilder('course')
+      .leftJoin('course.category', 'category')
       .select([
-        "course.id",
-        "course.title",
-        "course.description",
-        "course.price",
-        "course.discountPrice",
-        "course.discountStart",
-        "course.discountExpiration",
-        "course.imageUrl",
-        "course.bannerUrl",
-        "course.videoUrl",
-        "course.createdAt",
-        "course.lastModified",
+        'course.id',
+        'course.title',
+        'course.description',
+        'course.price',
+        'course.discountPrice',
+        'course.discountStart',
+        'course.discountExpiration',
+        'course.imageUrl',
+        'course.bannerUrl',
+        'course.videoUrl',
+        'course.createdAt',
+        'course.lastModified',
       ])
-      .addSelect(["category.id", "category.name"])
-      .where("course.id = :courseId", { courseId })
+      .addSelect(['category.id', 'category.name'])
+      .where('course.id = :courseId', { courseId })
       .getOne();
 
     if (existingCourse) {
-      logger.info(`getCourseById successful for courseId ${courseId}`);
+      // Convert dates to Jalali format
+      existingCourse.discountStart = jalaliMoment(existingCourse.discountStart).format('YYYY/MM/DD HH:mm:ss');
+      existingCourse.discountExpiration = jalaliMoment(existingCourse.discountExpiration).format('YYYY/MM/DD HH:mm:ss');
+      existingCourse.createdAt = jalaliMoment(existingCourse.createdAt).format('YYYY/MMMM/DD');
+      existingCourse.lastModified = jalaliMoment(existingCourse.lastModified).format('YYYY/MMMM/DD');
 
+      logger.info(`getCourseById successful for courseId ${courseId}`);
       res.json(existingCourse);
     } else {
       logger.info(`getCourseById failed for courseId ${courseId}`);
-      res.status(404).json({ error: "Course not found." });
+      res.status(404).json({ error: 'Course not found.' });
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
@@ -107,12 +113,9 @@ async function getCourseById(req, res) {
     });
 
     console.log(`>>>>${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving the course." });
+    res.status(500).json({ error: 'An error occurred while retrieving the course.' });
   }
 }
-
 module.exports = {
   getAllCourse,
   getCourseById,

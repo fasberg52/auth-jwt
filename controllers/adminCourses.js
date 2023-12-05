@@ -50,13 +50,13 @@ async function addCourse(req, res) {
       discountExpiration: expirationMoment ? expirationMoment.toDate() : null,
     });
 
-    const saveCourse = await courseRepository.save(newCourse);
-    console.log(`saveCourse >>> ${saveCourse}`);
+    const result = await courseRepository.save(newCourse);
+    console.log(`result >>> ${result}`);
 
     // Prepare a response object
     res
       .status(201)
-      .json({ message: "دوره با موفقیت ایجاد شد", saveCourse, status: 201 });
+      .json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
@@ -116,11 +116,11 @@ async function editCourse(req, res) {
 
       // Save the updated course
       existingCourse.lastModified = new Date();
-      const editCourse = await courseRepository.save(existingCourse);
+      const result = await courseRepository.save(existingCourse);
 
       res
         .status(200)
-        .json({ message: "دوره بروز رسانی شد", editCourse, status: 200 });
+        .json({ message: "دوره بروز رسانی شد", result, status: 200 });
     } else {
       // Move the 404 response here
       res.status(404).json({ error: "دوره ای پیدا نشد" });

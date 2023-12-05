@@ -62,6 +62,8 @@ router.put(
   upload.single("icon"),
   partController.editPart
 );
+
+router.delete("/part/:id", partController.deletePart);
 router.put(
   "/:courseId/chapter/:chapterId/part/:partId",
   jwtAuthMiddleware,
@@ -82,7 +84,6 @@ router.get(
 
 router.get("/:courseId/course-content", partController.getAllChaptersAndParts);
 
-
-
+router.get("/part/:partId/video-path", partController.getVideoPathWithPartId);
 
 module.exports = router;

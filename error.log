@@ -85,3 +85,19 @@ Error splitting the argument list: Option not found
 2023-12-04T12:34:08.837Z error: Error in getCourseById for courseId enroll
 2023-12-04T12:35:18.749Z error: Error in getCourseById for courseId enroll
 2023-12-04T12:38:04.856Z error: Error in getCourseById for courseId enroll
+2023-12-05T05:59:05.345Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at or near ":"
+2023-12-05T05:59:25.577Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at or near ":"
+2023-12-05T06:00:16.144Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T06:01:49.092Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "part" does not exist
+2023-12-05T06:01:59.413Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "chapter"
+2023-12-05T06:03:02.672Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column parts.chapter_id does not exist
+2023-12-05T06:03:20.610Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "part"
+2023-12-05T07:25:13.399Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T07:25:36.723Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T07:30:09.556Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-05T07:30:22.799Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "chapter"
+2023-12-05T07:34:59.805Z error: Error retrieving chapters and parts with course ID: ReferenceError: chater is not defined
+2023-12-05T07:50:47.651Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T07:52:44.834Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T07:57:17.725Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T09:05:38.033Z error: Error retrieving video path with part ID: TypeError: Cannot read properties of null (reading 'isFree')

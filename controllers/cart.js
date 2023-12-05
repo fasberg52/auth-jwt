@@ -56,7 +56,7 @@ async function createCartItem(req, res) {
       await cartItemsRepository.save(newCartItem);
     }
 
-    res.status(201).json({ message: "آیتم با موفقیت اضافه شد" });
+    res.status(201).json({ message: "آیتم با موفقیت اضافه شد", status: 201 });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
