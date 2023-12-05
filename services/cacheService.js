@@ -1,9 +1,13 @@
 const Keyv = require("keyv");
 const KeyvPostgres = require("@keyv/postgres");
-
+const dotenv = require("dotenv");
+dotenv.config();
 class CacheService {
   constructor() {
-    this.keyv = new Keyv({ store: new KeyvPostgres(process.env.DATABASE_URL) });
+    this.keyv = new Keyv({
+      store: new KeyvPostgres({ connectionString: process.env.DATABASE_KEYV }),
+    });
+    console.log("PostgreSQL Connection String:", process.env.DATABASE_KEYV);
   }
 
   async get(key) {
