@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-router.delete("clear-cache/:cacheKey", async (req, res) => {
+const cacheService = require("../../services/cacheService");
+
+router.delete("/:cacheKey", async (req, res) => {
   const cacheKey = req.params.cacheKey;
   try {
     await cacheService.delete(cacheKey);
