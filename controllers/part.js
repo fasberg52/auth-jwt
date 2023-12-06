@@ -109,13 +109,11 @@ async function editPart(req, res) {
         isFree,
       });
 
-      res
-        .status(200)
-        .json({
-          message: "پارت با موفقیت بروزرسانی شد",
-          updatedPart,
-          status: 200,
-        });
+      res.status(200).json({
+        message: "پارت با موفقیت بروزرسانی شد",
+        updatedPart,
+        status: 200,
+      });
     } else {
       res.status(404).json({ error: "Part not found." });
     }
@@ -330,7 +328,6 @@ async function getAllChaptersAndParts(req, res) {
         "part.description",
         "part.videoDuration",
         "part.isFree",
-        //"CASE WHEN COALESCE(part.isFree, false) THEN part.videoPath ELSE null END as videoPath",
       ])
       .where("chapter.courseId = :courseId", { courseId })
       .getMany();
