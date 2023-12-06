@@ -3,60 +3,79 @@ const jalaliMoment = require('jalali-moment');
 const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const logger = require("../services/logger");
+const cacheService = require("../services/cacheService");
+
 async function getAllCourse(req, res) {
+  const cacheKey = "allCourses";
+  console.log(`cacheKey >>> ${cacheKey}`);
+
   try {
-    const courseRepository = getManager().getRepository(Courses);
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const sortBy = req.query.sortBy || "id"; // Default to sorting by title
-    const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
-    const search = req.query.search || "";
+    const cachedData = await cacheService.get(cacheKey);
+    console.log(`cacheKey >>> ${cachedData}`);
+    if (cachedData !== undefined) {
+      console.log("Data found in cache. Returning cached data.");
 
-    const offset = (page - 1) * pageSize;
+      // If data is found in the cache, return it
+      return res.json({ courses: cachedData });
+    } else {
+      console.log("Data not found in cache. Fetching from the database.");
 
-    const [courses, total] = await courseRepository
-      .createQueryBuilder("course")
-      .leftJoinAndSelect("course.category", "category") // Join with category
-      .select([
-        "course.id",
-        "course.title",
-        "course.description",
-        "course.price",
-        "course.imageUrl",
-        "course.bannerUrl",
-        "course.videoUrl",
-        "course.discountPrice",
-        "course.discountStart",
-        "course.discountExpiration",
-        "course.createdAt",
-        "course.lastModified",
-      ])
-      .addSelect(["category.name"]) // Include category.name in the select
-      .where("course.title LIKE :search", { search: `%${search}%` }) // Search by course title
+      const courseRepository = getManager().getRepository(Courses);
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 10;
+      const sortBy = req.query.sortBy || "id"; // Default to sorting by title
+      const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
+      const search = req.query.search || "";
 
-      .orderBy(`course.${sortBy}`, sortOrder) // Add sorting
-      .skip(offset)
-      .take(pageSize)
-      .getManyAndCount();
+      const offset = (page - 1) * pageSize;
 
-    // Convert createdAt and lastModified to Jalali calendar
-    const jalaliCourses = courses.map((course) => ({
-      ...course,
-      createdAt: convertToJalaliDate(course.createdAt),
-      lastModified: convertToJalaliDate(course.lastModified),
-    }));
-    logger.info("getAllCourse successful", {
-      page,
-      pageSize,
-      sortBy,
-      sortOrder,
-      search,
-    });
+      const [courses, total] = await courseRepository
+        .createQueryBuilder("course")
+        .leftJoinAndSelect("course.category", "category") // Join with category
+        .select([
+          "course.id",
+          "course.title",
+          "course.description",
+          "course.price",
+          "course.imageUrl",
+          "course.bannerUrl",
+          "course.videoUrl",
+          "course.discountPrice",
+          "course.discountStart",
+          "course.discountExpiration",
+          "course.createdAt",
+          "course.lastModified",
+        ])
+        .addSelect(["category.name"]) // Include category.name in the select
+        .where("course.title LIKE :search", { search: `%${search}%` }) // Search by course title
+        .orderBy(`course.${sortBy}`, sortOrder) // Add sorting
+        .skip(offset)
+        .take(pageSize)
+        .getManyAndCount();
 
-    res.json({
-      courses: jalaliCourses,
-      total,
-    });
+      // Convert createdAt and lastModified to Jalali calendar
+      const jalaliCourses = courses.map((course) => ({
+        ...course,
+        createdAt: convertToJalaliDate(course.createdAt),
+        lastModified: convertToJalaliDate(course.lastModified),
+      }));
+
+      await cacheService.set(cacheKey, { courses: jalaliCourses, total },100 * 1000);
+
+
+      logger.info("getAllCourse successful", {
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+        search,
+      });
+
+      res.json({
+        courses: jalaliCourses,
+        total,
+      });
+    }
   } catch (error) {
     console.log(error);
     logger.error("Error in getAllCourse", { error });
