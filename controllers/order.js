@@ -57,56 +57,62 @@ async function checkOutCart(req, res) {
   }
 }
 
-async function createPayment(req, res) {
-  try {
-    const userPhone = req.user.phone;
-    const connection = getConnection();
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
-    const courseRepository = connection.getRepository(Courses);
 
-    const userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
+async function createPayment(req, res) {
+  const userPhone = req.user.phone;
+
+  try {
+    await getManager().transaction(async transactionalEntityManager => {
+      const cartRepository = transactionalEntityManager.getRepository(Cart);
+      const cartItemsRepository = transactionalEntityManager.getRepository(CartItems);
+      const courseRepository = transactionalEntityManager.getRepository(Courses);
+
+      const userCart = await cartRepository.findOne({
+        where: { user: { phone: userPhone } },
+      });
+
+      if (!userCart) {
+        return res.status(404).json({ error: "Cart not found for the user" });
+      }
+
+      const cartItems = await getCartItems(cartItemsRepository, userCart.id);
+
+      const savedOrder = await createOrder(userPhone);
+      const updatedTotalPrice = await createEnrollmentAndCalculateTotalPrice(
+        cartItems,
+        savedOrder,
+        transactionalEntityManager
+      );
+
+      const updatedTotalPriceInRials = updatedTotalPrice * 10;
+      const callbackUrl = buildCallbackUrl(
+        updatedTotalPriceInRials,
+        userPhone,
+        savedOrder.id
+      );
+      const requestData = buildRequestData(
+        process.env.MERCHANT_ID,
+        updatedTotalPriceInRials,
+        callbackUrl,
+        userPhone
+      );
+      const response = await sendPaymentRequest(
+        process.env.ZARINPAL_LINK_REQUEST,
+        requestData
+      );
+
+      const code = response.data.data.code;
+
+      if (code === 100) {
+        const paymentUrl = buildPaymentUrl(response.data.data.authority);
+        const cartId = cartItems[0].cartId;
+
+        return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
+      } else {
+        return res.status(400).json({ error: "Payment Request Failed" });
+      }
     });
 
-    if (!userCart) {
-      return res.status(404).json({ error: "Cart not found for the user" });
-    }
-
-    const cartItems = await getCartItems(cartItemsRepository, userCart.id);
-
-    const savedOrder = await createOrder(userPhone);
-    const updatedTotalPrice = await createEnrollmentAndCalculateTotalPrice(
-      cartItems,
-      savedOrder
-    );
-    const updatedTotalPriceInRials = updatedTotalPrice * 10;
-    const callbackUrl = buildCallbackUrl(
-      updatedTotalPriceInRials,
-      userPhone,
-      savedOrder.id
-    );
-    const requestData = buildRequestData(
-      process.env.MERCHANT_ID,
-      updatedTotalPriceInRials,
-      callbackUrl,
-      userPhone
-    );
-    const response = await sendPaymentRequest(
-      process.env.ZARINPAL_LINK_REQUEST,
-      requestData
-    );
-
-    const code = response.data.data.code;
-
-    if (code === 100) {
-      const paymentUrl = buildPaymentUrl(response.data.data.authority);
-      const cartId = cartItems[0].cartId;
-
-      return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
-    } else {
-      return res.status(400).json({ error: "Payment Request Failed" });
-    }
   } catch (error) {
     console.error(`createPayment error: ${error}`);
     return res
