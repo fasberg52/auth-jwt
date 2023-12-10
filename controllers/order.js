@@ -181,7 +181,7 @@ async function getCourseById(courseId) {
 }
 
 function buildCallbackUrl(totalPrice, userPhone, orderId) {
-  return `http://localhost:3000/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
+  return `${process.env.CALLBACKURL_ZARIPAL}/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
 }
 
 function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {

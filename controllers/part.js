@@ -82,6 +82,7 @@ async function editPart(req, res) {
       req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
+    const videoDuration = await getVideoDuration(videoPath);
 
     const existingPart = await partRepository.findOne({
       where: { id: partId },
@@ -94,6 +95,7 @@ async function editPart(req, res) {
       existingPart.videoPath = videoPath;
       existingPart.orderIndex = orderIndex; // Add this line
       existingPart.isFree = isFree; // Add this line
+      existingPart.videoDuration = videoDuration;
 
       // Save the updated part
       existingPart.lastModified = new Date();
@@ -107,6 +109,7 @@ async function editPart(req, res) {
         videoPath,
         orderIndex,
         isFree,
+        videoDuration,
       });
 
       res.status(200).json({
@@ -328,8 +331,11 @@ async function getAllChaptersAndParts(req, res) {
         "part.description",
         "part.videoDuration",
         "part.isFree",
+        "part.orderIndex",
       ])
       .where("chapter.courseId = :courseId", { courseId })
+      .orderBy("chapter.orderIndex", "ASC")
+      .addOrderBy("part.orderIndex", "ASC")
       .getMany();
 
     if (chapters.length === 0) {
@@ -376,7 +382,7 @@ async function getVideoPathWithPartId(req, res) {
   } catch (error) {
     logger.error(`Error retrieving video path with part ID: ${error}`);
     res.status(500).json({
-      error: "An error occurred while retrieving video path with part ID.",
+      error: "Internal Server Error",
     });
   }
 }
