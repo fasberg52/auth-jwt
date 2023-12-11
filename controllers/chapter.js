@@ -72,7 +72,7 @@ async function editChapter(req, res) {
       chapterId,
       title,
     });
-    res.json({ message: "success", updatedChapter, status: 200 });
+    res.json({ message: "با موفقیت تغییر کرد", updatedChapter, status: 200 });
   } catch (error) {
     logger.error(`Error editing chapter: ${error}`);
     res

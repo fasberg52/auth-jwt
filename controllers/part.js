@@ -15,7 +15,7 @@ async function createPart(req, res) {
     const { courseId, chapterId, title, description, videoPath, isFree } =
       req.body;
     //const icon = req.file ? req.file.filename : null;
-    const videoDuration = await getVideoDuration(videoPath);
+    //const videoDuration = await getVideoDuration(videoPath);
 
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
@@ -46,7 +46,7 @@ async function createPart(req, res) {
       description,
       orderIndex,
       videoPath,
-      videoDuration,
+      //videoDuration,
       isFree,
     });
 
@@ -61,7 +61,7 @@ async function createPart(req, res) {
       title,
       description,
       videoPath,
-      videoDuration,
+      //videoDuration,
       orderIndex,
       isFree,
     });
@@ -82,7 +82,7 @@ async function editPart(req, res) {
       req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
-    const videoDuration = await getVideoDuration(videoPath);
+    //const videoDuration = await getVideoDuration(videoPath);
 
     const existingPart = await partRepository.findOne({
       where: { id: partId },
@@ -95,7 +95,7 @@ async function editPart(req, res) {
       existingPart.videoPath = videoPath;
       existingPart.orderIndex = orderIndex; // Add this line
       existingPart.isFree = isFree; // Add this line
-      existingPart.videoDuration = videoDuration;
+      //existingPart.videoDuration = videoDuration;
 
       // Save the updated part
       existingPart.lastModified = new Date();
@@ -109,7 +109,7 @@ async function editPart(req, res) {
         videoPath,
         orderIndex,
         isFree,
-        videoDuration,
+        //videoDuration,
       });
 
       res.status(200).json({

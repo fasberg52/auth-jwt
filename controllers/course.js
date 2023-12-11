@@ -2,6 +2,7 @@ const Courses = require("../model/Course");
 const jalaliMoment = require("jalali-moment");
 const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
+const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
 const cacheService = require("../services/cacheService");
 
@@ -90,70 +91,167 @@ async function getAllCourse(req, res) {
   }
 }
 
+// async function getCourseById(req, res) {
+//   const cacheKey = "getCourseById";
+//   try {
+//     // const cachedData = await cacheService.get(cacheKey);
+//     // console.log(`cacheKey >>> ${JSON.stringify(cachedData)}`);
+//     // if (cachedData !== undefined) {
+//     //   console.log("Data found in cache. Returning cached data.");
+//     //   const { existingCourse } = cachedData;
+//     //   console.log(cacheKey);
+//     //   // If data is found in the cache, return it
+//     //   return res.json({ existingCourse });
+//     // } else {
+//     console.log("Data NOT found in cache. Returning cached data.");
+
+//     const userPhone = req.user.phone;
+//     const enrollmentRepository = getManager().getRepository(Enrollment);
+
+//     const courseRepository = getManager().getRepository(Courses);
+//     const courseId = req.params.courseId;
+
+//     // Fetch the course with related chapters, parts, and category
+//     const existingCourse = await courseRepository
+//       .createQueryBuilder("course")
+//       .leftJoin("course.category", "category")
+//       .select([
+//         "course.id",
+//         "course.title",
+//         "course.description",
+//         "course.price",
+//         "course.discountPrice",
+//         "course.discountStart",
+//         "course.discountExpiration",
+//         "course.imageUrl",
+//         "course.bannerUrl",
+//         "course.videoUrl",
+//         "course.createdAt",
+//         "course.lastModified",
+//       ])
+//       .addSelect(["category.id", "category.name"])
+//       .where("course.id = :courseId", { courseId })
+//       .getOne();
+
+//     const isEnrolled = await enrollmentRepository
+//       .createQueryBuilder("enrollment")
+//       .innerJoin("enrollment.course", "course")
+//       .innerJoin("enrollment.order", "order")
+//       .innerJoin("order.user", "user")
+//       .where("course.id = :courseId", { courseId })
+//       .andWhere("user.phone = :phone", { phone: userPhone })
+//       .getCount();
+
+//     if (!isEnrolled) {
+//       return res
+//         .status(401)
+//         .json({ error: "کاربر ثبت نام نکرده است" });
+//     }
+
+//     if (existingCourse) {
+//       // Convert dates to Jalali format
+//       existingCourse.discountStart = jalaliMoment(
+//         existingCourse.discountStart
+//       ).format("YYYY/MM/DD HH:mm:ss");
+//       existingCourse.discountExpiration = jalaliMoment(
+//         existingCourse.discountExpiration
+//       ).format("YYYY/MM/DD HH:mm:ss");
+//       existingCourse.createdAt = jalaliMoment(existingCourse.createdAt).format(
+//         "YYYY/MMMM/DD"
+//       );
+//       existingCourse.lastModified = jalaliMoment(
+//         existingCourse.lastModified
+//       ).format("YYYY/MMMM/DD");
+
+//       const { price, ...cachedCourse } = existingCourse;
+
+//       await cacheService.set(cacheKey, { cachedCourse }, 86400 * 1000);
+
+//       logger.info(`getCourseById successful for courseId ${courseId}`);
+//       res.json(existingCourse);
+//     } else {
+//       logger.info(`getCourseById failed for courseId ${courseId}`);
+//       res.status(404).json({ error: "Course not found." });
+//     }
+//     // }
+//   } catch (error) {
+//     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
+//       error,
+//     });
+
+//     console.log(`>>>>${error}`);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while retrieving the course." });
+//   }
+// }
+
 async function getCourseById(req, res) {
   const cacheKey = "getCourseById";
   try {
-    const cachedData = await cacheService.get(cacheKey);
-    console.log(`cacheKey >>> ${JSON.stringify(cachedData)}`);
-    if (cachedData !== undefined) {
-      console.log("Data found in cache. Returning cached data.");
-      const { existingCourse } = cachedData;
-      console.log(cacheKey);
-      // If data is found in the cache, return it
-      return res.json({ existingCourse });
-    } else {
-      console.log("Data NOT found in cache. Returning cached data.");
+    const userPhone = req.user.phone;
 
-      const courseRepository = getManager().getRepository(Courses);
-      const courseId = req.params.courseId;
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+    const courseId = req.params.courseId;
 
-      // Fetch the course with related chapters, parts, and category
-      const existingCourse = await courseRepository
-        .createQueryBuilder("course")
-        .leftJoin("course.category", "category")
-        .select([
-          "course.id",
-          "course.title",
-          "course.description",
-          "course.price",
-          "course.discountPrice",
-          "course.discountStart",
-          "course.discountExpiration",
-          "course.imageUrl",
-          "course.bannerUrl",
-          "course.videoUrl",
-          "course.createdAt",
-          "course.lastModified",
-        ])
-        .addSelect(["category.id", "category.name"])
-        .where("course.id = :courseId", { courseId })
-        .getOne();
+    const isEnrolled = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoin("enrollment.course", "course")
+      .innerJoin("enrollment.order", "order")
+      .innerJoin("order.user", "user")
+      .where("course.id = :courseId", { courseId })
+      .andWhere("user.phone = :phone", { phone: userPhone })
+      .getCount();
 
-      if (existingCourse) {
-        // Convert dates to Jalali format
-        existingCourse.discountStart = jalaliMoment(
-          existingCourse.discountStart
-        ).format("YYYY/MM/DD HH:mm:ss");
-        existingCourse.discountExpiration = jalaliMoment(
-          existingCourse.discountExpiration
-        ).format("YYYY/MM/DD HH:mm:ss");
-        existingCourse.createdAt = jalaliMoment(
-          existingCourse.createdAt
-        ).format("YYYY/MMMM/DD");
-        existingCourse.lastModified = jalaliMoment(
-          existingCourse.lastModified
-        ).format("YYYY/MMMM/DD");
+    const courseRepository = getManager().getRepository(Courses);
 
-        const { price, ...cachedCourse } = existingCourse;
+    const existingCourse = await courseRepository
+      .createQueryBuilder("course")
+      .leftJoin("course.category", "category")
+      .select([
+        "course.id",
+        "course.title",
+        "course.description",
+        "course.price",
+        "course.discountPrice",
+        "course.discountStart",
+        "course.discountExpiration",
+        "course.imageUrl",
+        "course.bannerUrl",
+        "course.videoUrl",
+        "course.createdAt",
+        "course.lastModified",
+      ])
+      .addSelect(["category.id", "category.name"])
+      .where("course.id = :courseId", { courseId })
+      .getOne();
 
+    if (existingCourse) {
+      existingCourse.discountStart = jalaliMoment(
+        existingCourse.discountStart
+      ).format("YYYY/MM/DD HH:mm:ss");
+      existingCourse.discountExpiration = jalaliMoment(
+        existingCourse.discountExpiration
+      ).format("YYYY/MM/DD HH:mm:ss");
+      existingCourse.createdAt = jalaliMoment(existingCourse.createdAt).format(
+        "YYYY/MMMM/DD"
+      );
+      existingCourse.lastModified = jalaliMoment(
+        existingCourse.lastModified
+      ).format("YYYY/MMMM/DD");
+
+      const { price, ...cachedCourse } = existingCourse;
+      if (!isEnrolled) {
         await cacheService.set(cacheKey, { cachedCourse }, 86400 * 1000);
 
         logger.info(`getCourseById successful for courseId ${courseId}`);
-        res.json(existingCourse);
+        res.json({ access: false, ...existingCourse });
       } else {
-        logger.info(`getCourseById failed for courseId ${courseId}`);
-        res.status(404).json({ error: "Course not found." });
+        res.json({ access: true, ...existingCourse });
       }
+    } else {
+      logger.info(`getCourseById failed for courseId ${courseId}`);
+      res.status(404).json({ error: "Course not found." });
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
@@ -166,6 +264,7 @@ async function getCourseById(req, res) {
       .json({ error: "An error occurred while retrieving the course." });
   }
 }
+
 module.exports = {
   getAllCourse,
   getCourseById,

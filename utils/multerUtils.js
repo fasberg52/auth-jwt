@@ -73,27 +73,27 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
-    const allowedFileTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "video/mp4",
-      "video/avi",
-      "video/m4v"
-    ];
+    // const allowedFileTypes = [
+    //   "image/jpeg",
+    //   "image/png",
+    //   "image/webp",
+    //   "video/mp4",
+    //   "video/avi",
+    //   "video/m4v"
+    // ];
     if (file.size > 5 * 1024 * 1024) {
       return cb(null, false, {
         error: "File size limit exceeded. Maximum file size is 5 MB.",
       });
     }
-    if (allowedFileTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(null, false, {
-        error:
-          "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
-      });
-    }
+    // if (allowedFileTypes.includes(file.mimetype)) {
+    //   cb(null, true);
+    // } else {
+    //   cb(null, false, {
+    //     error:
+    //       "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
+    //   });
+    // }
   },
 });
 
