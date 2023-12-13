@@ -32,7 +32,7 @@ async function createCartItem(req, res) {
     });
 
     if (!course) {
-      // If courseId is not found, return a 400 Bad Request response
+      
       return res.status(400).json({ error: "دوره پیدا نشد" });
     }
 
@@ -95,16 +95,17 @@ async function getUserCart(req, res) {
           });
           console.log("Fetched course data: ", course);
           if (course) {
-            // Calculate discounted price if applicable
+            
             const discountedPrice = course.discountPrice || course.price;
             console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
-            // Accumulate the total price
+           
             totalCartPrice += itemPrice;
 
             return {
               courseId: course.id,
+              imageUrl: course.imageUrl,
               quantity: cartItem.quantity,
               price: discountedPrice,
               title: course.title,
@@ -232,7 +233,7 @@ async function getUserCart(req, res) {
 
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params; // Assuming you're passing cartItemId as a route parameter
+    const { cartItemId } = req.params; 
 
     const connection = getConnection();
     const cartItemsRepository = connection.getRepository(CartItems);
