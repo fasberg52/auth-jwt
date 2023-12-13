@@ -231,22 +231,26 @@ async function getUserCart(req, res) {
 
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params;
+    const { cartItemId } = req.body;
 
     const connection = getConnection();
     const cartItemsRepository = connection.getRepository(CartItems);
 
-    const cartItemToRemove = await cartItemsRepository.findOne({
-      where: { id: cartItemId },
-    });
+    const cartItemToRemove = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .leftJoinAndSelect("cartItem.course", "course") // Assuming a relation named "course" exists in CartItems entity
+      .where("cartItem.id = :cartItemId", { cartItemId })
+      .getOne();
 
     if (!cartItemToRemove) {
       return res.status(404).json({ error: "آیتم های سبدخرید پیدا نشد" });
     }
 
+    const courseName = cartItemToRemove.course ? cartItemToRemove.course.title : "آیتم";
+
     await cartItemsRepository.remove(cartItemToRemove);
 
-    res.status(200).json({ message: "آیتم حذف شد" });
+    res.status(200).json({ message: `${courseName} از سبد خرید شما حذف شد` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
