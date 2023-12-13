@@ -7,10 +7,14 @@ const phoneSchema = {
     phone: { type: "string", pattern: "^09\\d{9}$" },
   },
   required: ["phone"],
+  additionalProperties: false,
   errorMessage: {
     properties: {
       phone: "فرمت شماره همراه صحیح نیست",
+
     },
+    additionalProperties: "اطلاعات اضافی مجاز نیست",
+
   },
 };
 
@@ -83,7 +87,6 @@ const courseSchema = {
     properties: {
       title: "شما باید عنوان را وارد کنید",
     },
-
   },
 };
 
