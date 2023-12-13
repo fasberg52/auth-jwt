@@ -32,7 +32,6 @@ async function createCartItem(req, res) {
     });
 
     if (!course) {
-      
       return res.status(400).json({ error: "دوره پیدا نشد" });
     }
 
@@ -95,15 +94,14 @@ async function getUserCart(req, res) {
           });
           console.log("Fetched course data: ", course);
           if (course) {
-            
             const discountedPrice = course.discountPrice || course.price;
             console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
-           
             totalCartPrice += itemPrice;
 
             return {
+              cartItemId: cartItem.id,
               courseId: course.id,
               imageUrl: course.imageUrl,
               quantity: cartItem.quantity,
@@ -233,7 +231,7 @@ async function getUserCart(req, res) {
 
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params; 
+    const { cartItemId } = req.params;
 
     const connection = getConnection();
     const cartItemsRepository = connection.getRepository(CartItems);
