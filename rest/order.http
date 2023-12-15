@@ -1,0 +1,25 @@
+###
+POST http://localhost:3000/payment-request
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTNUMTA6MzY6MTguNjY3WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyNDYzNzc4LCJleHAiOjE3MDI3MjI5Nzh9.Hj1jO8ohzjdH_Hg5fC_ahU0_UvycbLYQzBPcUrcNmTc
+
+# input :
+# {
+# 	"orderId":11
+# }
+
+# output : 
+# {
+# 	"paymentUrl": "https://www.zarinpal.com/pg/StartPay/A00000000000000000000000000484013291",
+# 	"updatedTotalPrice": 5000,
+# 	"cartId": 4,
+# 	"savedOrder": {
+# 		"orderStatus": "pending",
+# 		"totalPrice": 5000,
+# 		"userPhone": "09218913541",
+# 		"refId": null,
+# 		"id": 13,
+# 		"orderDate": "2023-12-08T18:07:25.578Z"
+# 	}
+# }
+
+

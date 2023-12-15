@@ -26,7 +26,7 @@ async function createUpload(req, res) {
       subdirectory,
       originalFilename
     );
-
+      console.log(`filePath >>> ${filePath}`);
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
@@ -123,6 +123,7 @@ async function removeUploadByPath(req, res) {
       where: { path: uploadPath },
     });
 
+    // Check if upload is null
     if (!upload) {
       return res.status(404).json({
         message: "فایلی پیدا نشد",
@@ -130,15 +131,16 @@ async function removeUploadByPath(req, res) {
       });
     }
 
-    // Remove the file from the uploads folder
-    const subdirectory = createSubdirectory();
+    // Check if upload has createdAt property before using it
+    const subdirectory = createSubdirectory(upload.createdAt || new Date());
     const filePath = path.resolve(
       __dirname,
       `../uploads/${subdirectory}`,
       upload.path
     );
 
-    await fs.unlink(filePath);
+    // Use fs.promises.unlink for a Promise-based version
+    await fs.promises.unlink(filePath);
 
     // Remove the record from the database
     await uploadRepository.remove(upload);
@@ -155,6 +157,8 @@ async function removeUploadByPath(req, res) {
     });
   }
 }
+
+
 
 async function getUploadById(req, res) {
   try {

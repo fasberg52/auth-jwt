@@ -11,7 +11,7 @@ const createSubdirectory = (date) => {
   const subdirectory = path.join(year.toString(), month);
   return subdirectory;
 };
-
+console.log("here upaod");
 const generateUniqueFilename = (originalname, counter) => {
   const extension = path.extname(originalname);
   const baseName = path.basename(originalname, extension);
@@ -82,18 +82,23 @@ const upload = multer({
     //   "video/m4v"
     // ];
     if (file.size > 5 * 1024 * 1024) {
-      return cb(null, false, {
+      cb(null, false, {
         error: "File size limit exceeded. Maximum file size is 5 MB.",
       });
+    } else {
+      // Uncomment the following block if you have specific file type restrictions
+      // if (allowedFileTypes.includes(file.mimetype)) {
+      //   cb(null, true);
+      // } else {
+      //   cb(null, false, {
+      //     error:
+      //       "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
+      //   });
+      // }
+
+      // In the absence of file type restrictions, call cb with true for successful uploads
+      cb(null, true);
     }
-    // if (allowedFileTypes.includes(file.mimetype)) {
-    //   cb(null, true);
-    // } else {
-    //   cb(null, false, {
-    //     error:
-    //       "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
-    //   });
-    // }
   },
 });
 
