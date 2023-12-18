@@ -57,15 +57,16 @@ async function checkOutCart(req, res) {
   }
 }
 
-
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
 
   try {
-    await getManager().transaction(async transactionalEntityManager => {
+    await getManager().transaction(async (transactionalEntityManager) => {
       const cartRepository = transactionalEntityManager.getRepository(Cart);
-      const cartItemsRepository = transactionalEntityManager.getRepository(CartItems);
-      const courseRepository = transactionalEntityManager.getRepository(Courses);
+      const cartItemsRepository =
+        transactionalEntityManager.getRepository(CartItems);
+      const courseRepository =
+        transactionalEntityManager.getRepository(Courses);
 
       const userCart = await cartRepository.findOne({
         where: { user: { phone: userPhone } },
@@ -112,7 +113,6 @@ async function createPayment(req, res) {
         return res.status(400).json({ error: "Payment Request Failed" });
       }
     });
-
   } catch (error) {
     console.error(`createPayment error: ${error}`);
     return res
@@ -181,7 +181,7 @@ async function getCourseById(courseId) {
 }
 
 function buildCallbackUrl(totalPrice, userPhone, orderId) {
-  return `localhost:5173/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
+  return `${process.env.ZARINPAL_CALLBACK_URL}/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
 }
 
 function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {

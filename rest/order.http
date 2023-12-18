@@ -23,3 +23,6 @@ Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2
 # }
 
 
+###
+GET http://localhost:3000/admin/orders?pageSize={number}&&page={number}&&sortBy={sting}&&sortOrder={string}
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTdUMTI6Mzg6MTYuNjQ0WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZCIsImxhc3ROYW1lIjoidGFoZXJpYW4iLCJpYXQiOjE3MDI4MTY2OTYsImV4cCI6MTcwMzA3NTg5Nn0.Wd8NFGIec1TysShDgrcuC31hpZ1bkcJ2TH20NMlbxOo
