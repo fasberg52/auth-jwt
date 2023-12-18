@@ -110,14 +110,14 @@ async function createPayment(req, res) {
 
         return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
       } else {
-        return res.status(400).json({ error: "Payment Request Failed" });
+        return res
+          .status(400)
+          .json({ error: "درخواست پرداخت با خطا مواجه شد" });
       }
     });
   } catch (error) {
     console.error(`createPayment error: ${error}`);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while preparing the createPayment." });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -181,7 +181,7 @@ async function getCourseById(courseId) {
 }
 
 function buildCallbackUrl(totalPrice, userPhone, orderId) {
-  return `${process.env.ZARINPAL_CALLBACK_URL}/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
+  return `${process.env.CALLBACKURL_ZARIPAL}/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
 }
 
 function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
@@ -273,13 +273,15 @@ async function verifyPayment(req, res) {
 
         // Clear the user's shopping cart (You can implement this function)
         //await clearUserCart(userPhone);
-
-        return res
-          .status(200)
-          .json({ message: "Payment verification succeeded", updateOrder });
+        return res.render("payment", {
+          orderStatus: "success",
+          updateOrder,
+        });
+        // return res
+        //   .status(200)
+        //   .json({ message: "Payment verification succeeded", updateOrder });
       }
     } else if (Status === "NOK") {
-      // Payment was not successful
       console.log("hereeeee");
       const orderRepository = getManager().getRepository(Order);
       const phone = req.query.Phone || "UNKNOWN";
@@ -300,10 +302,15 @@ async function verifyPayment(req, res) {
       console.log("phone : " + phone);
 
       console.log(`Order created successfully. Order ID: ${updateOrder.id}`);
-      return res.status(400).json({ error: "Payment was not successful" });
+      return res.render("payment", {
+        orderStatus: "cancelled",
+        error: "پرداخت انجام شده از طرف سرویس دهنده تایید نشد",
+      });
     } else {
-      // Handle other Status values if needed
-      return res.status(400).json({ error: "Invalid payment status" });
+      return res.render("payment", {
+        orderStatus: "cancelled", 
+        error: "Inavlid Payment Status",
+      });
     }
   } catch (error) {
     console.error(`verifyPayment error: ${error}`);
@@ -323,7 +330,6 @@ async function clearUserCart(userPhone) {
   });
 
   if (userCart) {
-    // Remove the cart items associated with the user's cart
     const cartItems = await cartItemsRepository.find({
       where: { cart: userCart.id },
     });
@@ -332,7 +338,6 @@ async function clearUserCart(userPhone) {
       await cartItemsRepository.remove(cartItems);
     }
 
-    // Optionally, you can delete the user's cart as well
     await cartRepository.remove(userCart);
   }
 }
@@ -369,7 +374,6 @@ async function getAllOrders(req, res) {
       .skip(offset)
       .take(pageSize);
 
-    // Add search conditions if search parameters are provided
     if (searchId) {
       queryBuilder.andWhere("order.id = :searchId", {
         searchId: parseInt(searchId),

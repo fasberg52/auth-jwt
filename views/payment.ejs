@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa-IR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5"
+    />
+
+    <title>تکمیل سفارش - باکلاس آنلاین</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- <link rel="stylesheet" type="text/css" href="/public/style/bundled.css" />
+   <link rel="stylesheet" type="text/css" href="/public/style/app.css" /> -->
+    <link rel="stylesheet" type="text/css" href="/public/style/square.css" />
+  </head>
+
+  <body class="position-relative">
+    <div class="container h-100 context rounded-5">
+      <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-6">
+          <div class="card text-center">
+            <figure class="img-fluid">
+              <% if (orderStatus === 'success') { %>
+              <img
+                src="https://baclassonline.iran.liara.run/app/uploads/2023/12/PaymentComplete.png"
+                alt="پرداخت موفق"
+                class="card-img img-fluid card-img-custom"
+              />
+              <% } else { %>
+              <img
+                src="https://baclassonline.iran.liara.run/app/uploads/2023/12/PaymentError.png"
+                alt="پرداخت ناموفق"
+                class="card-img img-fluid card-img-custom"
+              />
+              <% } %>
+            </figure>
+
+            <div class="card-body">
+              <% if (orderStatus === 'success') { %>
+              <h6 class="card-title text-dark size-text">
+                سفارش شما با موفقیت تکمیل شد
+              </h6>
+              <p class="card-text card-text-custom">
+                شناسه سفارش: <%= updateOrder.id %>
+              </p>
+              <% } else { %>
+              <h6 class="card-title text-dark size-text">
+                مشکلی هنگام تکمیل سفارش وجود آمده است
+              </h6>
+              <p class="card-text card-text-custom"><%= error %></p>
+              <% } %>
+            </div>
+
+            <div>
+              <% if (orderStatus === 'success') { %>
+              <a class="btn btn-primary btn-primary-custom" href="">
+                مشاهده سفارش
+              </a>
+              <% } else { %>
+              <a
+                class="btn btn-primary btn-primary-custom order-pay-btn"
+                href=""
+              >
+                پرداخت مجدد سفارش
+              </a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="area">
+      <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+      integrity="sha384-sYl7rBZTnNTA9a8dVo3IJB0+pb6ZDHCW/6Zc4FWCkYYUAQifP06Hc4K40If+Br5K"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
