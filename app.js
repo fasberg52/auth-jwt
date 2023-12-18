@@ -5,9 +5,8 @@ const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
-
+const path = require("path");
 const bodyParser = require("body-parser");
-
 
 const dotenv = require("dotenv").config();
 const app = express();
@@ -16,6 +15,8 @@ async function main() {
   try {
     await setupDatabase();
     configureSession(app);
+    app.set("view engine", "ejs");
+    app.set("views", path.join(__dirname  , "views"));
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(cookieParser());
