@@ -304,11 +304,11 @@ async function verifyPayment(req, res) {
       console.log(`Order created successfully. Order ID: ${updateOrder.id}`);
       return res.render("payment", {
         orderStatus: "cancelled",
-        error: "Payment was not successful",
+        error: "پرداخت انجام شده از طرف سرویس دهنده تایید نشد",
       });
     } else {
       return res.render("payment", {
-        orderStatus: "cancelled",
+        orderStatus: "cancelled", 
         error: "Inavlid Payment Status",
       });
     }

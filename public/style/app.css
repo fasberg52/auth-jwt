@@ -3,6 +3,10 @@
     display: block;
     clear: both
 }
+@font-face {
+    font-family: IRANSans;
+    src: url('../font/IRANSansX-Regular-815cea82.woff2'), format(woff2);
+}
 
 *,:after,:before {
     box-sizing: border-box
