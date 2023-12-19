@@ -34,7 +34,7 @@ router.get(
 );
 
 router.put(
-  "/update/:phone",
+  "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
   usersController.updateUsers

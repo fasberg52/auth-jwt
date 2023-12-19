@@ -144,7 +144,7 @@ async function getUserByPhone(req, res) {
 
 async function updateUsers(req, res) {
   try {
-    const { firstName, lastName, phone, password, role, imageUrl, grade } =
+    const { firstName, lastName, phone, password, roles, imageUrl, grade } =
       req.body;
     const userRepository = getManager().getRepository(Users);
 
@@ -155,13 +155,23 @@ async function updateUsers(req, res) {
     if (!existingUser) {
       res.status(404).json({ error: "کاربر وجود ندارد" });
     } else {
+      Object.assign(existingUser, {
+        firstName,
+        lastName,
+        password,
+        roles,
+        imageUrl,
+        grade,
+      });
+
+
       const savedUser = await userRepository.save(existingUser);
-      res.json(savedUser);
+      res
+        .status(200)
+        .json({ message: "تغییرات انجام شد", savedUser, status: 200 });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the user." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
