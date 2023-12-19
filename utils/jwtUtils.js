@@ -19,4 +19,14 @@ function createToken(user) {
   );
 }
 
-module.exports = { createToken };
+function verifyAndDecodeToken(token) {
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    return decodedToken;
+  } catch (error) {
+    console.error("Token verification failed:", error.message);
+    return null;
+  }
+}
+
+module.exports = { createToken, verifyAndDecodeToken };

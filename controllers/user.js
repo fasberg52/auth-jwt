@@ -1,9 +1,8 @@
-const Users = require("../model/users");
+const User = require("../model/users");
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
 const { convertToJalaliDate } = require("../services/jalaliService");
-const User = require("../model/users");
 
 async function getUserDataWithToken(req, res) {
     try {
