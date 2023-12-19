@@ -124,21 +124,19 @@ async function getUserByPhone(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        createdAt: moment(existingUser.createdAt).format("jYYYY/jMM/jDD"),
-        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMM/jDD"),
+        createdAt: moment(existingUser.createdAt).format("jYYYY/jMMMM/jDD"),
+        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMMMM/jDD"),
         lastLogin: existingUser.lastLogin
-          ? moment(existingUser.lastLogin).format("jYYYY/jMM/jDD")
+          ? moment(existingUser.lastLogin).format("jYYYY/jMMMM/jDD")
           : null,
       };
 
       res.json(userWithJalaliDates);
     } else {
-      res.status(404).json({ error: "User not found." });
+      res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while getting the user." });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -163,7 +161,6 @@ async function updateUsers(req, res) {
         imageUrl,
         grade,
       });
-
 
       const savedUser = await userRepository.save(existingUser);
       res
