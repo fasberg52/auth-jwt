@@ -1,8 +1,45 @@
 const Users = require("../model/users");
 const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
-
+const logger = require("../services/logger");
 const moment = require("jalali-moment");
+const User = require("../model/users");
+
+async function createUser(req, res) {
+  try {
+    const { firstName, lastName, phone, password, roles, imageUrl, grade } =
+      req.body;
+
+    const userRepository = getManager.getRepository(User);
+    const existingUser = await userRepository.findOne({
+      where: { phone: phone },
+    });
+    if (existingUser) {
+      res
+        .status(400)
+        .json({ message: "کاربر دیگری با این شماره وجود دارد", status: 400 });
+    }
+    const newUser = await userRepository.create({
+      firstName,
+      lastName,
+      phone,
+      password,
+      roles,
+      imageUrl,
+      grade,
+    });
+
+    const savedUser = await userRepository.save(newUser);
+
+    res
+      .status(201)
+      .json({ message: "کاربر جدید ایجاد شد", newUser, status: 201 });
+  } catch {
+    logger.error;
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 async function getUsers(req, res) {
   try {
@@ -53,8 +90,6 @@ async function getUsers(req, res) {
       .where("user.roles = :role", { role: "admin" })
       .getRawOne();
 
-   
-
     res.json({
       users,
       totalUsers: totalUsers,
@@ -87,12 +122,8 @@ async function getUserByPhone(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        createdAt: moment(existingUser.createdAt).format(
-          "jYYYY/jMM/jDD"
-        ),
-        updatedAt: moment(existingUser.updatedAt).format(
-          "jYYYY/jMM/jDD"
-        ),
+        createdAt: moment(existingUser.createdAt).format("jYYYY/jMM/jDD"),
+        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMM/jDD"),
         lastLogin: existingUser.lastLogin
           ? moment(existingUser.lastLogin).format("jYYYY/jMM/jDD")
           : null,
@@ -173,4 +204,5 @@ module.exports = {
   getUserByPhone,
   updateUsers,
   deleteUsers,
+  createUser,
 };
