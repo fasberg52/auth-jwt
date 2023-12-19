@@ -3,6 +3,7 @@ const Order = require("../model/Orders");
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
+const { convertToJalaliDate } = require("../services/jalaliService");
 const User = require("../model/users");
 
 async function createUser(req, res) {
@@ -10,16 +11,17 @@ async function createUser(req, res) {
     const { firstName, lastName, phone, password, roles, imageUrl, grade } =
       req.body;
 
-    const userRepository = getManager.getRepository(User);
+    const userRepository = getManager().getRepository(User);
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
     if (existingUser) {
-      res
-        .status(400)
-        .json({ message: "کاربر دیگری با این شماره وجود دارد", status: 400 });
+      return res.status(400).json({
+        message: "کاربر دیگری با این شماره وجود دارد",
+        status: 400,
+      });
     }
-    const newUser = await userRepository.create({
+    const newUser = userRepository.create({
       firstName,
       lastName,
       phone,
@@ -30,11 +32,11 @@ async function createUser(req, res) {
     });
 
     const savedUser = await userRepository.save(newUser);
-
+    savedUser.createdAt = convertToJalaliDate(savedUser.createdAt);
     res
       .status(201)
-      .json({ message: "کاربر جدید ایجاد شد", newUser, status: 201 });
-  } catch {
+      .json({ message: "کاربر جدید ایجاد شد", savedUser, status: 201 });
+  } catch (error) {
     logger.error;
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });

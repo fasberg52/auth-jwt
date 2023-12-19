@@ -12,6 +12,7 @@ const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
+router.post("/user", jwtAuthMiddleware, usersController.createUser);
 router.get(
   "/users",
 
