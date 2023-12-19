@@ -22,7 +22,6 @@ async function main() {
     app.use(cookieParser());
 
     app.use(bodyParser.urlencoded({ extended: false }));
-
     app.use(express.json());
     app.use("/app/uploads", express.static("uploads"));
     app.use('/public', express.static('public'));
