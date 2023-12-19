@@ -88,13 +88,13 @@ async function getUserByPhone(req, res) {
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
         createdAt: moment(existingUser.createdAt).format(
-          "jYYYY/jMM/jDD HH:mm:ss"
+          "jYYYY/jMM/jDD"
         ),
         updatedAt: moment(existingUser.updatedAt).format(
-          "jYYYY/jMM/jDD HH:mm:ss"
+          "jYYYY/jMM/jDD"
         ),
         lastLogin: existingUser.lastLogin
-          ? moment(existingUser.lastLogin).format("jYYYY/jMM/jDD HH:mm:ss")
+          ? moment(existingUser.lastLogin).format("jYYYY/jMM/jDD")
           : null,
       };
 
