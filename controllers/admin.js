@@ -41,20 +41,25 @@ async function getUsers(req, res) {
 
     const [users, totalUsers] = await queryBuilder.getManyAndCount();
 
-    const usersWithJalaliDates = users.map((user) => {
-      return {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        role: user.roles,
-        grade: user.grade,
-      };
-    });
+    const usersCount = await userRepository
+      .createQueryBuilder("user")
+      .select("COUNT(user.id)", "count")
+      .where("user.roles = :role", { role: "user" })
+      .getRawOne();
+
+    const adminsCount = await userRepository
+      .createQueryBuilder("user")
+      .select("COUNT(user.id)", "count")
+      .where("user.roles = :role", { role: "admin" })
+      .getRawOne();
+
+   
 
     res.json({
-      users: usersWithJalaliDates,
+      users,
       totalUsers: totalUsers,
+      adminsCount: adminsCount.count,
+      usersCount: usersCount.count,
     });
   } catch (error) {
     console.log(error);
@@ -132,10 +137,9 @@ async function updateUsers(req, res) {
 
 async function deleteUsers(req, res) {
   try {
-    const phone = req.params.phone; 
+    const phone = req.params.phone;
 
     await getManager().transaction(async (transactionalEntityManager) => {
-      
       const user = await transactionalEntityManager.findOne(Users, {
         where: { phone: phone },
       });
@@ -144,12 +148,11 @@ async function deleteUsers(req, res) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      
       await transactionalEntityManager
         .createQueryBuilder()
         .update(Order)
         .set({ user: null })
-        .where("user.phone = :phone", { phone: phone }) 
+        .where("user.phone = :phone", { phone: phone })
         .execute();
 
       // Delete the user
