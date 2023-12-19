@@ -144,22 +144,19 @@ async function getUserByPhone(req, res) {
 
 async function updateUsers(req, res) {
   try {
+    const { firstName, lastName, phone, password, role, imageUrl, grade } =
+      req.body;
     const userRepository = getManager().getRepository(Users);
-    const phoneNumber = req.params.phone;
 
     const existingUser = await userRepository.findOne({
-      where: { phone: phoneNumber },
+      where: { phone: phone },
     });
 
-    if (existingUser) {
-      existingUser.firstName = req.body.firstName;
-      existingUser.lastName = req.body.lastName;
-      existingUser.password = req.body.password;
-
+    if (!existingUser) {
+      res.status(404).json({ error: "کاربر وجود ندارد" });
+    } else {
       const savedUser = await userRepository.save(existingUser);
       res.json(savedUser);
-    } else {
-      res.status(404).json({ error: "User not found." });
     }
   } catch (error) {
     res

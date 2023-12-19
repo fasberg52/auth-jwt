@@ -15,6 +15,7 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 router.post(
   "/user",
   jwtAuthMiddleware,
+  checkRole("admin"),
   ajvMiddlerware.validateSignUp,
   usersController.createUser
 );
