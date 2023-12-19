@@ -46,14 +46,10 @@ const signUpSchema = {
     roles: {
       type: "string",
     },
-    imageUrl: {
-      type: "string",
-    },
-    grade: {
-      type: "string",
-    },
+    imageUrl: { anyOf: [{ type: "string" }, { type: "null" }] },
+    grade: { anyOf: [{ type: "string" }, { type: "null" }] },
   },
-  required: ["firstName", "lastName"],
+  required: ["firstName", "lastName", "phone"],
   additionalProperties: false,
   errorMessage: {
     properties: {
@@ -61,6 +57,9 @@ const signUpSchema = {
       lastName: "فامیل خود را فارسی وارد کنید",
       phone: "فرمت شماره همراه صحیح نیست",
       password: "لطفا ترکیبی از حروف و اعداد وارد کنید",
+      imageUrl: "عکس را درست انتخاب کنید",
+      roles: "نقش را درست انتخاب کنید",
+      grade: "پایه تحصیلی را درست انتخاب کنید",
     },
     additionalProperties: "وارد کردن اطلاعات اضافی مجاز نیست",
   },
@@ -77,10 +76,10 @@ const createPartSchema = {
   required: ["title", "chapterId", "description", "videoPath"],
   errorMessage: {
     properties: {
-      title: "Input should be a string",
-      chapterId: "Input should be an integer",
-      description: "Input should be a string",
-      videoPath: "Format is wrong. Supported formats: mp4, m4v",
+      title: "ورودی باید استرینگ باشد",
+      chapterId: "آیدی سرفصل باید عددی باشد",
+      description: "ورودی باید استرینگ باشد",
+      videoPath: "فرمت مجاز نیست : mp4 , m4v",
     },
   },
 };
