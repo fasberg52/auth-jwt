@@ -97,15 +97,44 @@ const courseSchema = {
   },
 };
 
+const updateUserSchema = {
+  type: "object",
+  properties: {
+    firstName: { type: "string", pattern: "^[آ-ی ]+$" },
+    lastName: { type: "string", pattern: "^[آ-ی ]+$" },
+    phone: { type: "string", pattern: "^09\\d{9}$" },
+    password: { type: "string", minLength: 5 },
+    roles: { type: "string" },
+    imageUrl: { type: ["string", "null"] },
+    grade: { type: ["string", "null"] },
+  },
+  required: ["phone"],
+  additionalProperties: false,
+  errorMessage: {
+    properties: {
+      firstName: "لطفا نام فارسی وارد کنید",
+      lastName: "لطفا فامیل فارسی وارد کنید",
+      phone: "فرمت شماره همراه صحیح نیست",
+      password: "لطفا رمز عبور معتبر وارد کنید",
+    },
+    required: {
+      phone: "شماره همراه اجباری است",
+    },
+    additionalProperties: "وارد کردن اطلاعات اضافی مجاز نیست",
+  },
+};
+
 const phoneValidator = ajv.compile(phoneSchema);
 const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
 const signUpValidator = ajv.compile(signUpSchema);
 const partValidator = ajv.compile(createPartSchema);
 const courseValidator = ajv.compile(courseSchema);
+const updateUserValidator = ajv.compile(updateUserSchema);
 module.exports = {
   phoneValidator,
   loginWithOTPValidator,
   signUpValidator,
   partValidator,
   courseValidator,
+  updateUserValidator,
 };

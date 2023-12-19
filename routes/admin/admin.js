@@ -37,6 +37,7 @@ router.put(
   "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
+  ajvMiddlerware.validUpdateUser,
   usersController.updateUsers
 );
 router.delete(
