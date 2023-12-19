@@ -11,10 +11,8 @@ const phoneSchema = {
   errorMessage: {
     properties: {
       phone: "فرمت شماره همراه صحیح نیست",
-
     },
     additionalProperties: "اطلاعات اضافی مجاز نیست",
-
   },
 };
 
@@ -45,9 +43,18 @@ const signUpSchema = {
       pattern: "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$",
       minLength: 5,
     },
+    roles: {
+      type: "string",
+    },
+    imageUrl: {
+      type: "string",
+    },
+    grade: {
+      type: "string",
+    },
   },
   required: ["firstName", "lastName"],
-
+  additionalProperties: false,
   errorMessage: {
     properties: {
       firstName: "نام خود را فارسی وارد کنید",
@@ -55,6 +62,7 @@ const signUpSchema = {
       phone: "فرمت شماره همراه صحیح نیست",
       password: "لطفا ترکیبی از حروف و اعداد وارد کنید",
     },
+    additionalProperties: "وارد کردن اطلاعات اضافی مجاز نیست",
   },
 };
 
