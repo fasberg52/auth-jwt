@@ -4,11 +4,11 @@ const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
-const cacheService = require("../services/cacheService");
+//const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
-  const cacheKey = "allCourses";
-  console.log(`cacheKey >>> ${cacheKey}`);
+  //const cacheKey = "allCourses";
+  //console.log(`cacheKey >>> ${cacheKey}`);
 
   try {
     // const cachedData = await cacheService.get(cacheKey);
@@ -20,7 +20,7 @@ async function getAllCourse(req, res) {
     //   // If data is found in the cache, return it
     //   return res.json({ courses: courses });
     // } else {
-    console.log("Data not found in cache. Fetching from the database.");
+    //console.log("Data not found in cache. Fetching from the database.");
 
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
@@ -62,11 +62,11 @@ async function getAllCourse(req, res) {
       lastModified: convertToJalaliDate(course.lastModified),
     }));
 
-    await cacheService.set(
-      cacheKey,
-      { courses: jalaliCourses, totalCount },
-      86400 * 1000
-    );
+    // await cacheService.set(
+    //   cacheKey,
+    //   { courses: jalaliCourses, totalCount },
+    //   86400 * 1000
+    // );
 
     logger.info("getAllCourse successful", {
       page,
@@ -82,7 +82,7 @@ async function getAllCourse(req, res) {
     });
     // }
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     logger.error("Error in getAllCourse", { error });
 
     res
@@ -187,7 +187,6 @@ async function getAllCourse(req, res) {
 // }
 
 async function getCourseById(req, res) {
-  const cacheKey = "getCourseById";
   try {
     const userPhone = req.user.phone;
 
@@ -197,11 +196,11 @@ async function getCourseById(req, res) {
     const isEnrolled = await enrollmentRepository
       .createQueryBuilder("enrollment")
       .innerJoin("enrollment.course", "course")
-      .innerJoin("enrollment.order", "order")
-      .innerJoin("order.user", "user")
+      .innerJoin("enrollment.order", "o")
+      .innerJoin("o.user", "user")
       .where("course.id = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
-      .andWhere("order.status = :status", { status: "success" }) // Check order status
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .getCount();
 
     const courseRepository = getManager().getRepository(Courses);
@@ -228,23 +227,12 @@ async function getCourseById(req, res) {
       .getOne();
 
     if (existingCourse) {
-      existingCourse.discountStart = jalaliMoment(
-        existingCourse.discountStart
-      ).format("YYYY/MM/DD HH:mm:ss");
-      existingCourse.discountExpiration = jalaliMoment(
-        existingCourse.discountExpiration
-      ).format("YYYY/MM/DD HH:mm:ss");
-      existingCourse.createdAt = jalaliMoment(existingCourse.createdAt).format(
-        "YYYY/MMMM/DD"
-      );
-      existingCourse.lastModified = jalaliMoment(
-        existingCourse.lastModified
-      ).format("YYYY/MMMM/DD");
+      existingCourse.discountStart = convertToJalaliDate(existingCourse.discountStart);
+      existingCourse.discountExpiration = convertToJalaliDate(existingCourse.discountExpiration);
+      existingCourse.createdAt = convertToJalaliDate(existingCourse.createdAt);
+      existingCourse.lastModified = convertToJalaliDate(existingCourse.lastModified);
 
-      const { price, ...cachedCourse } = existingCourse;
       if (!isEnrolled) {
-        await cacheService.set(cacheKey, { cachedCourse }, 86400 * 1000);
-
         logger.info(`getCourseById successful for courseId ${courseId}`);
         res.json({ access: false, ...existingCourse });
       } else {
@@ -258,11 +246,8 @@ async function getCourseById(req, res) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
     });
-
     console.log(`>>>>${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving the course." });
+    res.status(500).json({ error });
   }
 }
 
