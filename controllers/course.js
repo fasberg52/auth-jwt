@@ -244,7 +244,7 @@ async function getCourseById(req, res) {
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
-      error,
+      error,   
     });
     console.log(`>>>>${error}`);
     res.status(500).json({ error });
