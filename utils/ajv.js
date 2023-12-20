@@ -88,6 +88,7 @@ const courseSchema = {
   type: "object",
   properties: {
     title: { type: "string", minLength: 1 },
+    price: { type: "number" },
   },
   required: ["title"],
   errorMessage: {

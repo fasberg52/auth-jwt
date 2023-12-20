@@ -21,6 +21,10 @@ async function addCourse(req, res) {
       discountExpiration,
     } = req.body;
 
+    if (discountPrice && discountPrice >= price) {
+      return res.status(400).json({ error: "تخفیف نمیتواند از قیمت اصلی بیشتر باشد" });
+    }
+
     let category = null;
     if (categoryId !== undefined && categoryId !== null) {
       category = await getManager()
@@ -28,7 +32,6 @@ async function addCourse(req, res) {
         .findOne({ where: { id: categoryId } });
     }
 
-    // Check if discountStart and discountExpiration are provided
     const startMoment = discountStart
       ? jalaliMoment(discountStart, "jYYYY-jM-jD")
       : null;
@@ -54,14 +57,13 @@ async function addCourse(req, res) {
     console.log(`result >>> ${result}`);
 
     // Prepare a response object
-    res
-      .status(201)
-      .json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
+    return res.status(201).json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
 async function editCourse(req, res) {
   try {
@@ -183,7 +185,7 @@ async function getAdminCourseById(req, res) {
         "part.videoDuration",
         "part.isFree",
         "part.videoPath",
-        "part.orderIndex"
+        "part.orderIndex",
       ])
       .where("course.id = :courseId", { courseId })
       .orderBy("chapter.orderIndex", "ASC")
