@@ -201,6 +201,7 @@ async function getCourseById(req, res) {
       .innerJoin("order.user", "user")
       .where("course.id = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("order.status = :status", { status: "success" }) // Check order status
       .getCount();
 
     const courseRepository = getManager().getRepository(Courses);

@@ -12,7 +12,7 @@ function convertToJalaliDate(date) {
 
   const persianMonthName = moment(date).format('MMMM');
 
-  return moment(date).format(`jYYYY/${persianMonthName}/jDD`);
+  return moment(date).format(`jDD/${persianMonthName}/jYYYY`);
 }
 
 module.exports = {
