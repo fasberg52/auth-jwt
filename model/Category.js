@@ -1,6 +1,4 @@
-// category.js
-
-const { EntitySchema, Timestamp } = require("typeorm");
+const { EntitySchema, Timestamp, ManyToOne, OneToMany } = require("typeorm");
 
 const Category = new EntitySchema({
   name: "Category",
@@ -10,18 +8,16 @@ const Category = new EntitySchema({
       type: "int",
       generated: true,
       primary: true,
-     
     },
     name: {
       type: "varchar",
-
     },
     description: {
       type: "varchar",
       nullable: true,
     },
     icon: {
-      type: "varchar", 
+      type: "varchar",
       nullable: true,
     },
     createdAt: {
@@ -33,6 +29,24 @@ const Category = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+    parentName: {
+      type: "varchar",
+      nullable: true,
+    },
+  },
+  relations: {
+    parent: {
+      type: "ManyToOne",
+      target: "Category",
+      inverseSide: "children",
+      nullable: true,
+    },
+    children: {
+      type: "OneToMany",
+      target: "Category",
+      inverseSide: "parent",
+    },
   },
 });
+
 module.exports = Category;

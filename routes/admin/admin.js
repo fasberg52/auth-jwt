@@ -78,10 +78,10 @@ router.get(
 //category
 
 router.post(
-  "/create-category",
-  jwtAuthMiddleware,
-  checkRole("admin"),
-  upload.single("icon"),
+  "/category",
+  //jwtAuthMiddleware,
+  //checkRole("admin"),
+  //upload.single("icon"),
   categoryController.createCategory
 );
 router.put(
