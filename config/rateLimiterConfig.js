@@ -3,7 +3,7 @@ const rateLimit = require("express-rate-limit");
 
   const otpRateLimiter = rateLimit({
     windowMs: 3 * 60 * 1000, // 3 minutes
-    limit: 5, // 5 request for easch IP
+    limit: 10, // 5 request for easch IP
     standardHeaders: "draft-7", 
     legacyHeaders: false, 
     message:

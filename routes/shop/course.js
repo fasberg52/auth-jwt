@@ -8,7 +8,7 @@ const express = require("express");
 const categoryController = require("../../controllers/category");
 const router = express.Router();
 
-router.get("/allcourses", courseController.getAllCourse);
+router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 router.get("/category", categoryController.getAllCategories);
 

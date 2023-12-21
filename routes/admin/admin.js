@@ -12,6 +12,13 @@ const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
+router.post(
+  "/user",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  ajvMiddlerware.validateSignUp,
+  usersController.createUser
+);
 router.get(
   "/users",
 
@@ -27,9 +34,10 @@ router.get(
 );
 
 router.put(
-  "/update/:phone",
+  "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
+  ajvMiddlerware.validUpdateUser,
   usersController.updateUsers
 );
 router.delete(
@@ -70,10 +78,10 @@ router.get(
 //category
 
 router.post(
-  "/create-category",
-  jwtAuthMiddleware,
-  checkRole("admin"),
-  upload.single("icon"),
+  "/category",
+  //jwtAuthMiddleware,
+  //checkRole("admin"),
+  //upload.single("icon"),
   categoryController.createCategory
 );
 router.put(

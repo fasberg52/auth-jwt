@@ -4,11 +4,11 @@ const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
-const cacheService = require("../services/cacheService");
+//const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
-  const cacheKey = "allCourses";
-  console.log(`cacheKey >>> ${cacheKey}`);
+  //const cacheKey = "allCourses";
+  //console.log(`cacheKey >>> ${cacheKey}`);
 
   try {
     // const cachedData = await cacheService.get(cacheKey);
@@ -20,20 +20,34 @@ async function getAllCourse(req, res) {
     //   // If data is found in the cache, return it
     //   return res.json({ courses: courses });
     // } else {
-    console.log("Data not found in cache. Fetching from the database.");
+    //console.log("Data not found in cache. Fetching from the database.");
 
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const sortBy = req.query.sortBy || "id"; // Default to sorting by title
-    const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
+    const pageSize = parseInt(req.query.pageSize) || 20;
+    const sortBy = req.query.sortBy || "id";
+    const sortOrder = req.query.sortOrder || "DESC";
     const search = req.query.search || "";
+
+    if (isNaN(page) || isNaN(pageSize) || page < 1 || pageSize < 1) {
+      return res.status(400).json({ error: "صفحه مورد نظر وجود ندارد" });
+    }
+
+    const totalCourseCount = await courseRepository.count();
+
+    const totalPages = Math.ceil(totalCourseCount / pageSize);
+
+    if (page > totalPages) {
+      return res
+        .status(400)
+        .json({ error: `بیشتر از ${totalPages} صفحه نداریم` });
+    }
 
     const offset = (page - 1) * pageSize;
 
     const [courses, totalCount] = await courseRepository
       .createQueryBuilder("course")
-      .leftJoinAndSelect("course.category", "category") // Join with category
+      .leftJoinAndSelect("course.category", "category")
       .select([
         "course.id",
         "course.title",
@@ -48,25 +62,24 @@ async function getAllCourse(req, res) {
         "course.createdAt",
         "course.lastModified",
       ])
-      .addSelect(["category.name"]) // Include category.name in the select
-      .where("course.title LIKE :search", { search: `%${search}%` }) // Search by course title
-      .orderBy(`course.${sortBy}`, sortOrder) // Add sorting
+      .addSelect(["category.name"])
+      .where("course.title LIKE :search", { search: `%${search}%` })
+      .orderBy(`course.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize)
       .getManyAndCount();
 
-    // Convert createdAt and lastModified to Jalali calendar
     const jalaliCourses = courses.map((course) => ({
       ...course,
       createdAt: convertToJalaliDate(course.createdAt),
       lastModified: convertToJalaliDate(course.lastModified),
     }));
 
-    await cacheService.set(
-      cacheKey,
-      { courses: jalaliCourses, totalCount },
-      86400 * 1000
-    );
+    // await cacheService.set(
+    //   cacheKey,
+    //   { courses: jalaliCourses, totalCount },
+    //   86400 * 1000
+    // );
 
     logger.info("getAllCourse successful", {
       page,
@@ -82,7 +95,7 @@ async function getAllCourse(req, res) {
     });
     // }
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     logger.error("Error in getAllCourse", { error });
 
     res
@@ -187,7 +200,6 @@ async function getAllCourse(req, res) {
 // }
 
 async function getCourseById(req, res) {
-  const cacheKey = "getCourseById";
   try {
     const userPhone = req.user.phone;
 
@@ -197,10 +209,11 @@ async function getCourseById(req, res) {
     const isEnrolled = await enrollmentRepository
       .createQueryBuilder("enrollment")
       .innerJoin("enrollment.course", "course")
-      .innerJoin("enrollment.order", "order")
-      .innerJoin("order.user", "user")
+      .innerJoin("enrollment.order", "o")
+      .innerJoin("o.user", "user")
       .where("course.id = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .getCount();
 
     const courseRepository = getManager().getRepository(Courses);
@@ -227,23 +240,18 @@ async function getCourseById(req, res) {
       .getOne();
 
     if (existingCourse) {
-      existingCourse.discountStart = jalaliMoment(
+      existingCourse.discountStart = convertToJalaliDate(
         existingCourse.discountStart
-      ).format("YYYY/MM/DD HH:mm:ss");
-      existingCourse.discountExpiration = jalaliMoment(
-        existingCourse.discountExpiration
-      ).format("YYYY/MM/DD HH:mm:ss");
-      existingCourse.createdAt = jalaliMoment(existingCourse.createdAt).format(
-        "YYYY/MMMM/DD"
       );
-      existingCourse.lastModified = jalaliMoment(
+      existingCourse.discountExpiration = convertToJalaliDate(
+        existingCourse.discountExpiration
+      );
+      existingCourse.createdAt = convertToJalaliDate(existingCourse.createdAt);
+      existingCourse.lastModified = convertToJalaliDate(
         existingCourse.lastModified
-      ).format("YYYY/MMMM/DD");
+      );
 
-      const { price, ...cachedCourse } = existingCourse;
       if (!isEnrolled) {
-        await cacheService.set(cacheKey, { cachedCourse }, 86400 * 1000);
-
         logger.info(`getCourseById successful for courseId ${courseId}`);
         res.json({ access: false, ...existingCourse });
       } else {
@@ -257,11 +265,8 @@ async function getCourseById(req, res) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
     });
-
     console.log(`>>>>${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving the course." });
+    res.status(500).json({ error });
   }
 }
 

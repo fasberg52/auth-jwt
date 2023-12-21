@@ -47,22 +47,64 @@ async function getAllCategories(req, res) {
   }
 }
 
+// async function createCategory(req, res) {
+//   try {
+//     const { name, description, icon } = req.body;
+//     const categoryRepository = getManager().getRepository(Category);
+//     const newCategory = categoryRepository.create({ name, description, icon });
+//     const savedCategory = await categoryRepository.save(newCategory);
+//     res
+//       .status(201)
+//       .json({ message: "با موفقیت ساخته شد", savedCategory, status: 201 });
+//   } catch (error) {
+//     res.status(500).json({
+//       error: "Internal Server Error",
+//     });
+//   }
+// }
+
+
+
+
 async function createCategory(req, res) {
   try {
-    const { name, description, icon } = req.body;
+    const { name, description, icon, parent } = req.body;
+
+    let parentCategory = null;
+    if (parent && parent.id) {
+      const parentRepository = getManager().getRepository(Category);
+      parentCategory = await parentRepository.findOne({
+        where: { id: parent.id },
+      });
+      if (!parentCategory) {
+        return res.status(404).json({ error: "دسته واد پیدا نشد" });
+      }
+    }
     const categoryRepository = getManager().getRepository(Category);
-    const newCategory = categoryRepository.create({ name, description, icon });
+
+    const newCategory = categoryRepository.create({
+      name,
+      description,
+      icon,
+      parent: parentCategory,
+    });
+
+    if (parentCategory) {
+      newCategory.parentName = parentCategory.name;
+    }
+
     const savedCategory = await categoryRepository.save(newCategory);
+
     res
       .status(201)
       .json({ message: "با موفقیت ساخته شد", savedCategory, status: 201 });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       error: "Internal Server Error",
     });
   }
 }
-
 async function updateCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;

@@ -16,17 +16,17 @@ async function createUpload(req, res) {
 
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
-    
+
     // Pass the current date to createSubdirectory
     const subdirectory = createSubdirectory(new Date());
-    
+
     const filePath = path.resolve(
       __dirname,
       "../uploads",
       subdirectory,
       originalFilename
     );
-      console.log(`filePath >>> ${filePath}`);
+    console.log(`filePath >>> ${filePath}`);
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
@@ -63,7 +63,6 @@ async function createUpload(req, res) {
   }
 }
 
-
 async function getAllUploads(req, res) {
   try {
     const uploadRepository = getManager().getRepository(Upload);
@@ -82,8 +81,7 @@ async function getAllUploads(req, res) {
       },
     });
 
-    const uploadsData = uploads.map((upload) => {
-      // Use the original upload date for creating the subdirectory
+      const uploadsData = uploads.map((upload) => {
       const subdirectory = createSubdirectory(upload.createdAt);
 
       const filePath = upload.path
@@ -157,8 +155,6 @@ async function removeUploadByPath(req, res) {
     });
   }
 }
-
-
 
 async function getUploadById(req, res) {
   try {

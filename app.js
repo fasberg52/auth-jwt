@@ -15,6 +15,8 @@ async function main() {
   try {
     await setupDatabase();
     configureSession(app);
+    app.set('trust proxy', 1);
+
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
     app.use(passport.initialize());
@@ -22,7 +24,6 @@ async function main() {
     app.use(cookieParser());
 
     app.use(bodyParser.urlencoded({ extended: false }));
-
     app.use(express.json());
     app.use("/app/uploads", express.static("uploads"));
     app.use('/public', express.static('public'));

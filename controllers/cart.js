@@ -67,7 +67,7 @@ async function createCartItem(req, res) {
         quantity: defaultQuantity,
       });
       await cartItemsRepository.save(newCartItem);
-      console.log(newCartItem);
+      //console.log(newCartItem);
       res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,
@@ -75,7 +75,7 @@ async function createCartItem(req, res) {
       });
     }
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -103,17 +103,17 @@ async function getUserCart(req, res) {
     let totalCartPrice = 0;
 
     const cartDataPromises = cartItems.map(async (cartItem) => {
-      console.log("Processing cartItem: ", cartItem);
+      //console.log("Processing cartItem: ", cartItem);
       if (cartItem.courseId) {
-        console.log("Course data exists for cartItem: ", cartItem.courseId);
+        //console.log("Course data exists for cartItem: ", cartItem.courseId);
         try {
           const course = await courseRepository.findOne({
             where: { id: cartItem.courseId },
           });
-          console.log("Fetched course data: ", course);
+          // console.log("Fetched course data: ", course);
           if (course) {
             const discountedPrice = course.discountPrice || course.price;
-            console.log(`discountedPrice>>> ${discountedPrice}`);
+            // console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;
@@ -129,17 +129,17 @@ async function getUserCart(req, res) {
             };
           }
         } catch (error) {
-          console.error("Error fetching course: ", error);
+          //console.error("Error fetching course: ", error);
         }
       }
     });
 
     const cartData = await Promise.all(cartDataPromises);
-    console.log("Final cartData: ", cartData);
+    // console.log("Final cartData: ", cartData);
 
     res.status(200).json({ cartData, totalCartPrice, status: 200 });
   } catch (error) {
-    console.error("Error: ", error);
+    // console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -272,7 +272,7 @@ async function removeCartItem(req, res) {
 
     res.status(200).json({ message: `${courseName} از سبد خرید شما حذف شد` });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

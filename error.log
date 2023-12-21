@@ -101,3 +101,16 @@ Error splitting the argument list: Option not found
 2023-12-05T07:52:44.834Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
 2023-12-05T07:57:17.725Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
 2023-12-05T09:05:38.033Z error: Error retrieving video path with part ID: TypeError: Cannot read properties of null (reading 'isFree')
+2023-12-20T07:47:44.079Z error: Error in getCourseById for courseId 42
+2023-12-20T07:50:08.754Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:36.968Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:37.037Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:58.533Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:58.548Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:41.491Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:41.500Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:52.719Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:52.735Z error: Error in getCourseById for courseId 42
+2023-12-20T09:40:26.343Z error: Error in getCourseById for courseId 42
+2023-12-20T09:40:48.474Z error: Error in getCourseById for courseId 42
+2023-12-20T09:41:06.103Z error: Error in getCourseById for courseId 42

@@ -5,7 +5,7 @@ const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
 const axios = require("axios");
-const moment = require("jalali-moment");
+const { convertToJalaliDate } = require("../services/jalaliService");
 
 async function checkOutCart(req, res) {
   try {
@@ -308,7 +308,7 @@ async function verifyPayment(req, res) {
       });
     } else {
       return res.render("payment", {
-        orderStatus: "cancelled", 
+        orderStatus: "cancelled",
         error: "Inavlid Payment Status",
       });
     }
@@ -344,17 +344,18 @@ async function clearUserCart(userPhone) {
 
 async function getAllOrders(req, res) {
   try {
-    const sortBy = req.query.sortBy || "orderDate";
-    const sortOrder = req.query.sortOrder || "DESC";
+    const {
+      sortBy = "orderDate",
+      sortOrder = "DESC",
+      page = 1,
+      pageSize = 10,
+      searchId,
+      searchName,
+      searchOrderDate,
+    } = req.query;
 
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const offset = (page - 1) * pageSize;
     const orderRepository = getRepository(Order);
-
-    const searchId = req.query.searchId;
-    const searchName = req.query.searchName;
-    const searchOrderDate = req.query.searchOrderDate;
+    const offset = (page - 1) * pageSize;
 
     const queryBuilder = orderRepository
       .createQueryBuilder("order")
@@ -366,10 +367,6 @@ async function getAllOrders(req, res) {
         "order.totalPrice",
       ])
       .addSelect(["user.id", "user.firstName", "user.lastName"])
-      .addSelect(
-        `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
-        "jalaliDate"
-      )
       .orderBy(`order.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize);
@@ -397,9 +394,12 @@ async function getAllOrders(req, res) {
     const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
 
-    console.log(queryBuilder.getSql());
+    const jalaliOrders = orders.map((order) => ({
+      ...order,
+      orderDate: convertToJalaliDate(order.orderDate),
+    }));
 
-    res.status(200).json({ orders, totalCount });
+    res.status(200).json({ orders: jalaliOrders, totalCount });
   } catch (error) {
     console.error(`getAllOrders error: ${error}`);
     res.status(500).json({ error: "Internal server error on getAllOrders" });

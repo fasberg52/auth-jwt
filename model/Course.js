@@ -15,7 +15,7 @@ const Course = new EntitySchema({
     },
     description: {
       type: "text",
-      nullable:true
+      nullable: true,
     },
     price: {
       type: "int",
@@ -23,6 +23,7 @@ const Course = new EntitySchema({
     },
     discountPrice: {
       type: "int",
+      default: null,
       nullable: true,
     },
     discountStart: {
@@ -30,7 +31,7 @@ const Course = new EntitySchema({
       nullable: true,
     },
     discountExpiration: {
-      type: "timestamp", 
+      type: "timestamp",
       nullable: true,
     },
     imageUrl: {
@@ -58,7 +59,7 @@ const Course = new EntitySchema({
   relations: {
     category: {
       type: "many-to-one",
-      target: "Category", 
+      target: "Category",
       joinColumn: { name: "categoryId", referencedColumnName: "id" },
     },
 
