@@ -22,7 +22,14 @@ async function addCourse(req, res) {
     } = req.body;
 
     if (discountPrice && discountPrice >= price) {
-      return res.status(400).json({ error: "تخفیف نمیتواند از قیمت اصلی بیشتر باشد" });
+      return res
+        .status(400)
+        .json({ error: "تخفیف نمیتواند از قیمت اصلی بیشتر باشد" });
+    }
+    if (discountExpiration && discountExpiration < discountStart) {
+      return res
+        .status(400)
+        .json({ error: "تخفیف پایانی نباید کمتر از ابتدایی باشد" });
     }
 
     let category = null;
@@ -57,13 +64,14 @@ async function addCourse(req, res) {
     console.log(`result >>> ${result}`);
 
     // Prepare a response object
-    return res.status(201).json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
+    return res
+      .status(201)
+      .json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
   } catch (error) {
     console.error(`Error adding course: ${error}`);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 
 async function editCourse(req, res) {
   try {

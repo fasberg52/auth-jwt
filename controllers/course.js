@@ -48,9 +48,9 @@ async function getAllCourse(req, res) {
         "course.createdAt",
         "course.lastModified",
       ])
-      .addSelect(["category.name"]) // Include category.name in the select
-      .where("course.title LIKE :search", { search: `%${search}%` }) // Search by course title
-      .orderBy(`course.${sortBy}`, sortOrder) // Add sorting
+      .addSelect(["category.name"]) 
+      .where("course.title LIKE :search", { search: `%${search}%` }) 
+      .orderBy(`course.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize)
       .getManyAndCount();
