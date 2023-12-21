@@ -47,7 +47,7 @@ async function getUsers(req, res) {
   try {
     const userRepository = getManager().getRepository(Users);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
+    const pageSize = parseInt(req.query.pageSize) || 20;
 
     const searchInput = req.query.search;
 

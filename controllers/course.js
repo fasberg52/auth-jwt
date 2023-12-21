@@ -24,7 +24,7 @@ async function getAllCourse(req, res) {
 
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
+    const pageSize = parseInt(req.query.pageSize) || 20;
     const sortBy = req.query.sortBy || "id"; // Default to sorting by title
     const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
     const search = req.query.search || "";
