@@ -25,15 +25,29 @@ async function getAllCourse(req, res) {
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
-    const sortBy = req.query.sortBy || "id"; // Default to sorting by title
-    const sortOrder = req.query.sortOrder || "DESC"; // Default to ascending order
+    const sortBy = req.query.sortBy || "id";
+    const sortOrder = req.query.sortOrder || "DESC";
     const search = req.query.search || "";
+
+    if (isNaN(page) || isNaN(pageSize) || page < 1 || pageSize < 1) {
+      return res.status(400).json({ error: "صفحه مورد نظر وجود ندارد" });
+    }
+
+    const totalCourseCount = await courseRepository.count();
+
+    const totalPages = Math.ceil(totalCourseCount / pageSize);
+
+    if (page > totalPages) {
+      return res
+        .status(400)
+        .json({ error: `بیشتر از ${totalPages} صفحه نداریم` });
+    }
 
     const offset = (page - 1) * pageSize;
 
     const [courses, totalCount] = await courseRepository
       .createQueryBuilder("course")
-      .leftJoinAndSelect("course.category", "category") // Join with category
+      .leftJoinAndSelect("course.category", "category")
       .select([
         "course.id",
         "course.title",
@@ -48,14 +62,13 @@ async function getAllCourse(req, res) {
         "course.createdAt",
         "course.lastModified",
       ])
-      .addSelect(["category.name"]) 
-      .where("course.title LIKE :search", { search: `%${search}%` }) 
+      .addSelect(["category.name"])
+      .where("course.title LIKE :search", { search: `%${search}%` })
       .orderBy(`course.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize)
       .getManyAndCount();
 
-    // Convert createdAt and lastModified to Jalali calendar
     const jalaliCourses = courses.map((course) => ({
       ...course,
       createdAt: convertToJalaliDate(course.createdAt),
@@ -227,10 +240,16 @@ async function getCourseById(req, res) {
       .getOne();
 
     if (existingCourse) {
-      existingCourse.discountStart = convertToJalaliDate(existingCourse.discountStart);
-      existingCourse.discountExpiration = convertToJalaliDate(existingCourse.discountExpiration);
+      existingCourse.discountStart = convertToJalaliDate(
+        existingCourse.discountStart
+      );
+      existingCourse.discountExpiration = convertToJalaliDate(
+        existingCourse.discountExpiration
+      );
       existingCourse.createdAt = convertToJalaliDate(existingCourse.createdAt);
-      existingCourse.lastModified = convertToJalaliDate(existingCourse.lastModified);
+      existingCourse.lastModified = convertToJalaliDate(
+        existingCourse.lastModified
+      );
 
       if (!isEnrolled) {
         logger.info(`getCourseById successful for courseId ${courseId}`);
@@ -244,7 +263,7 @@ async function getCourseById(req, res) {
     }
   } catch (error) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
-      error,   
+      error,
     });
     console.log(`>>>>${error}`);
     res.status(500).json({ error });
