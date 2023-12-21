@@ -50,6 +50,7 @@ async function getUsers(req, res) {
     const pageSize = parseInt(req.query.pageSize) || 20;
 
     const searchInput = req.query.search;
+    const role = req.query.roles;
 
     const queryBuilder = userRepository
       .createQueryBuilder("user")
@@ -76,6 +77,10 @@ async function getUsers(req, res) {
         .orWhere("user.phone ILIKE :searchInput", {
           searchInput: `%${searchInput}%`,
         });
+    }
+
+    if (role) {
+      queryBuilder.andWhere("user.roles = :role", { role });
     }
 
     const [users, totalUsers] = await queryBuilder.getManyAndCount();
