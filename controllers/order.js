@@ -352,6 +352,7 @@ async function getAllOrders(req, res) {
       searchId,
       searchName,
       searchOrderDate,
+      orderStatus,
     } = req.query;
 
     const orderRepository = getRepository(Order);
@@ -388,6 +389,11 @@ async function getAllOrders(req, res) {
     if (searchOrderDate) {
       queryBuilder.andWhere("order.orderDate::text ILIKE :searchOrderDate", {
         searchOrderDate: `%${searchOrderDate}%`,
+      });
+    }
+    if (orderStatus) {
+      queryBuilder.andWhere("order.orderStatus = :orderStatus", {
+        orderStatus,
       });
     }
 
