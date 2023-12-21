@@ -52,6 +52,20 @@ async function getUsers(req, res) {
     const searchInput = req.query.search;
     const role = req.query.roles;
 
+    if (isNaN(page) || isNaN(pageSize) || page < 1 || pageSize < 1) {
+      return res.status(400).json({ error: "صفحه مورد نظر وجود ندارد" });
+    }
+
+    const totalUsersCount = await userRepository.count();
+
+    const totalPages = Math.ceil(totalUsersCount / pageSize);
+
+    if (page > totalPages) {
+      return res
+        .status(400)
+        .json({ error: `بیشتر از ${totalPages} صفحه نداریم` });
+    }
+
     const queryBuilder = userRepository
       .createQueryBuilder("user")
       .select([
