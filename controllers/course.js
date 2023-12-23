@@ -4,6 +4,9 @@ const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
+const User = require("../model/users");
+const { verifyAndDecodeToken } = require("../utils/jwtUtils");
+
 //const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
@@ -270,7 +273,58 @@ async function getCourseById(req, res) {
   }
 }
 
+async function getCourseUserWithToken(req, res) {
+  try {
+    const token = req.body.token;
+
+    if (!token) {
+      res.status(400).json("توکن وارد شده صحیح نیست");
+    }
+
+    const decodedToken = verifyAndDecodeToken(token);
+
+    if (!decodedToken || !decodedToken.phone) {
+      res.status(400).json("توکن وارد شده پیدا نشد");
+    }
+
+    const userPhone = decodedToken.phone;
+
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+
+    const enrolledCourses = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoin("enrollment.course", "course")
+      .innerJoin("enrollment.order", "o")
+      .innerJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select([
+        "course.id",
+        "course.title",
+        "course.price",
+        "course.discountPrice",
+        "course.imageUrl",
+      ])
+      .getMany();
+
+    const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
+      ...course,
+      discountStart: convertToJalaliDate(course.discountStart),
+      discountExpiration: convertToJalaliDate(course.discountExpiration),
+      createdAt: convertToJalaliDate(course.createdAt),
+      lastModified: convertToJalaliDate(course.lastModified),
+    }));
+
+    res.json({ enrolledCourses: jalaliEnrolledCourses });
+  } catch (error) {
+    console.log(error);
+    logger.error(`Error in getCourseUserWithToken: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getAllCourse,
   getCourseById,
+  getCourseUserWithToken,
 };
