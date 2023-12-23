@@ -82,6 +82,11 @@ const Course = new EntitySchema({
       target: "Part",
       inverseSide: "course",
     },
+    enrollments: {
+      type: "one-to-many",
+      target: "Enrollment",
+      inverseSide: "course",
+    },
   },
 });
 

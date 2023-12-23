@@ -293,21 +293,25 @@ async function getCourseUserWithToken(req, res) {
 
     const enrolledCourses = await enrollmentRepository
       .createQueryBuilder("enrollment")
-      .innerJoin("enrollment.course", "course")
-      .innerJoin("enrollment.order", "o")
-      .innerJoin("o.user", "user")
+      .leftJoin("enrollment.course", "course")
+      .leftJoin("course.category", "category") 
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
       .where("user.phone = :phone", { phone: userPhone })
       .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .select([
-        "course.id",
-        "course.title",
-        "course.price",
-        "course.discountPrice",
-        "course.imageUrl",
+        "course.id as id",
+        "course.title as title",
+        "course.price as price",
+        "course.discountPrice as discountPrice",
+        "course.imageUrl as imageUrl",
       ])
+      .addSelect(["o.orderDate as orderDate"])
+      .addSelect(["category.name as categoryName"])
+
       .getRawMany();
 
-      console.log(enrolledCourses);
+    console.log(enrolledCourses);
 
     const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
       ...course,
@@ -318,8 +322,7 @@ async function getCourseUserWithToken(req, res) {
     }));
 
     res.status(200).json({
-      message: "دورهای شما",
-      enrolledCourses: jalaliEnrolledCourses,
+      enrolledCourses,
       status: 200,
     });
   } catch (error) {

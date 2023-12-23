@@ -129,3 +129,5 @@ Error splitting the argument list: Option not found
 2023-12-23T07:39:32.186Z error: Error in getCourseById for courseId m-course
 2023-12-23T07:39:48.256Z error: Error in getCourseById for courseId course
 2023-12-23T07:42:43.355Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-23T09:59:31.127Z error: Error in getCourseUserWithToken: QueryFailedError: column enrollment.userphone does not exist
+2023-12-23T10:39:00.146Z error: Error in getCourseUserWithToken: TypeORMError: Relation with property path category, category in entity was not found.
