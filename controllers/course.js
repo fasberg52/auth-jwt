@@ -294,7 +294,7 @@ async function getCourseUserWithToken(req, res) {
     const enrolledCourses = await enrollmentRepository
       .createQueryBuilder("enrollment")
       .leftJoin("enrollment.course", "course")
-      .leftJoin("course.category", "category") 
+      .leftJoin("course.category", "category")
       .leftJoin("enrollment.order", "o")
       .leftJoin("o.user", "user")
       .where("user.phone = :phone", { phone: userPhone })
@@ -319,10 +319,12 @@ async function getCourseUserWithToken(req, res) {
       discountExpiration: convertToJalaliDate(course.discountExpiration),
       createdAt: convertToJalaliDate(course.createdAt),
       lastModified: convertToJalaliDate(course.lastModified),
+      orderDate: convertToJalaliDate(course.orderDate),
     }));
 
+    console.log(jalaliEnrolledCourses);
     res.status(200).json({
-      enrolledCourses,
+      enrolledCourses: jalaliEnrolledCourses,
       status: 200,
     });
   } catch (error) {
