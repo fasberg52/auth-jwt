@@ -348,7 +348,7 @@ async function getAllOrders(req, res) {
       sortBy = "orderDate",
       sortOrder = "DESC",
       page = 1,
-      pageSize = 10,
+      pageSize = 20,
       searchId,
       searchName,
       searchOrderDate,
@@ -391,11 +391,31 @@ async function getAllOrders(req, res) {
         searchOrderDate: `%${searchOrderDate}%`,
       });
     }
+
+    // Use a single andWhere clause for orderStatus
     if (orderStatus) {
       queryBuilder.andWhere("order.orderStatus = :orderStatus", {
         orderStatus,
       });
     }
+
+    const pendingCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "pending" })
+      .getRawOne();
+
+    const successCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "success" })
+      .getRawOne();
+
+    const cancelledCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "cancelled" })
+      .getRawOne();
 
     const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
@@ -405,7 +425,13 @@ async function getAllOrders(req, res) {
       orderDate: convertToJalaliDate(order.orderDate),
     }));
 
-    res.status(200).json({ orders: jalaliOrders, totalCount });
+    res.status(200).json({
+      orders: jalaliOrders,
+      totalCount,
+      pendingCount: pendingCount.count,
+      successCount: successCount.count,
+      cancelledCount: cancelledCount.count,
+    });
   } catch (error) {
     console.error(`getAllOrders error: ${error}`);
     res.status(500).json({ error: "Internal server error on getAllOrders" });
@@ -437,6 +463,7 @@ async function getOrderById(req, res) {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
+    order.orderDate = convertToJalaliDate(order.orderDate);
 
     res.status(200).json({ order });
   } catch (error) {
