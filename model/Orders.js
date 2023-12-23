@@ -32,6 +32,7 @@ const Order = new EntitySchema({
       type: "int",
       nullable: true,
     },
+  
   },
   relations: {
     user: {

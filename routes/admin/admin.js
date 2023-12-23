@@ -134,7 +134,7 @@ router.get(
 router.get(
   "/order/:id",
   jwtAuthMiddleware,
-  checkRole("admin"),
+//  checkRole("admin"),
   orderController.getOrderById
 );
 

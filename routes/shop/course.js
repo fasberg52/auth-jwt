@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
 
-router.get(
-  "/my-course",
+router.post(
+  "/my-courses",
   jwtAuthMiddleware,
   courseController.getCourseUserWithToken
 );
