@@ -305,7 +305,9 @@ async function getCourseUserWithToken(req, res) {
         "course.discountPrice",
         "course.imageUrl",
       ])
-      .getMany();
+      .getRawMany();
+
+      console.log(enrolledCourses);
 
     const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
       ...course,
@@ -315,7 +317,11 @@ async function getCourseUserWithToken(req, res) {
       lastModified: convertToJalaliDate(course.lastModified),
     }));
 
-    res.json({ enrolledCourses: jalaliEnrolledCourses });
+    res.status(200).json({
+      message: "دورهای شما",
+      enrolledCourses: jalaliEnrolledCourses,
+      status: 200,
+    });
   } catch (error) {
     console.log(error);
     logger.error(`Error in getCourseUserWithToken: ${error}`);

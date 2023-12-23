@@ -9,7 +9,15 @@ const categoryController = require("../../controllers/category");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
+
+router.get(
+  "/my-course",
+  jwtAuthMiddleware,
+  courseController.getCourseUserWithToken
+);
+
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
+
 router.get("/category", categoryController.getAllCategories);
 
 router.get("/play/:secureLink", secureLink.createSecureLink);
@@ -23,4 +31,5 @@ router.get(
   jwtAuthMiddleware,
   enrollmentController.getVideoPathAfterEnroll
 );
+
 module.exports = router;
