@@ -1,4 +1,6 @@
 const User = require("../model/users");
+const Order = require("../model/Orders");
+
 const jwt = require("jsonwebtoken");
 
 const { getManager } = require("typeorm");
@@ -99,4 +101,5 @@ async function getAllOrderUser(req, res) {
 
 module.exports = {
   getUserDataWithToken,
+  getAllOrderUser
 };
