@@ -4,6 +4,9 @@ const { getManager } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
+const User = require("../model/users");
+const { verifyAndDecodeToken } = require("../utils/jwtUtils");
+
 //const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
@@ -270,7 +273,86 @@ async function getCourseById(req, res) {
   }
 }
 
+async function getCourseUserWithToken(req, res) {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      res.status(400).json("توکن وارد شده صحیح نیست");
+    }
+
+    const decodedToken = verifyAndDecodeToken(token);
+
+    if (!decodedToken || !decodedToken.phone) {
+      res.status(400).json("توکن وارد شده پیدا نشد");
+    }
+
+    const userPhone = decodedToken.phone;
+
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    const enrolledCoursesQuery = enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .leftJoin("enrollment.course", "course")
+      .leftJoin("course.category", "category")
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select([
+        "course.id as enrollment_id",
+        "course.title as title",
+        "course.price as price",
+        "course.discountPrice as discountPrice",
+        "course.imageUrl as imageUrl",
+      ])
+      .addSelect(["o.orderDate as orderDate"]);
+
+    const totalCount = await enrolledCoursesQuery.getCount();
+
+    const enrolledCourses = await enrolledCoursesQuery
+      .skip(skip)
+      .take(take)
+      .getRawMany();
+
+    const onlyCount = req.query.onlyCount === "true";
+    if (onlyCount) {
+      const total = totalCount;
+      res.status(200).json({ total });
+      return;
+    }
+
+    console.log(enrolledCourses);
+
+    const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
+      ...course,
+      discountStart: convertToJalaliDate(course.discountStart),
+      discountExpiration: convertToJalaliDate(course.discountExpiration),
+      createdAt: convertToJalaliDate(course.createdAt),
+      lastModified: convertToJalaliDate(course.lastModified),
+      orderDate: convertToJalaliDate(course.orderDate),
+    }));
+
+    console.log(jalaliEnrolledCourses);
+    res.status(200).json({
+      enrolledCourses: jalaliEnrolledCourses,
+      totalCount,
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
+    logger.error(`Error in getCourseUserWithToken: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getAllCourse,
   getCourseById,
+  getCourseUserWithToken,
 };

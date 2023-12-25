@@ -1,4 +1,6 @@
 const User = require("../model/users");
+const Order = require("../model/Orders");
+
 const jwt = require("jsonwebtoken");
 
 const { getManager } = require("typeorm");
@@ -11,14 +13,13 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 async function getUserDataWithToken(req, res) {
   try {
     const userRepository = getManager().getRepository(User);
-    const token = req.body.token; // Assuming the token is sent as req.body.token
+    const token = req.body.token;
     console.log("Received Token:", token);
 
     if (!token) {
       return res.status(401).json({ error: "Missing token" });
     }
 
-    // Assuming you have a function to verify and decode the token
     const decodedToken = verifyAndDecodeToken(token);
     console.log("Decoded Token:", decodedToken);
 
@@ -58,6 +59,58 @@ async function getUserDataWithToken(req, res) {
   }
 }
 
+async function getAllOrderUser(req, res) {
+  try {
+    const userRepository = getManager().getRepository(User);
+
+    const token = req.body.token;
+    console.log("Received Token:", token);
+
+    if (!token) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
+    }
+
+    const decodedToken = verifyAndDecodeToken(token);
+    console.log("Decoded Token:", decodedToken);
+
+    if (!decodedToken || !decodedToken.phone) {
+      return res.status(401).json({ error: "توکن اشتباه است" });
+    }
+
+    const phone = decodedToken.phone;
+
+    const user = await userRepository
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.orders", "orders")
+      .where("user.phone = :phone", { phone })
+      .getOne();
+
+    if (!user) {
+      return res.status(404).json({ error: "کاربری پیدا نشد" });
+    }
+
+    const userOrders = user.orders.map((order) => {
+      return {
+        id: order.id,
+        orderDate: convertToJalaliDate(order.orderDate), // Convert to Jalali date
+        orderStatus: order.orderStatus,
+        totalPrice: order.totalPrice,
+        paymentType: order.paymentType,
+        refId: order.refId,
+        // Add other properties as needed
+      };
+    });
+
+    //const userOrders = user.orders;
+
+    return res.status(200).json({ orders: userOrders, status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getUserDataWithToken,
+  getAllOrderUser,
 };

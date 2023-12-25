@@ -195,12 +195,16 @@ function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
 }
 
 async function sendPaymentRequest(url, requestData) {
-  return await axios.post(url, requestData, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+  return await axios
+    .post(url, requestData, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+    .catch((error) => {
+      console.log(error.response);
+    });
 }
 
 function buildPaymentUrl(authority) {
@@ -216,28 +220,26 @@ async function verifyPayment(req, res) {
     let response;
 
     if (Status === "OK") {
-      // Payment was successful
       const amount = Amount;
       const amountInTomans = Amount / 10;
       const merchant_id = process.env.MERCHANT_ID;
 
-      // Construct the request data for verification
       const verificationData = JSON.stringify({
         merchant_id: merchant_id,
         authority: Authority,
         amount: amount,
       });
 
-      response = await axios.post(
-        `${process.env.ZARINPAL_LINK_VERIFY}`,
-        verificationData,
-        {
+      response = await axios
+        .post(`${process.env.ZARINPAL_LINK_VERIFY}`, verificationData, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
-      );
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
 
       console.log(`response verify : ${JSON.stringify(response.data)}`);
 
@@ -246,10 +248,8 @@ async function verifyPayment(req, res) {
       console.log(`code  >> ${code}`);
 
       if (code == 100) {
-        // Payment verification succeeded
         const refID = response.data.data.ref_id;
 
-        // You can create an order and perform any other necessary actions here
         const orderRepository = getManager().getRepository(Order);
         const phone = req.query.Phone || "UNKNOWN";
 
@@ -266,7 +266,6 @@ async function verifyPayment(req, res) {
         existingOrder.orderStatus = "success";
         existingOrder.refId = refID;
         const updateOrder = await orderRepository.save(existingOrder);
-        // Find the existing order with the orderId
 
         console.log(`existingOrder >> ${existingOrder}`);
         console.log(`Order updated successfully. Order ID: ${updateOrder.id}`);
@@ -313,7 +312,7 @@ async function verifyPayment(req, res) {
       });
     }
   } catch (error) {
-    console.error(`verifyPayment error: ${error}`);
+    console.dir(`verifyPayment error: ${error}`);
     return res.status(500).json({
       error: "An error occurred while processing the payment verification.",
     });
@@ -442,7 +441,6 @@ async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
     const orderRepository = getRepository(Order);
-    const enrollmentRepository = getRepository(Enrollment);
 
     const order = await orderRepository
       .createQueryBuilder("order")
@@ -455,6 +453,7 @@ async function getOrderById(req, res) {
         "enrollments.courseId",
         "course.title",
         "course.price",
+        "course.imageUrl",
         "course.discountPrice",
       ])
       .where("order.id = :orderId", { orderId })
@@ -471,6 +470,22 @@ async function getOrderById(req, res) {
     res.status(500).json({ error: "Internal server error on getOrderById" });
   }
 }
+
+async function createOrder(req, res) {
+  try {
+    const { phone } = req.body;
+    const userRepository = getManager().getRepository(User);
+    const existingUser = userRepository.findOne({ where: { phone: phone } });
+
+    if (!existingUser) {
+      res.status(400).json({ error: "کاربر وجود ندارد", userFound: false });
+    }
+
+  } catch (error) {
+    req.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   checkOutCart,
   createPayment,
@@ -478,5 +493,6 @@ module.exports = {
   clearUserCart,
   getAllOrders,
   getOrderById,
+  createOrder,
 };
 

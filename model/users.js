@@ -15,7 +15,6 @@ const User = new EntitySchema({
     },
     lastName: {
       type: "varchar",
-     
     },
     phone: {
       type: "text",
@@ -23,11 +22,10 @@ const User = new EntitySchema({
     },
     password: {
       type: "text",
-     
     },
     roles: {
       type: "enum",
-      enum: ["admin", "user"], 
+      enum: ["admin", "user"],
       default: "user",
     },
     imageUrl: {
@@ -47,7 +45,13 @@ const User = new EntitySchema({
       nullable: true,
     },
   },
- 
+  relations: {
+    orders: {
+      type: "one-to-many",
+      target: "Order",
+      inverseSide: "user",
+    },
+  },
 });
 
 module.exports = User;

@@ -26,9 +26,7 @@ async function createCartItem(req, res) {
       .andWhere("user.phone = :phone", { phone: userPhone })
       .getCount();
     if (isEnrolled) {
-      res
-        .status(403)
-        .json({ message: "شما قبلا ثبت نام کرده اید", status: 403 });
+      res.status(400).json({ error: "این دوره در سبد خرید موجود است", status: 400 });
     }
     let userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },

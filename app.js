@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const path = require("path");
 const bodyParser = require("body-parser");
-
 const dotenv = require("dotenv").config();
 const app = express();
 app.disable("x-powered-by");
@@ -15,7 +14,7 @@ async function main() {
   try {
     await setupDatabase();
     configureSession(app);
-    app.set('trust proxy', 1);
+    app.set("trust proxy", 1);
 
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
@@ -26,14 +25,11 @@ async function main() {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(express.json());
     app.use("/app/uploads", express.static("uploads"));
-    app.use('/public', express.static('public'));
-    console.log(__dirname);
+    app.use("/public", express.static("public"));
 
     app.use(cors());
 
     routerConfig(app);
-
-    // Start the server
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
     });
@@ -41,5 +37,4 @@ async function main() {
     console.error("Error setting up the application:", error);
   }
 }
-
 main();

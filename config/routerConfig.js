@@ -8,6 +8,7 @@ const uploadRouter = require("../routes/admin/upload");
 const orderRouter = require("../routes/shop/order");
 const cacheRouter = require("../routes/admin/cache");
 const userRouter = require("../routes/shop/user");
+const categoryRouter = require("../routes/shop/category");
 const swaggerUi = require("swagger-ui-express"); // Import swaggerUi
 
 const swaggerSpec = require("../utils/swagger");
@@ -26,6 +27,7 @@ async function routerConfig(app) {
   app.use("/", orderRouter);
   app.use("/cache", cacheRouter);
   app.use("/", userRouter);
+  app.use("/category", categoryRouter);
 }
 
 module.exports = {
