@@ -11,9 +11,9 @@ function createToken(user) {
       role: user.roles,
       firstName: user.firstName,
       lastName: user.lastName,
-      grade:user.grade,
-      createdAt:user.createdAt
-
+      grade: user.grade,
+      imageUrl: user.imageUrl,
+      createdAt: user.createdAt,
     },
     process.env.JWT_SECRET,
     {
