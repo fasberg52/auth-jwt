@@ -441,7 +441,6 @@ async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
     const orderRepository = getRepository(Order);
-    const enrollmentRepository = getRepository(Enrollment);
 
     const order = await orderRepository
       .createQueryBuilder("order")
@@ -454,6 +453,7 @@ async function getOrderById(req, res) {
         "enrollments.courseId",
         "course.title",
         "course.price",
+        "course.imageUrl",
         "course.discountPrice",
       ])
       .where("order.id = :orderId", { orderId })
@@ -470,6 +470,22 @@ async function getOrderById(req, res) {
     res.status(500).json({ error: "Internal server error on getOrderById" });
   }
 }
+
+async function createOrder(req, res) {
+  try {
+    const { phone } = req.body;
+    const userRepository = getManager().getRepository(User);
+    const existingUser = userRepository.findOne({ where: { phone: phone } });
+
+    if (!existingUser) {
+      res.status(400).json({ error: "کاربر وجود ندارد", userFound: false });
+    }
+
+  } catch (error) {
+    req.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   checkOutCart,
   createPayment,
@@ -477,4 +493,5 @@ module.exports = {
   clearUserCart,
   getAllOrders,
   getOrderById,
+  createOrder,
 };
