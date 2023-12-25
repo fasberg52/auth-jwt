@@ -5,7 +5,6 @@ const { checkRole } = require("../../middleware/checkAccess");
 const secureLink = require("../../controllers/secureLink");
 const enrollmentController = require("../../controllers/enrollment");
 const express = require("express");
-const categoryController = require("../../controllers/category");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
@@ -18,7 +17,6 @@ router.post(
 
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 
-router.get("/category", categoryController.getAllCategories);
 
 router.get("/play/:secureLink", secureLink.createSecureLink);
 router.get(

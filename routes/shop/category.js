@@ -3,7 +3,6 @@ const express = require("express");
 const categoryController = require("../../controllers/category");
 const router = express.Router();
 
+router.get("/", jwtAuthMiddleware, categoryController.getAllCategories);
 
-router.get("/category", categoryController.getAllCategories);
-
-module.exports=router
+module.exports = router;
