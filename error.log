@@ -133,3 +133,19 @@ Error splitting the argument list: Option not found
 2023-12-23T10:39:00.146Z error: Error in getCourseUserWithToken: TypeORMError: Relation with property path category, category in entity was not found.
 2023-12-23T12:46:21.384Z error: Error in getCourseUserWithToken: ReferenceError: jalaliEnrolledCourses is not defined
 2023-12-23T12:46:23.114Z error: Error in getCourseUserWithToken: ReferenceError: jalaliEnrolledCourses is not defined
+2023-12-25T12:19:00.356Z error: Error in getCourseUserWithToken: TypeError: enrollmentRepository.createQueryBuilder(...).leftJoin(...).leftJoin(...).leftJoin(...).leftJoin(...).where(...).andWhere(...).select(...).addSelect(...).addSelect(...).count is not a function
+2023-12-25T12:24:38.221Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:26:08.331Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:26:33.098Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:27:55.722Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:28:06.937Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:28:57.614Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:29:52.554Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:30:21.234Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:31:07.099Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:31:18.039Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:32:16.799Z error: Error in getCourseUserWithToken: TypeError: (intermediate value) is not iterable
+2023-12-25T12:33:09.114Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawManyAndCount is not a function
+2023-12-25T12:33:27.207Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawAndCount is not a function
+2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
+2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client

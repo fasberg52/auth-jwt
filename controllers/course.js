@@ -275,8 +275,7 @@ async function getCourseById(req, res) {
 
 async function getCourseUserWithToken(req, res) {
   try {
-    const token = req.body.token;
-
+    const { token } = req.body;
     if (!token) {
       res.status(400).json("توکن وارد شده صحیح نیست");
     }
@@ -291,7 +290,13 @@ async function getCourseUserWithToken(req, res) {
 
     const enrollmentRepository = getManager().getRepository(Enrollment);
 
-    const enrolledCourses = await enrollmentRepository
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
       .leftJoin("enrollment.course", "course")
       .leftJoin("course.category", "category")
@@ -300,16 +305,27 @@ async function getCourseUserWithToken(req, res) {
       .where("user.phone = :phone", { phone: userPhone })
       .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .select([
-        "course.id as id",
+        "course.id as enrollment_id",
         "course.title as title",
         "course.price as price",
         "course.discountPrice as discountPrice",
         "course.imageUrl as imageUrl",
       ])
-      .addSelect(["o.orderDate as orderDate"])
-      .addSelect(["category.name as categoryName"])
+      .addSelect(["o.orderDate as orderDate"]);
 
+    const totalCount = await enrolledCoursesQuery.getCount();
+
+    const enrolledCourses = await enrolledCoursesQuery
+      .skip(skip)
+      .take(take)
       .getRawMany();
+
+    const onlyCount = req.query.onlyCount === "true";
+    if (onlyCount) {
+      const total = totalCount;
+      res.status(200).json({ total });
+      return;
+    }
 
     console.log(enrolledCourses);
 
@@ -325,6 +341,7 @@ async function getCourseUserWithToken(req, res) {
     console.log(jalaliEnrolledCourses);
     res.status(200).json({
       enrolledCourses: jalaliEnrolledCourses,
+      totalCount,
       status: 200,
     });
   } catch (error) {
