@@ -149,3 +149,11 @@ Error splitting the argument list: Option not found
 2023-12-25T12:33:27.207Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawAndCount is not a function
 2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
 2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-26T06:43:13.320Z error: Error creating part: Error: spawn undefined ENOENT
+2023-12-26T06:45:21.586Z error: Error creating part: Error: spawn undefined ENOENT
+2023-12-26T06:47:26.320Z error: Error creating part: AxiosError: Request failed with status code 404
+2023-12-26T07:05:18.024Z error: Error creating part: AxiosError: Request failed with status code 404
+2023-12-26T07:10:40.910Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
+2023-12-26T07:12:53.348Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
+2023-12-26T07:13:26.267Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
+2023-12-26T07:15:37.423Z error: Error creating part: AxiosError: Request failed with status code 404

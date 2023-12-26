@@ -71,7 +71,10 @@ const createPartSchema = {
     title: { type: "string" },
     chapterId: { type: "integer" },
     description: { type: "string" },
-    videoPath: { type: "string", pattern: "^(.*\\.(mp4|m4v))$" },
+    videoPath: {
+      type: "string",
+      // pattern: "^(.*\\.(mp4|m4v))$"
+    },
   },
   required: ["title", "chapterId", "description", "videoPath"],
   errorMessage: {
@@ -79,7 +82,7 @@ const createPartSchema = {
       title: "ورودی باید استرینگ باشد",
       chapterId: "آیدی سرفصل باید عددی باشد",
       description: "ورودی باید استرینگ باشد",
-      videoPath: "فرمت مجاز نیست : mp4 , m4v",
+      // videoPath: "فرمت مجاز نیست : mp4 , m4v",
     },
   },
 };

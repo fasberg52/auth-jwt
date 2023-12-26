@@ -31,6 +31,7 @@ const Part = new EntitySchema({
     videoDuration: {
       type: "varchar",
       nullable: true,
+      default: null,
     },
     isFree: {
       type: "boolean",
@@ -62,7 +63,7 @@ const Part = new EntitySchema({
   videoType: {
     type: "enum",
     enum: ["embed", "normal"],
-    default: null,
+    nullable: true,
   },
   relations: {
     chapter: {

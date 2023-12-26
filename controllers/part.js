@@ -3,19 +3,35 @@ const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
 // const SecureLink = require("../model/secureLink");
+const axios = require("axios");
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
 const dotenv = require("dotenv").config();
-//ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
-ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
+ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
+//ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
 
 async function createPart(req, res) {
   try {
-    const { courseId, chapterId, title, description, videoPath, isFree } =
-      req.body;
-    //const icon = req.file ? req.file.filename : null;
-    //const videoDuration = await getVideoDuration(videoPath);
+    const {
+      courseId,
+      chapterId,
+      title,
+      description,
+      videoPath,
+      isFree,
+      videoType,
+    } = req.body;
+
+    let videoDuration;
+
+    if (videoType === "normal") {
+      videoDuration = await getVideoDuration(videoPath);
+    } else if (videoType === "embed") {
+      videoDuration = await getVideoDurationFromApi(videoPath);
+    } else {
+      videoDuration = "00:00:00";
+    }
 
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
@@ -45,8 +61,9 @@ async function createPart(req, res) {
       description,
       orderIndex,
       videoPath,
-      //videoDuration,
+      videoDuration,
       isFree,
+      videoType,
     });
 
     const savedPart = await partRepository.save(newPart);
@@ -383,6 +400,20 @@ async function getVideoPathWithPartId(req, res) {
     res.status(500).json({
       error: "Internal Server Error",
     });
+  }
+}
+
+async function getVideoDurationFromApi(videoPath) {
+  try {
+    const urlVideo = "https://api.video/videos/vi3QJijJ6d6hocMNctaGPN1u/status";
+    const response = await axios.get(urlVideo);
+    const apiVideoDuration = response.data.duration;
+    console.log(apiVideoDuration);
+    return formatVideoDuration(apiVideoDuration);
+  } catch (error) {
+    console.error(`Error getting video duration from API: ${error.message}`);
+    console.error("Full error response:", error.response.data);
+    throw error;
   }
 }
 

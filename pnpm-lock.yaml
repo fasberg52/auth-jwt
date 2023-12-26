@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@api.video/nodejs-client':
+    specifier: ^2.5.5
+    version: 2.5.5
   '@keyv/postgres':
     specifier: ^1.4.9
     version: 1.4.9
@@ -107,6 +110,15 @@ packages:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /@api.video/nodejs-client@2.5.5:
+    resolution: {integrity: sha512-CpLKHScGcF6C+qxp+VjRu+aPCB8Ou4Z7YuRaXr51yMPJGusNSiwXX/f/LEdmk3z8lDbZ5nFuFQ1FoWKDIQwueg==}
+    dependencies:
+      axios: 1.5.1
+      js-base64: 3.7.5
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /@apidevtools/json-schema-ref-parser@9.1.2:
     resolution: {integrity: sha512-r1w81DpR+KyRWd3f+rk6TNqMgedmAxZP5v5KWlXQWlgMUUtyEJch0DKEci1SorPMiSeM8XPl7MZ3miJ60JIpQg==}
@@ -1400,6 +1412,10 @@ packages:
       commander: 7.2.0
       inquirer: 8.2.6
       moment: 2.29.4
+    dev: false
+
+  /js-base64@3.7.5:
+    resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==}
     dev: false
 
   /js-yaml@4.1.0:
