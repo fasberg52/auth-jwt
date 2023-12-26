@@ -59,7 +59,7 @@ async function checkOutCart(req, res) {
 
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
-
+  console.log("response received");
   try {
     await getManager().transaction(async (transactionalEntityManager) => {
       const cartRepository = transactionalEntityManager.getRepository(Cart);
@@ -117,7 +117,8 @@ async function createPayment(req, res) {
     });
   } catch (error) {
     console.error(`createPayment error: ${error}`);
-    return res.status(500).json({ error: "Internal Server Error" });
+
+    return res.status(500).json(error);
   }
 }
 
@@ -471,20 +472,19 @@ async function getOrderById(req, res) {
   }
 }
 
-async function createOrder(req, res) {
-  try {
-    const { phone } = req.body;
-    const userRepository = getManager().getRepository(User);
-    const existingUser = userRepository.findOne({ where: { phone: phone } });
+// async function createOrder(req, res) {
+//   try {
+//     const { phone } = req.body;
+//     const userRepository = getManager().getRepository(User);
+//     const existingUser = userRepository.findOne({ where: { phone: phone } });
 
-    if (!existingUser) {
-      res.status(400).json({ error: "کاربر وجود ندارد", userFound: false });
-    }
-
-  } catch (error) {
-    req.status(500).json({ error: "Internal Server Error" });
-  }
-}
+//     if (!existingUser) {
+//       res.status(400).json({ error: "کاربر وجود ندارد", userFound: false });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
 
 module.exports = {
   checkOutCart,

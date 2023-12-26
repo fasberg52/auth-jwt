@@ -149,24 +149,3 @@ Error splitting the argument list: Option not found
 2023-12-25T12:33:27.207Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawAndCount is not a function
 2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
 2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-2023-12-26T06:43:13.320Z error: Error creating part: Error: spawn undefined ENOENT
-2023-12-26T06:45:21.586Z error: Error creating part: Error: spawn undefined ENOENT
-2023-12-26T06:47:26.320Z error: Error creating part: AxiosError: Request failed with status code 404
-2023-12-26T07:05:18.024Z error: Error creating part: AxiosError: Request failed with status code 404
-2023-12-26T07:10:40.910Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:12:53.348Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:13:26.267Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:15:37.423Z error: Error creating part: AxiosError: Request failed with status code 404
-2023-12-26T07:24:26.533Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:25:14.491Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:28:06.951Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:28:20.525Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:30:39.207Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:31:15.019Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:31:24.440Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T07:31:57.472Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
-2023-12-26T08:47:48.385Z error: Error creating part: ReferenceError: exec is not defined
-2023-12-26T08:58:30.747Z error: Error creating part: Error: ENOENT: no such file or directory, open 'E:\Desktop\postgress\https:\dl3.baclass.online\sarsalari\01-Sarsalari-1402-07-12-1.m4v'
-2023-12-26T09:00:55.989Z error: Error creating part: Error: Invalid input
-2023-12-26T09:01:50.577Z error: Error creating part: Error: Invalid input
-2023-12-26T09:02:27.569Z error: Error creating part: Error: Invalid input
