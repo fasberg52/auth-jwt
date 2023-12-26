@@ -63,7 +63,7 @@ async function addCourse(req, res) {
     const result = await courseRepository.save(newCourse);
     console.log(`result >>> ${result}`);
 
-    // Prepare a response object
+    
     return res
       .status(201)
       .json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });

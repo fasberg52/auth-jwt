@@ -35,7 +35,6 @@ async function createPart(req, res) {
 
     console.log(`>> partCount ${partCount}`);
 
-    // Step 2: Set the orderIndex for the new part to the current partCount
     const orderIndex = partCount;
     console.log(`>> orderIndex ${orderIndex}`);
 

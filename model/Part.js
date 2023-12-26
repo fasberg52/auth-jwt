@@ -59,6 +59,11 @@ const Part = new EntitySchema({
       default: 0,
     },
   },
+  videoType: {
+    type: "enum",
+    enum: ["embed", "normal"],
+    default: null,
+  },
   relations: {
     chapter: {
       type: "many-to-one",
