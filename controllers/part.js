@@ -8,6 +8,8 @@ const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
 const dotenv = require("dotenv").config();
+const { getVideoDurationFromApi } = require("../services/video.api");
+
 ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
 //ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
 
@@ -26,7 +28,7 @@ async function createPart(req, res) {
     let videoDuration;
 
     if (videoType === "normal") {
-      videoDuration = await getVideoDuration(videoPath);
+      videoDuration = req.body.videoDuration;
     } else if (videoType === "embed") {
       videoDuration = await getVideoDurationFromApi(videoPath);
     } else {
@@ -77,7 +79,7 @@ async function createPart(req, res) {
       title,
       description,
       videoPath,
-      //videoDuration,
+      videoDuration,
       orderIndex,
       isFree,
     });
@@ -274,47 +276,6 @@ async function getAllPartsWithChapterId(req, res) {
   }
 }
 
-async function getVideoDuration(videoPath) {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(videoPath, (err, metadata) => {
-      if (err) {
-        console.error(`Error getting video duration: ${err}`);
-        reject(err);
-      } else {
-        const durationInSeconds = metadata.format.duration;
-        const formattedDuration = formatVideoDuration(durationInSeconds);
-        resolve(formattedDuration);
-      }
-    });
-  });
-}
-
-function formatVideoDuration(durationInSeconds) {
-  const hours = Math.floor(durationInSeconds / 3600);
-  const minutes = Math.floor((durationInSeconds % 3600) / 60);
-  const seconds = Math.floor(durationInSeconds % 60);
-
-  return `${hours}:${String(minutes).padStart(2, "0")}:${String(
-    seconds
-  ).padStart(2, "0")}`;
-}
-
-function calculateTotalDuration(parts) {
-  let totalDurationInSeconds = 0;
-
-  parts.forEach((part) => {
-    totalDurationInSeconds += parseDurationToSeconds(part.videoDuration);
-  });
-
-  const totalDuration = formatVideoDuration(totalDurationInSeconds);
-  return totalDuration;
-}
-
-function parseDurationToSeconds(duration) {
-  const [hours, minutes, seconds] = duration.split(":").map(Number);
-  return hours * 3600 + minutes * 60 + seconds;
-}
-
 // async function createSecureLink(originalLink) {
 //   const token = crypto.randomBytes(16).toString("hex");
 
@@ -400,20 +361,6 @@ async function getVideoPathWithPartId(req, res) {
     res.status(500).json({
       error: "Internal Server Error",
     });
-  }
-}
-
-async function getVideoDurationFromApi(videoPath) {
-  try {
-    const urlVideo = "https://api.video/videos/vi3QJijJ6d6hocMNctaGPN1u/status";
-    const response = await axios.get(urlVideo);
-    const apiVideoDuration = response.data.duration;
-    console.log(apiVideoDuration);
-    return formatVideoDuration(apiVideoDuration);
-  } catch (error) {
-    console.error(`Error getting video duration from API: ${error.message}`);
-    console.error("Full error response:", error.response.data);
-    throw error;
   }
 }
 
