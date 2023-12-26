@@ -89,21 +89,7 @@ async function getAllOrderUser(req, res) {
       return res.status(404).json({ error: "کاربری پیدا نشد" });
     }
 
-    const userOrders = user.orders.map((order) => {
-      return {
-        id: order.id,
-        orderDate: convertToJalaliDate(order.orderDate), // Convert to Jalali date
-        orderStatus: order.orderStatus,
-        totalPrice: order.totalPrice,
-        paymentType: order.paymentType,
-        refId: order.refId,
-        // Add other properties as needed
-      };
-    });
-
-    //const userOrders = user.orders;
-
-    return res.status(200).json({ orders: userOrders, status: 200 });
+    return res.status(200).json({ orders, status: 200 });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });

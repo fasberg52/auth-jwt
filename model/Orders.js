@@ -26,8 +26,14 @@ const Order = new EntitySchema({
     },
     paymentType: {
       type: "enum",
-      enum: ["zp", "cbc", "hand"],//zarinpal, cart by cart, hand
+      enum: ["online", "cbc", "hand"], //zarinpal, cart by cart, hand
       nullable: true,
+      default: "online",
+    },
+    gateWayPAyment: {
+      type: "enum",
+      enum: ["zarinpal", "payping"],
+      default: "zarinpal",
     },
     refId: {
       type: "varchar",
