@@ -34,12 +34,10 @@ async function getVideoPathAfterEnroll(req, res) {
       return res.status(401).json({ error: "شما ثبت نام نکرده اید" });
     }
 
-    // Check if the orderStatus is successful
     if (enrollment.order.orderStatus !== "success") {
       return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
     }
 
-    // User is enrolled, order is successful, get video paths for the course using QueryBuilder
     const videoPaths = await partRepository
       .createQueryBuilder("part")
       .select(["part.id as id", "part.videoPath as videoPath"])
@@ -70,34 +68,38 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
       .andWhere("user.phone = :phone", { phone: userPhone })
       .getOne();
 
-    if (!enrollment || !enrollment.order || !enrollment.order.user || !enrollment.order.user.phone) {
-      return res.status(401).json({ error: "User is not enrolled in the course." });
+    if (
+      !enrollment ||
+      !enrollment.order ||
+      !enrollment.order.user ||
+      !enrollment.order.user.phone
+    ) {
+      return res
+        .status(401)
+        .json({ error: "شما در این دوره ثبت نام نکرده اید" });
     }
 
-    // Check if the orderStatus is successful
-    if (enrollment.order.orderStatus !== 'success') {
-      return res.status(401).json({ error: "Order status is not successful." });
+    if (enrollment.order.orderStatus !== "success") {
+      return res.status(403).json({ error: "شما دوره نخریده اید" });
     }
 
-    // User is enrolled, order is successful, get video path for the specific part using QueryBuilder
-    const videoPath = await partRepository
+    const result = await partRepository
       .createQueryBuilder("part")
-      .select("part.videoPath", "videoPath")
+      .select(["part.videoPath as videoPath", "part.videoType as videoType"])
       .where("part.courseId = :courseId", { courseId })
       .andWhere("part.id = :partId", { partId })
       .getRawOne();
 
-    if (!videoPath) {
-      return res.status(404).json({ error: "Video path not found for the specified part." });
+    if (!result) {
+      return res.status(404).json({ error: "آدرس ویدئو پیدا نشد" });
     }
 
-    res.status(200).json({ videoPath });
+    res.status(200).json({ result });
   } catch (error) {
     console.error(`Error in getVideoPathAfterEnrollWithPartId: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 
 module.exports = {
   getVideoPathAfterEnrollWithPartId,

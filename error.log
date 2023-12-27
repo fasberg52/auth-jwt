@@ -149,3 +149,4 @@ Error splitting the argument list: Option not found
 2023-12-25T12:33:27.207Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawAndCount is not a function
 2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
 2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-27T10:23:23.680Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
