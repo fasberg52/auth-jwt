@@ -305,7 +305,7 @@ async function getCourseUserWithToken(req, res) {
       .where("user.phone = :phone", { phone: userPhone })
       .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .select([
-        "course.id as enrollment_id",
+        "course.id as id",
         "course.title as title",
         "course.price as price",
         "course.discountPrice as discountPrice",

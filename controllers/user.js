@@ -88,8 +88,8 @@ async function getAllOrderUser(req, res) {
     if (!user) {
       return res.status(404).json({ error: "کاربری پیدا نشد" });
     }
-
-    return res.status(200).json({ orders, status: 200 });
+ 
+    return res.status(200).json({ orders : user.orders, status: 200 });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });

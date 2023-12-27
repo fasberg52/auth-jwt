@@ -30,10 +30,11 @@ const Order = new EntitySchema({
       nullable: true,
       default: "online",
     },
-    gateWayPAyment: {
+    gatewayPay: {
       type: "enum",
       enum: ["zarinpal", "payping"],
       default: "zarinpal",
+      nullable:true
     },
     refId: {
       type: "varchar",
