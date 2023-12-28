@@ -34,3 +34,199 @@ ffmpeg version 2023-11-27-git-0ea9e26636-full_build-www.gyan.dev Copyright (c) 2
 Unrecognized option 'show_streams'.
 Error splitting the argument list: Option not found
 
+2023-11-30T12:32:52.211Z error: Error creating part: ReferenceError: crypto is not defined
+2023-11-30T12:33:57.383Z error: Error creating part: ReferenceError: SecureLink is not defined
+2023-12-02T05:53:51.088Z error: Error in getCourseById for courseId 23
+2023-12-02T05:57:54.441Z error: Error in getCourseById for courseId 23
+2023-12-02T06:02:55.120Z error: Error in getCourseById for courseId part
+2023-12-02T06:06:10.217Z error: Error in getCourseById for courseId parts
+2023-12-02T06:21:45.139Z error: Error in getCourseById for courseId 23
+2023-12-02T07:48:46.696Z error: Error in getChpaterWithParts: TypeORMError: Relation with property path parts in entity was not found.
+2023-12-02T07:51:43.445Z error: Error in getChpaterWithParts: TypeORMError: Relation with property path parts in entity was not found.
+2023-12-02T08:32:21.612Z error: Error deleting chapter: QueryFailedError: update or delete on table "chapters" violates foreign key constraint "FK_64cb2e279bbfc2ec860a75137ad" on table "parts"
+2023-12-02T08:38:40.458Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
+2023-12-02T08:40:45.982Z error: Error deleting chapter: EntityPropertyNotFoundError: Property "parts" was not found in "Chapter". Make sure your query is correct.
+2023-12-02T08:41:49.215Z error: Error deleting chapter: ReferenceError: Part is not defined
+2023-12-02T11:21:52.105Z error: Error retrieving parts with course ID: EntityPropertyNotFoundError: Property "courseId" was not found in "Part". Make sure your query is correct.
+2023-12-02T11:23:19.560Z error: Error retrieving parts with course ID: EntityPropertyNotFoundError: Property "courseId" was not found in "Part". Make sure your query is correct.
+2023-12-02T12:27:31.435Z error: Error in getCourseById for courseId 23
+2023-12-02T12:28:29.389Z error: Error in getCourseById for courseId 23
+2023-12-02T15:25:08.791Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:25:32.982Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:26:25.431Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:27:19.644Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:27:50.962Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:28:58.347Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:29:40.668Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:29:51.172Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:30:34.000Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:31:07.215Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-02T15:32:03.115Z error: Error retrieving parts with course ID: QueryFailedError: function str_to_date(character varying, unknown) does not exist
+2023-12-04T06:03:26.371Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at end of input
+2023-12-04T06:04:30.221Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-04T06:07:37.783Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:08:28.572Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:09:54.951Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-04T06:11:09.276Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.orderindex does not exist
+2023-12-04T06:11:41.815Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.courseid does not exist
+2023-12-04T06:11:55.206Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.videoduration does not exist
+2023-12-04T06:12:25.237Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.isfree does not exist
+2023-12-04T06:12:40.038Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column c.courseid does not exist
+2023-12-04T06:23:37.725Z error: Error retrieving chapters and parts with course ID: TypeORMError: "chapter" alias was not found. Maybe you forgot to join it?
+2023-12-04T06:49:45.081Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:50:37.536Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:52:48.464Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:53:28.935Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:53:45.907Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:54:25.029Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T06:55:26.855Z error: Error retrieving chapters and parts with course ID: Cannot read properties of undefined (reading 'getParameters')
+2023-12-04T08:21:33.093Z error: Error creating part: ReferenceError: id is not defined
+2023-12-04T12:33:39.758Z error: Error in getCourseById for courseId enroll
+2023-12-04T12:34:08.837Z error: Error in getCourseById for courseId enroll
+2023-12-04T12:35:18.749Z error: Error in getCourseById for courseId enroll
+2023-12-04T12:38:04.856Z error: Error in getCourseById for courseId enroll
+2023-12-05T05:59:05.345Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at or near ":"
+2023-12-05T05:59:25.577Z error: Error retrieving chapters and parts with course ID: QueryFailedError: syntax error at or near ":"
+2023-12-05T06:00:16.144Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T06:01:49.092Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "part" does not exist
+2023-12-05T06:01:59.413Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "chapter"
+2023-12-05T06:03:02.672Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column parts.chapter_id does not exist
+2023-12-05T06:03:20.610Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "part"
+2023-12-05T07:25:13.399Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T07:25:36.723Z error: Error retrieving chapters and parts with course ID: QueryFailedError: relation "chapter" does not exist
+2023-12-05T07:30:09.556Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column p.chapterid does not exist
+2023-12-05T07:30:22.799Z error: Error retrieving chapters and parts with course ID: QueryFailedError: missing FROM-clause entry for table "chapter"
+2023-12-05T07:34:59.805Z error: Error retrieving chapters and parts with course ID: ReferenceError: chater is not defined
+2023-12-05T07:50:47.651Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T07:52:44.834Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T07:57:17.725Z error: Error retrieving chapters and parts with course ID: QueryFailedError: column "part.id" must appear in the GROUP BY clause or be used in an aggregate function
+2023-12-05T09:05:38.033Z error: Error retrieving video path with part ID: TypeError: Cannot read properties of null (reading 'isFree')
+2023-12-20T07:47:44.079Z error: Error in getCourseById for courseId 42
+2023-12-20T07:50:08.754Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:36.968Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:37.037Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:58.533Z error: Error in getCourseById for courseId 42
+2023-12-20T09:19:58.548Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:41.491Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:41.500Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:52.719Z error: Error in getCourseById for courseId 42
+2023-12-20T09:25:52.735Z error: Error in getCourseById for courseId 42
+2023-12-20T09:40:26.343Z error: Error in getCourseById for courseId 42
+2023-12-20T09:40:48.474Z error: Error in getCourseById for courseId 42
+2023-12-20T09:41:06.103Z error: Error in getCourseById for courseId 42
+2023-12-23T07:23:19.275Z error: Error in getCourseById for courseId my-course
+2023-12-23T07:24:02.466Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:24:52.167Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:29:28.517Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:29:42.473Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:30:02.319Z error: Error in getCourseById for courseId my-as
+2023-12-23T07:30:08.139Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:31:07.709Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:33:12.095Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:34:38.421Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:38:06.857Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:38:15.665Z error: Error in getCourseById for courseId my-courses
+2023-12-23T07:39:32.186Z error: Error in getCourseById for courseId m-course
+2023-12-23T07:39:48.256Z error: Error in getCourseById for courseId course
+2023-12-23T07:42:43.355Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-23T09:59:31.127Z error: Error in getCourseUserWithToken: QueryFailedError: column enrollment.userphone does not exist
+2023-12-23T10:39:00.146Z error: Error in getCourseUserWithToken: TypeORMError: Relation with property path category, category in entity was not found.
+2023-12-23T12:46:21.384Z error: Error in getCourseUserWithToken: ReferenceError: jalaliEnrolledCourses is not defined
+2023-12-23T12:46:23.114Z error: Error in getCourseUserWithToken: ReferenceError: jalaliEnrolledCourses is not defined
+2023-12-25T12:19:00.356Z error: Error in getCourseUserWithToken: TypeError: enrollmentRepository.createQueryBuilder(...).leftJoin(...).leftJoin(...).leftJoin(...).leftJoin(...).where(...).andWhere(...).select(...).addSelect(...).addSelect(...).count is not a function
+2023-12-25T12:24:38.221Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:26:08.331Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:26:33.098Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:27:55.722Z error: Error in getCourseUserWithToken: TypeORMError: Provided "skip" value is not a number. Please provide a numeric value.
+2023-12-25T12:28:06.937Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:28:57.614Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:29:52.554Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:30:21.234Z error: Error in getCourseUserWithToken: ReferenceError: token is not defined
+2023-12-25T12:31:07.099Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:31:18.039Z error: Error in getCourseUserWithToken: QueryFailedError: column distinctAlias.enrollment_id does not exist
+2023-12-25T12:32:16.799Z error: Error in getCourseUserWithToken: TypeError: (intermediate value) is not iterable
+2023-12-25T12:33:09.114Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawManyAndCount is not a function
+2023-12-25T12:33:27.207Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.getRawAndCount is not a function
+2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
+2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-27T10:23:23.680Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
+2023-12-28T05:17:08.849Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-28T05:48:13.942Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:03:15.622Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:04:48.873Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:21:53.198Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:22:20.893Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:23:18.850Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:25:19.463Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:25:50.700Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:26:00.570Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:37:20.979Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:37:44.229Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:43:07.820Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:45:52.041Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:46:39.223Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:47:00.402Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-28T07:48:27.753Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:49:23.806Z error: Error in getCourseById for courseId my-coursessss
+2023-12-28T08:47:12.368Z error: Error in getCourseById for courseId my-course
+ 
+[object Object]
+2023-12-28T08:54:05.002Z error: Error in getCourseById for courseId my-course
+ 
+[object Object]
+2023-12-28T08:57:54.119Z error: Error in getAllCourse
+ 
+[object Object]
+2023-12-28T08:58:33.411Z error: Error in getAllCourse
+at PostgresQueryRunner.query (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\driver\postgres\PostgresQueryRunner.js:211:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async SelectQueryBuilder.loadRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2183:25)
+at async SelectQueryBuilder.getRawMany (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:646:29)
+at async SelectQueryBuilder.executeEntitiesAndRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:1973:26)
+at async SelectQueryBuilder.getManyAndCount (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:850:36)
+at async getAllCourse (E:\Desktop\postgress\controllers\course.js:51:35) 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:00:13.901Z error: Error in getAllCourse
+at PostgresQueryRunner.query (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\driver\postgres\PostgresQueryRunner.js:211:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async SelectQueryBuilder.loadRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2183:25)
+at async SelectQueryBuilder.getRawMany (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:646:29)
+at async SelectQueryBuilder.executeEntitiesAndRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:1973:26)
+at async SelectQueryBuilder.getManyAndCount (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:850:36)
+at async getAllCourse (E:\Desktop\postgress\controllers\course.js:51:35)
+ 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:00:55.171Z error: Error in getAllCourse 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:01:32.102Z error: Error in getAllCourse
+ 
+[object Object]
+2023-12-28T09:04:06.757Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:05:11.567Z error: Error creating part: ReferenceError: logger is not defined 
+2023-12-28T09:05:43.539Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:05:43.546Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:06:40.600Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:06:40.602Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:08:22.306Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:08:22.312Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 

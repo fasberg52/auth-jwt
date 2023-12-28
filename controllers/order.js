@@ -3,9 +3,9 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
-const OrderItems = require("../model/orderItems");
+const Enrollment = require("../model/Enrollment");
 const axios = require("axios");
-const moment = require("jalali-moment");
+const { convertToJalaliDate } = require("../services/jalaliService");
 
 async function checkOutCart(req, res) {
   try {
@@ -15,7 +15,7 @@ async function checkOutCart(req, res) {
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
     const orderRepository = connection.getRepository(Order);
-    const orderItemsRepository = connection.getRepository(OrderItems);
+    const enrollmentRepository = connection.getRepository(Enrollment);
 
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
@@ -58,60 +58,67 @@ async function checkOutCart(req, res) {
 }
 
 async function createPayment(req, res) {
+  const userPhone = req.user.phone;
+  console.log("response received");
   try {
-    const userPhone = req.user.phone;
-    const connection = getConnection();
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
-    const courseRepository = connection.getRepository(Courses);
+    await getManager().transaction(async (transactionalEntityManager) => {
+      const cartRepository = transactionalEntityManager.getRepository(Cart);
+      const cartItemsRepository =
+        transactionalEntityManager.getRepository(CartItems);
+      const courseRepository =
+        transactionalEntityManager.getRepository(Courses);
 
-    const userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
+      const userCart = await cartRepository.findOne({
+        where: { user: { phone: userPhone } },
+      });
+
+      if (!userCart) {
+        return res.status(404).json({ error: "Cart not found for the user" });
+      }
+
+      const cartItems = await getCartItems(cartItemsRepository, userCart.id);
+
+      const savedOrder = await createOrder(userPhone);
+      const updatedTotalPrice = await createEnrollmentAndCalculateTotalPrice(
+        cartItems,
+        savedOrder,
+        transactionalEntityManager
+      );
+
+      const updatedTotalPriceInRials = updatedTotalPrice * 10;
+      const callbackUrl = buildCallbackUrl(
+        updatedTotalPriceInRials,
+        userPhone,
+        savedOrder.id
+      );
+      const requestData = buildRequestData(
+        process.env.MERCHANT_ID,
+        updatedTotalPriceInRials,
+        callbackUrl,
+        userPhone
+      );
+      const response = await sendPaymentRequest(
+        process.env.ZARINPAL_LINK_REQUEST,
+        requestData
+      );
+
+      const code = response.data.data.code;
+
+      if (code === 100) {
+        const paymentUrl = buildPaymentUrl(response.data.data.authority);
+        const cartId = cartItems[0].cartId;
+
+        return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
+      } else {
+        return res
+          .status(400)
+          .json({ error: "درخواست پرداخت با خطا مواجه شد" });
+      }
     });
-
-    if (!userCart) {
-      return res.status(404).json({ error: "Cart not found for the user" });
-    }
-
-    const cartItems = await getCartItems(cartItemsRepository, userCart.id);
-
-    const savedOrder = await createOrder(userPhone);
-    const updatedTotalPrice = await createOrderItemsAndCalculateTotalPrice(
-      cartItems,
-      savedOrder
-    );
-    const updatedTotalPriceInRials = updatedTotalPrice * 10;
-    const callbackUrl = buildCallbackUrl(
-      updatedTotalPriceInRials,
-      userPhone,
-      savedOrder.id
-    );
-    const requestData = buildRequestData(
-      process.env.MERCHANT_ID,
-      updatedTotalPriceInRials,
-      callbackUrl,
-      userPhone
-    );
-    const response = await sendPaymentRequest(
-      process.env.ZARINPAL_LINK_REQUEST,
-      requestData
-    );
-
-    const code = response.data.data.code;
-
-    if (code === 100) {
-      const paymentUrl = buildPaymentUrl(response.data.data.authority);
-      const cartId = cartItems[0].cartId;
-
-      return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
-    } else {
-      return res.status(400).json({ error: "Payment Request Failed" });
-    }
   } catch (error) {
     console.error(`createPayment error: ${error}`);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while preparing the createPayment." });
+
+    return res.status(500).json(error);
   }
 }
 
@@ -133,8 +140,8 @@ async function createOrder(userPhone) {
   return await orderRepository.save(newOrder);
 }
 
-async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
-  const orderItemsRepository = getRepository(OrderItems);
+async function createEnrollmentAndCalculateTotalPrice(cartItems, savedOrder) {
+  const enrollmentRepository = getRepository(Enrollment);
   const courseRepository = getRepository(Courses);
   let totalPrice = 0;
   for (const cartItem of cartItems) {
@@ -149,12 +156,12 @@ async function createOrderItemsAndCalculateTotalPrice(cartItems, savedOrder) {
           `Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`
         );
         totalPrice += discountedPrice * cartItem.quantity;
-        const newOrderItem = orderItemsRepository.create({
+        const newEnrollment = enrollmentRepository.create({
           order: savedOrder,
           courseId: cartItem.courseId,
           quantity: cartItem.quantity,
         });
-        await orderItemsRepository.save(newOrderItem);
+        await enrollmentRepository.save(newEnrollment);
       }
     }
   }
@@ -175,7 +182,7 @@ async function getCourseById(courseId) {
 }
 
 function buildCallbackUrl(totalPrice, userPhone, orderId) {
-  return `http://localhost:3000/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
+  return `${process.env.CALLBACKURL_ZARIPAL}/payment-verify?Amount=${totalPrice}&Phone=${userPhone}&OrderId=${orderId}`;
 }
 
 function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
@@ -189,12 +196,16 @@ function buildRequestData(merchantId, totalPrice, callbackUrl, userPhone) {
 }
 
 async function sendPaymentRequest(url, requestData) {
-  return await axios.post(url, requestData, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
+  return await axios
+    .post(url, requestData, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+    .catch((error) => {
+      console.log(error.response);
+    });
 }
 
 function buildPaymentUrl(authority) {
@@ -210,28 +221,26 @@ async function verifyPayment(req, res) {
     let response;
 
     if (Status === "OK") {
-      // Payment was successful
       const amount = Amount;
       const amountInTomans = Amount / 10;
       const merchant_id = process.env.MERCHANT_ID;
 
-      // Construct the request data for verification
       const verificationData = JSON.stringify({
         merchant_id: merchant_id,
         authority: Authority,
         amount: amount,
       });
 
-      response = await axios.post(
-        `${process.env.ZARINPAL_LINK_VERIFY}`,
-        verificationData,
-        {
+      response = await axios
+        .post(`${process.env.ZARINPAL_LINK_VERIFY}`, verificationData, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
-      );
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
 
       console.log(`response verify : ${JSON.stringify(response.data)}`);
 
@@ -240,10 +249,8 @@ async function verifyPayment(req, res) {
       console.log(`code  >> ${code}`);
 
       if (code == 100) {
-        // Payment verification succeeded
         const refID = response.data.data.ref_id;
 
-        // You can create an order and perform any other necessary actions here
         const orderRepository = getManager().getRepository(Order);
         const phone = req.query.Phone || "UNKNOWN";
 
@@ -260,20 +267,21 @@ async function verifyPayment(req, res) {
         existingOrder.orderStatus = "success";
         existingOrder.refId = refID;
         const updateOrder = await orderRepository.save(existingOrder);
-        // Find the existing order with the orderId
 
         console.log(`existingOrder >> ${existingOrder}`);
         console.log(`Order updated successfully. Order ID: ${updateOrder.id}`);
 
         // Clear the user's shopping cart (You can implement this function)
         //await clearUserCart(userPhone);
-
-        return res
-          .status(200)
-          .json({ message: "Payment verification succeeded", updateOrder });
+        return res.render("payment", {
+          orderStatus: "success",
+          updateOrder,
+        });
+        // return res
+        //   .status(200)
+        //   .json({ message: "Payment verification succeeded", updateOrder });
       }
     } else if (Status === "NOK") {
-      // Payment was not successful
       console.log("hereeeee");
       const orderRepository = getManager().getRepository(Order);
       const phone = req.query.Phone || "UNKNOWN";
@@ -294,13 +302,18 @@ async function verifyPayment(req, res) {
       console.log("phone : " + phone);
 
       console.log(`Order created successfully. Order ID: ${updateOrder.id}`);
-      return res.status(400).json({ error: "Payment was not successful" });
+      return res.render("payment", {
+        orderStatus: "cancelled",
+        error: "پرداخت انجام شده از طرف سرویس دهنده تایید نشد",
+      });
     } else {
-      // Handle other Status values if needed
-      return res.status(400).json({ error: "Invalid payment status" });
+      return res.render("payment", {
+        orderStatus: "cancelled",
+        error: "Inavlid Payment Status",
+      });
     }
   } catch (error) {
-    console.error(`verifyPayment error: ${error}`);
+    console.dir(`verifyPayment error: ${error}`);
     return res.status(500).json({
       error: "An error occurred while processing the payment verification.",
     });
@@ -317,7 +330,6 @@ async function clearUserCart(userPhone) {
   });
 
   if (userCart) {
-    // Remove the cart items associated with the user's cart
     const cartItems = await cartItemsRepository.find({
       where: { cart: userCart.id },
     });
@@ -326,24 +338,25 @@ async function clearUserCart(userPhone) {
       await cartItemsRepository.remove(cartItems);
     }
 
-    // Optionally, you can delete the user's cart as well
     await cartRepository.remove(userCart);
   }
 }
 
 async function getAllOrders(req, res) {
   try {
-    const sortBy = req.query.sortBy || "orderDate";
-    const sortOrder = req.query.sortOrder || "DESC";
+    const {
+      sortBy = "orderDate",
+      sortOrder = "DESC",
+      page = 1,
+      pageSize = 20,
+      searchId,
+      searchName,
+      searchOrderDate,
+      orderStatus,
+    } = req.query;
 
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const offset = (page - 1) * pageSize;
     const orderRepository = getRepository(Order);
-
-    const searchId = req.query.searchId;
-    const searchName = req.query.searchName;
-    const searchOrderDate = req.query.searchOrderDate;
+    const offset = (page - 1) * pageSize;
 
     const queryBuilder = orderRepository
       .createQueryBuilder("order")
@@ -355,15 +368,10 @@ async function getAllOrders(req, res) {
         "order.totalPrice",
       ])
       .addSelect(["user.id", "user.firstName", "user.lastName"])
-      .addSelect(
-        `order.orderDate AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tehran'`,
-        "jalaliDate"
-      )
       .orderBy(`order.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize);
 
-    // Add search conditions if search parameters are provided
     if (searchId) {
       queryBuilder.andWhere("order.id = :searchId", {
         searchId: parseInt(searchId),
@@ -384,12 +392,46 @@ async function getAllOrders(req, res) {
       });
     }
 
+    // Use a single andWhere clause for orderStatus
+    if (orderStatus) {
+      queryBuilder.andWhere("order.orderStatus = :orderStatus", {
+        orderStatus,
+      });
+    }
+
+    const pendingCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "pending" })
+      .getRawOne();
+
+    const successCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "success" })
+      .getRawOne();
+
+    const cancelledCount = await orderRepository
+      .createQueryBuilder("order")
+      .select("COUNT(order.orderStatus)", "count")
+      .where("order.orderStatus = :orderStatus", { orderStatus: "cancelled" })
+      .getRawOne();
+
     const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
 
-    console.log(queryBuilder.getSql());
+    const jalaliOrders = orders.map((order) => ({
+      ...order,
+      orderDate: convertToJalaliDate(order.orderDate),
+    }));
 
-    res.status(200).json({ orders, totalCount });
+    res.status(200).json({
+      orders: jalaliOrders,
+      totalCount,
+      pendingCount: pendingCount.count,
+      successCount: successCount.count,
+      cancelledCount: cancelledCount.count,
+    });
   } catch (error) {
     console.error(`getAllOrders error: ${error}`);
     res.status(500).json({ error: "Internal server error on getAllOrders" });
@@ -400,19 +442,19 @@ async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
     const orderRepository = getRepository(Order);
-    const orderItemsRepository = getRepository(OrderItems);
 
     const order = await orderRepository
       .createQueryBuilder("order")
       .leftJoin("order.user", "user")
-      .leftJoin("order.orderItems", "orderItems")
-      .leftJoinAndSelect("orderItems.course", "course")
+      .leftJoin("order.enrollments", "enrollments")
+      .leftJoinAndSelect("enrollments.course", "course")
       .select(["order"])
       .addSelect(["user.firstName", "user.lastName"])
       .addSelect([
-        "orderItems.courseId",
+        "enrollments.courseId",
         "course.title",
         "course.price",
+        "course.imageUrl",
         "course.discountPrice",
       ])
       .where("order.id = :orderId", { orderId })
@@ -421,6 +463,7 @@ async function getOrderById(req, res) {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
+    order.orderDate = convertToJalaliDate(order.orderDate);
 
     res.status(200).json({ order });
   } catch (error) {
@@ -428,6 +471,21 @@ async function getOrderById(req, res) {
     res.status(500).json({ error: "Internal server error on getOrderById" });
   }
 }
+
+// async function createOrder(req, res) {
+//   try {
+//     const { phone } = req.body;
+//     const userRepository = getManager().getRepository(User);
+//     const existingUser = userRepository.findOne({ where: { phone: phone } });
+
+//     if (!existingUser) {
+//       res.status(400).json({ error: "کاربر وجود ندارد", userFound: false });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+
 module.exports = {
   checkOutCart,
   createPayment,
@@ -435,4 +493,5 @@ module.exports = {
   clearUserCart,
   getAllOrders,
   getOrderById,
+  createOrder,
 };

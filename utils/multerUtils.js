@@ -4,47 +4,65 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 
-let uploadCounter = {}; // Maintain a counter object to track each file
-
-const createSubdirectory = () => {
+const createSubdirectory = (date) => {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const subdirectory = path.join(year.toString(), month);
   return subdirectory;
 };
-
-const generateUniqueFilename = (originalname) => {
-  const baseName = path.basename(originalname, path.extname(originalname));
+console.log("here upaod");
+const generateUniqueFilename = (originalname, counter) => {
   const extension = path.extname(originalname);
-
-  if (!uploadCounter[originalname]) {
-    // First upload of this file
-    uploadCounter[originalname] = 1;
-    return `${baseName}${extension}`;
-  } else {
-    // Subsequent uploads, increment the counter
-    const count = uploadCounter[originalname]++;
-    return `${baseName}-${count}${extension}`;
-  }
+  const baseName = path.basename(originalname, extension);
+  return `${baseName}-${counter}${extension}`;
 };
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const subdirectory = createSubdirectory();
-    const uploadDir = path.join(__dirname, "../uploads", subdirectory);
+    const now = new Date()
+    const subdirectory = createSubdirectory(now);
+    req.uploadDir = path.join(__dirname, "../uploads", subdirectory);
 
-    fs.ensureDir(uploadDir)
+    fs.ensureDir(req.uploadDir)
       .then(() => {
-        cb(null, uploadDir);
+        cb(null, req.uploadDir);
       })
       .catch((err) => {
         cb(err);
       });
   },
-  filename: (req, file, cb) => {
+  filename: async (req, file, cb) => {
     const originalname = file.originalname;
-    const filename = generateUniqueFilename(originalname);
+
+    let counter = req.fileCounter || 0;
+    let filename;
+    let baseName; // Declare baseName here to make it accessible in both branches
+    let extension; // Declare extension here to make it accessible in the entire function
+
+    if (counter === 0) {
+      // For the first upload, use the original filename
+      filename = originalname;
+      baseName = path.basename(originalname, path.extname(originalname));
+      extension = path.extname(originalname);
+    } else {
+      // For subsequent uploads, append the counter to the original filename
+      extension = path.extname(originalname);
+      baseName = path.basename(originalname, extension);
+      filename = `${baseName}-${counter}${extension}`;
+    }
+
+    // Check if the filename already exists, increment counter if needed
+    while (fs.existsSync(path.join(req.uploadDir, filename))) {
+      counter++;
+      filename = `${baseName}-${counter}${extension}`;
+    }
+
+    // Pass the updated counter to the next upload
+    req.fileCounter = counter + 1;
+
+    // Pass the uploadRepository to generateUniqueFilename
+    req.uploadFilename = filename;
     cb(null, filename);
   },
 });
@@ -55,106 +73,33 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
-    const allowedFileTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "video/mp4",
-      "video/avi",
-    ];
+    // const allowedFileTypes = [
+    //   "image/jpeg",
+    //   "image/png",
+    //   "image/webp",
+    //   "video/mp4",
+    //   "video/avi",
+    //   "video/m4v"
+    // ];
     if (file.size > 5 * 1024 * 1024) {
-      return cb(null, false, {
+      cb(null, false, {
         error: "File size limit exceeded. Maximum file size is 5 MB.",
       });
-    }
-    if (allowedFileTypes.includes(file.mimetype)) {
-      cb(null, true);
     } else {
-      cb(null, false, {
-        error:
-          "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
-      });
+      // Uncomment the following block if you have specific file type restrictions
+      // if (allowedFileTypes.includes(file.mimetype)) {
+      //   cb(null, true);
+      // } else {
+      //   cb(null, false, {
+      //     error:
+      //       "Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.",
+      //   });
+      // }
+
+      // In the absence of file type restrictions, call cb with true for successful uploads
+      cb(null, true);
     }
   },
 });
 
 module.exports = { upload, createSubdirectory };
-
-// const multer = require('multer');
-// const multerS3 = require('multer-s3');
-// const { S3 } = require('@aws-sdk/client-s3');
-// const path = require('path');
-// const dotenv = require("dotenv").config();
-
-// const config = {
-//   endpoint: process.env.LIARA_ENDPOINT,
-//   accessKeyId: process.env.LIARA_ACCESS_KEY,
-//   secretAccessKey: process.env.LIARA_SECRET_KEY,
-//   region: "default",
-// };
-
-// const s3 = new S3(config);
-
-// let uploadCounter = {};
-
-// const createSubdirectory = () => {
-//   const now = new Date();
-//   const year = now.getFullYear();
-//   const month = (now.getMonth() + 1).toString().padStart(2, '0');
-//   const subdirectory = path.join(year.toString(), month);
-//   return subdirectory;
-// };
-
-// const generateUniqueFilename = (originalname) => {
-//   const baseName = path.basename(originalname, path.extname(originalname));
-//   const extension = path.extname(originalname);
-
-//   if (!uploadCounter[originalname]) {
-//     uploadCounter[originalname] = 1;
-//     return `${baseName}${extension}`;
-//   } else {
-//     const count = uploadCounter[originalname]++;
-//     return `${baseName}-${count}${extension}`;
-//   }
-// };
-
-// const upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: process.env.LIARA_BUCKET_NAME,
-//     acl: 'public-read',
-//     key: (req, file, cb) => {
-//       const subdirectory = createSubdirectory();
-//       const filename = generateUniqueFilename(file.originalname);
-//       const key = path.join(subdirectory, filename);
-//       cb(null, key);
-//     },
-//   }),
-//   limits: {
-//     fileSize: 5 * 1024 * 1024,
-//   },
-//   fileFilter: (req, file, cb) => {
-//     const allowedFileTypes = [
-//       'image/jpeg',
-//       'image/png',
-//       'image/webp',
-//       'video/mp4',
-//       'video/avi',
-//     ];
-//     if (file.size > 5 * 1024 * 1024) {
-//       return cb(null, false, {
-//         error: 'File size limit exceeded. Maximum file size is 5 MB.',
-//       });
-//     }
-//     if (allowedFileTypes.includes(file.mimetype)) {
-//       cb(null, true);
-//     } else {
-//       cb(null, false, {
-//         error:
-//           'Invalid file type. Only JPG, PNG, WEBP, MP4, and AVI files are allowed.',
-//       });
-//     }
-//   },
-// });
-
-// module.exports = { upload, createSubdirectory };

@@ -5,8 +5,43 @@ const {
   loginWithOTPValidator,
   signUpValidator,
   partValidator,
-  
+  courseValidator,
+  updateUserValidator,
+  tokenValidator,
 } = require("../utils/ajv");
+
+function validToken(req, res, next) {
+  const valid = tokenValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: tokenValidator.errors[0].message,
+    });
+  }
+}
+
+function validUpdateUser(req, res, next) {
+  const valid = updateUserValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: updateUserValidator.errors[0].message,
+    });
+  }
+}
+
+function validCourse(req, res, next) {
+  const valid = courseValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: courseValidator.errors[0].message,
+    });
+  }
+}
 
 function validParts(req, res, next) {
   const valid = partValidator(req.body);
@@ -57,7 +92,9 @@ module.exports = {
   validateLoginUsers,
   validateOTP,
   validateSignUp,
-  validParts
-
+  validParts,
+  validCourse,
+  validUpdateUser,
+  validToken,
   // Other validation functions
 };

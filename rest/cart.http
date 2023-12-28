@@ -1,0 +1,34 @@
+###
+DELETE http://localhost:3000/cart/111
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTNUMTA6MzY6MTguNjY3WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyNDYzNzc4LCJleHAiOjE3MDI3MjI5Nzh9.Hj1jO8ohzjdH_Hg5fC_ahU0_UvycbLYQzBPcUrcNmTc
+
+###
+POST http://localhost:3000/cart
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTNUMTA6MzY6MTguNjY3WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyNDYzNzc4LCJleHAiOjE3MDI3MjI5Nzh9.Hj1jO8ohzjdH_Hg5fC_ahU0_UvycbLYQzBPcUrcNmTc
+
+
+###
+
+GET http://localhost:3000/cart
+
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTNUMTA6MzY6MTguNjY3WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyNDYzNzc4LCJleHAiOjE3MDI3MjI5Nzh9.Hj1jO8ohzjdH_Hg5fC_ahU0_UvycbLYQzBPcUrcNmTc
+
+#output :
+#  {
+# 	"cartData": [
+# 		{
+# 			"courseId": 2,
+# 			"quantity": 1,
+# 			"price": 5000,
+# 			"title": "shimi",
+# 			"itemPrice": 5000
+# 		}
+# 	],
+# 	"totalCartPrice": 5000,
+# 	"status": 200
+# }
+
+
+###
+DELETE localhost:3000/upload/path/123-1.png
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTVUMTc6MDc6MTQuNDU5WiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZCIsImxhc3ROYW1lIjoidGFoZXJpYW4iLCJpYXQiOjE3MDI2NjAwMzQsImV4cCI6MTcwMjkxOTIzNH0.eOBs7Yv4_FNu-AnfpI53ZoCljYMf8-46N9dSOdT5QVw

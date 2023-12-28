@@ -2,40 +2,35 @@
 
 const { getManager } = require("typeorm");
 const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the path accordingly
-const fs = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const Upload = require("../model/Upload");
 const moment = require("jalali-moment");
+const { existsSync } = require("fs-extra");
+const { json } = require("body-parser");
+
 async function createUpload(req, res) {
   try {
     console.log("Received file upload request");
-
-    if (!req.file) {
-      // Check if file upload was successful
-      return res.status(400).json({
-        message: "آپلود شکست خورد",
-        status: 400,
-      });
-    }
+    console.log("req.file : " + JSON.stringify(req.file));
 
     const sizeFile = req.file.size;
-
     const originalFilename = req.file.originalname;
 
+    // Pass the current date to createSubdirectory
+    const subdirectory = createSubdirectory(new Date());
+
+    const filePath = path.resolve(
+      __dirname,
+      "../uploads",
+      subdirectory,
+      originalFilename
+    );
+    console.log(`filePath >>> ${filePath}`);
     const uploadRepository = getManager().getRepository(Upload);
 
-    // Check if a file with the same name already exists
-    let filename = originalFilename;
-    let counter = 1;
-    while (await uploadRepository.findOne({ where: { path: filename } })) {
-      const extension = path.extname(originalFilename);
-      const baseName = path.basename(originalFilename, extension);
-      filename = `${baseName}-${counter}${extension}`;
-      counter++;
-    }
-
     const newUpload = uploadRepository.create({
-      path: filename,
+      path: req.uploadFilename, // Use req.uploadFilename directly here
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
@@ -46,68 +41,27 @@ async function createUpload(req, res) {
 
     console.log("File successfully saved to database:", saveNewUpload);
 
-    const subdirectory = createSubdirectory(); // Adjust this based on your storage structure
-    const filePath = path.resolve(__dirname, "../uploads", subdirectory, filename);
-    console.log(`filePath >> ${filePath}`);
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
+
       saveNewUpload: {
         path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
-        createdAt: jalaliCreatedAt, // Use Jalali date
+        createdAt: jalaliCreatedAt,
       },
       status: 200,
     });
   } catch (error) {
     console.log("createUpload error " + error);
+    // If an error occurs, you can handle it appropriately
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
     });
   }
 }
-
-// async function getAllUploads(req, res) {
-//   try {
-//     const uploadRepository = getManager().getRepository(Upload);
-
-//     const page = req.query.page || 1;
-//     const pageSize = req.query.pageSize || 10;
-
-//     const skip = (page - 1) * pageSize;
-
-//     const [uploads, totalCount] = await uploadRepository.findAndCount({
-//       skip,
-//       take: pageSize,
-//     });
-
-//     // Convert dates to Jalali format before sending the response
-//     const uploadsWithJalaliDates = uploads.map((upload) => {
-//       return {
-//         ...upload,
-//         createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-//         updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-
-//         // Add more date fields if necessary
-//       };
-//     });
-
-//     res.status(200).json({
-//       message: "All uploads retrieved successfully",
-//       uploads: uploadsWithJalaliDates,
-//       totalCount,
-//       status: 200,
-//     });
-//   } catch (error) {
-//     console.error("Error getting all uploads:", error);
-//     res.status(500).json({
-//       message: "Internal Server Error",
-//       status: 500,
-//     });
-//   }
-// }
 
 async function getAllUploads(req, res) {
   try {
@@ -127,25 +81,22 @@ async function getAllUploads(req, res) {
       },
     });
 
-    // Convert dates to Jalali format and include file paths
-    const uploadsData = uploads.map((upload) => {
-      const subdirectory = createSubdirectory();
+      const uploadsData = uploads.map((upload) => {
+      const subdirectory = createSubdirectory(upload.createdAt);
 
-      // Check if upload.path is null before resolving the path
       const filePath = upload.path
         ? path.resolve(__dirname, `../uploads/${subdirectory}`, upload.path)
         : null;
 
       return {
         id: upload.id,
-        createdAt: moment(upload.createdAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        updatedAt: moment(upload.updatedAt).format("jYYYY/jMM/jDD HH:mm:ss"),
-        filePath: filePath, // This may be null if upload.path is null
+        createdAt: moment(upload.createdAt).format("jYYYY/jMMMM/jDD HH:mm:ss"),
+        updatedAt: moment(upload.updatedAt).format("jYYYY/jMMMM/jDD HH:mm:ss"),
+        filePath: filePath,
       };
     });
 
     res.status(200).json({
-      //  message: "All uploads retrieved successfully",
       uploads: uploadsData,
       totalCount,
       status: 200,
@@ -170,6 +121,7 @@ async function removeUploadByPath(req, res) {
       where: { path: uploadPath },
     });
 
+    // Check if upload is null
     if (!upload) {
       return res.status(404).json({
         message: "فایلی پیدا نشد",
@@ -177,15 +129,16 @@ async function removeUploadByPath(req, res) {
       });
     }
 
-    // Remove the file from the uploads folder
-    const subdirectory = createSubdirectory();
+    // Check if upload has createdAt property before using it
+    const subdirectory = createSubdirectory(upload.createdAt || new Date());
     const filePath = path.resolve(
       __dirname,
       `../uploads/${subdirectory}`,
       upload.path
     );
 
-    await fs.unlink(filePath);
+    // Use fs.promises.unlink for a Promise-based version
+    await fs.promises.unlink(filePath);
 
     // Remove the record from the database
     await uploadRepository.remove(upload);

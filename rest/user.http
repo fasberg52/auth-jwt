@@ -1,0 +1,38 @@
+###
+POST http://localhost:3000/admin/user
+Content-Type:application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTlUMDU6NDM6MzYuMDMzWiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyOTY0NjE2LCJleHAiOjE3MDMyMjM4MTZ9.dFHIJ4DHXBecdUYcbzm1RyBwG20TzoBejMsCt5Rt2tk
+
+{
+	"firstName": "سیش",
+	"lastName": "شسی",
+	"phone": "09154567895",
+	"password": "asd123",
+	"roles": "user",
+	"imageUrl": null,
+	"grade": null
+}
+
+###
+
+PUT http://localhost:3000/admin/user
+Content-Type:application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTlUMDU6NDM6MzYuMDMzWiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyOTY0NjE2LCJleHAiOjE3MDMyMjM4MTZ9.dFHIJ4DHXBecdUYcbzm1RyBwG20TzoBejMsCt5Rt2tk
+
+{
+	"firstName": "سیش",
+	"lastName": "psj",
+	"phone": "09154567895",
+	"password": "asd123",
+	"roles": "user",
+	"imageUrl": null,
+	"grade": null
+}
+
+###
+
+GET http://localhost:3000/admin/user/09218913541
+
+Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImxhc3RMb2dpbiI6IjIwMjMtMTItMTlUMTA6NTM6MzkuMjAxWiIsInBob25lIjoiMDkyMTg5MTM1NDEiLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJtb2hhbW1hZHJlemEiLCJsYXN0TmFtZSI6InRhaGVyaWFuIiwiaWF0IjoxNzAyOTgzMjE5LCJleHAiOjE3MDMyNDI0MTl9.vFIYiJf1ZNMm6X_xrgzPSEhc_yXLx9NpVCwmzZdxW48
+
+###

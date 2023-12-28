@@ -4,17 +4,30 @@ const { getManager, getConnection } = require("typeorm");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
-
+const Enrollment = require("../model/Enrollment");
 async function createCartItem(req, res) {
   try {
-    const { courseId, quantity } = req.body;
+    const { courseId } = req.body;
     const userPhone = req.user.phone;
+    const defaultQuantity = 1;
 
     const connection = getConnection();
+    const enrollmentRepository = connection.getRepository(Enrollment);
     const cartRepository = connection.getRepository(Cart);
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
 
+    const isEnrolled = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoin("enrollment.course", "course")
+      .innerJoin("enrollment.order", "order")
+      .innerJoin("order.user", "user")
+      .where("course.id = :courseId", { courseId })
+      .andWhere("user.phone = :phone", { phone: userPhone })
+      .getCount();
+    if (isEnrolled) {
+      res.status(400).json({ error: "این دوره در سبد خرید موجود است", status: 400 });
+    }
     let userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
@@ -25,14 +38,12 @@ async function createCartItem(req, res) {
       });
       await cartRepository.save(userCart);
     }
-    console.log(`userCart.id before findOne: ${userCart.id}`);
 
     const course = await courseRepository.findOne({
       where: { id: courseId },
     });
 
     if (!course) {
-      // If courseId is not found, return a 400 Bad Request response
       return res.status(400).json({ error: "دوره پیدا نشد" });
     }
 
@@ -41,24 +52,28 @@ async function createCartItem(req, res) {
       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
       .andWhere("cartItem.courseId = :courseId", { courseId: courseId })
       .getOne();
-    console.log(
-      `existingCartItem > >  > > > > ${JSON.stringify(existingCartItem)}`
-    );
+
     if (existingCartItem) {
-      existingCartItem.quantity += quantity;
-      await cartItemsRepository.save(existingCartItem);
+      return res.status(400).json({
+        error: "این دوره قبلاً به سبد خرید اضافه شده است",
+        status: 400,
+      });
     } else {
       const newCartItem = cartItemsRepository.create({
         cart: userCart,
         courseId: courseId,
-        quantity: quantity,
+        quantity: defaultQuantity,
       });
       await cartItemsRepository.save(newCartItem);
+      //console.log(newCartItem);
+      res.status(201).json({
+        message: "آیتم با موفقیت اضافه شد",
+        newCartItem,
+        status: 201,
+      });
     }
-
-    res.status(201).json({ message: "آیتم با موفقیت اضافه شد" });
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -86,25 +101,25 @@ async function getUserCart(req, res) {
     let totalCartPrice = 0;
 
     const cartDataPromises = cartItems.map(async (cartItem) => {
-      console.log("Processing cartItem: ", cartItem);
+      //console.log("Processing cartItem: ", cartItem);
       if (cartItem.courseId) {
-        console.log("Course data exists for cartItem: ", cartItem.courseId);
+        //console.log("Course data exists for cartItem: ", cartItem.courseId);
         try {
           const course = await courseRepository.findOne({
             where: { id: cartItem.courseId },
           });
-          console.log("Fetched course data: ", course);
+          // console.log("Fetched course data: ", course);
           if (course) {
-            // Calculate discounted price if applicable
             const discountedPrice = course.discountPrice || course.price;
-            console.log(`discountedPrice>>> ${discountedPrice}`);
+            // console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
-            // Accumulate the total price
             totalCartPrice += itemPrice;
 
             return {
+              cartItemId: cartItem.id,
               courseId: course.id,
+              imageUrl: course.imageUrl,
               quantity: cartItem.quantity,
               price: discountedPrice,
               title: course.title,
@@ -112,17 +127,17 @@ async function getUserCart(req, res) {
             };
           }
         } catch (error) {
-          console.error("Error fetching course: ", error);
+          //console.error("Error fetching course: ", error);
         }
       }
     });
 
     const cartData = await Promise.all(cartDataPromises);
-    console.log("Final cartData: ", cartData);
+    // console.log("Final cartData: ", cartData);
 
     res.status(200).json({ cartData, totalCartPrice, status: 200 });
   } catch (error) {
-    console.error("Error: ", error);
+    // console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -232,24 +247,30 @@ async function getUserCart(req, res) {
 
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params; // Assuming you're passing cartItemId as a route parameter
+    const { cartItemId } = req.params;
 
     const connection = getConnection();
     const cartItemsRepository = connection.getRepository(CartItems);
 
-    const cartItemToRemove = await cartItemsRepository.findOne({
-      where: { id: cartItemId },
-    });
+    const cartItemToRemove = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .leftJoinAndSelect("cartItem.course", "course") // Assuming a relation named "course" exists in CartItems entity
+      .where("cartItem.id = :cartItemId", { cartItemId })
+      .getOne();
 
     if (!cartItemToRemove) {
       return res.status(404).json({ error: "آیتم های سبدخرید پیدا نشد" });
     }
 
+    const courseName = cartItemToRemove.course
+      ? cartItemToRemove.course.title
+      : "آیتم";
+
     await cartItemsRepository.remove(cartItemToRemove);
 
-    res.status(200).json({ message: "آیتم حذف شد" });
+    res.status(200).json({ message: `${courseName} از سبد خرید شما حذف شد` });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

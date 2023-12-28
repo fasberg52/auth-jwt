@@ -14,7 +14,8 @@ const Course = new EntitySchema({
       type: "varchar",
     },
     description: {
-      type: "varchar",
+      type: "text",
+      nullable: true,
     },
     price: {
       type: "int",
@@ -22,6 +23,7 @@ const Course = new EntitySchema({
     },
     discountPrice: {
       type: "int",
+      default: null,
       nullable: true,
     },
     discountStart: {
@@ -29,15 +31,15 @@ const Course = new EntitySchema({
       nullable: true,
     },
     discountExpiration: {
-      type: "timestamp", 
+      type: "timestamp",
       nullable: true,
     },
     imageUrl: {
-      type: "text",
+      type: "varchar",
       nullable: true,
     },
     bannerUrl: {
-      type: "text",
+      type: "varchar",
       nullable: true,
     },
     videoUrl: {
@@ -57,7 +59,7 @@ const Course = new EntitySchema({
   relations: {
     category: {
       type: "many-to-one",
-      target: "Category", 
+      target: "Category",
       joinColumn: { name: "categoryId", referencedColumnName: "id" },
     },
 
@@ -69,6 +71,21 @@ const Course = new EntitySchema({
         joinColumn: { name: "courseId", referencedColumnName: "id" },
         inverseJoinColumn: { name: "userId", referencedColumnName: "phone" },
       },
+    },
+    chapters: {
+      type: "one-to-many",
+      target: "Chapter",
+      inverseSide: "course",
+    },
+    parts: {
+      type: "one-to-many",
+      target: "Part",
+      inverseSide: "course",
+    },
+    enrollments: {
+      type: "one-to-many",
+      target: "Enrollment",
+      inverseSide: "course",
     },
   },
 });

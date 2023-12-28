@@ -1,6 +1,6 @@
 // courseBuilder Entity
 
-const { EntitySchema, PrimaryColumn } = require("typeorm");
+const { EntitySchema } = require("typeorm");
 
 const Part = new EntitySchema({
   name: "Part",
@@ -11,8 +11,8 @@ const Part = new EntitySchema({
       generated: true,
       primary: true,
     },
-    chapterId:{
-      type:"int"
+    chapterId: {
+      type: "int",
     },
     title: {
       type: "varchar",
@@ -22,15 +22,20 @@ const Part = new EntitySchema({
     },
     icon: {
       type: "varchar",
-      nullable:true
+      nullable: true,
     },
 
     videoPath: {
       type: "varchar",
     },
-    videoDuration:{
-      type:"varchar",
-      nullable:true
+    videoDuration: {
+      type: "varchar",
+      nullable: true,
+      default: null,
+    },
+    isFree: {
+      type: "boolean",
+      default: false,
     },
     createdAt: {
       type: "timestamp",
@@ -41,12 +46,41 @@ const Part = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+    secureLinkId: {
+      type: "int",
+      nullable: true,
+    },
+    courseId: {
+      type: "int",
+      nullable: true,
+    },
+
+    orderIndex: {
+      type: "int",
+      default: 0,
+    },
+    videoType: {
+      type: "enum",
+      enum: ["embed", "normal"],
+      nullable: true,
+    },
   },
+
   relations: {
     chapter: {
       type: "many-to-one",
       target: "Chapter",
       joinColumn: true,
+    },
+    course: {
+      type: "many-to-one",
+      target: "Course",
+      joinColumn: { name: "courseId", referencedColumnName: "id" },
+    },
+    secureLink: {
+      type: "many-to-one",
+      target: "SecureLink",
+      joinColumn: { name: "secureLinkId", referencedColumnName: "id" },
     },
   },
 });

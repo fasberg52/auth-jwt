@@ -8,10 +8,17 @@ const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
 const tagController = require("../../controllers/tag");
 const orderController = require("../../controllers/order");
-
+const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 
+router.post(
+  "/user",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  ajvMiddlerware.validateSignUp,
+  usersController.createUser
+);
 router.get(
   "/users",
 
@@ -27,9 +34,10 @@ router.get(
 );
 
 router.put(
-  "/update/:phone",
+  "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
+  ajvMiddlerware.validUpdateUser,
   usersController.updateUsers
 );
 router.delete(
@@ -43,13 +51,14 @@ router.post(
   "/course",
   jwtAuthMiddleware,
   checkRole("admin"),
-  upload.single("courseImage"),
+  ajvMiddlerware.validCourse,
   courseController.addCourse
 );
 router.put(
   "/course/:id",
   jwtAuthMiddleware,
   checkRole("admin"),
+
   courseController.editCourse
 );
 router.delete(
@@ -59,13 +68,20 @@ router.delete(
   courseController.deleteCourse
 );
 
+router.get(
+  "/course/:courseId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  courseController.getAdminCourseById
+);
+
 //category
 
 router.post(
-  "/create-category",
-  jwtAuthMiddleware,
-  checkRole("admin"),
-  upload.single("icon"),
+  "/category",
+  //jwtAuthMiddleware,
+  //checkRole("admin"),
+  //upload.single("icon"),
   categoryController.createCategory
 );
 router.put(
@@ -118,7 +134,7 @@ router.get(
 router.get(
   "/order/:id",
   jwtAuthMiddleware,
-  checkRole("admin"),
+//  checkRole("admin"),
   orderController.getOrderById
 );
 
@@ -195,9 +211,9 @@ module.exports = router;
  *                   type: number
  *                   description: The HTTP status code (200)
  *       '400':
- *         description: دسته بندی پیدا نشد 
+ *         description: دسته بندی پیدا نشد
  *       '500':
- *         description: Internal server error 
+ *         description: Internal server error
  */
 
 /**
@@ -257,7 +273,6 @@ module.exports = router;
  *       '500':
  *         description: Internal server error
  */
-
 
 /**
  * @swagger

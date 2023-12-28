@@ -1,11 +1,11 @@
 // chapterController.js
 const { getManager } = require("typeorm");
-const Chapter = require("../model/Chapter"); 
-const logger = require("../services/logger")
+const Chapter = require("../model/Chapter");
+const Part = require("../model/Part");
+const logger = require("../services/logger");
 async function createChapter(req, res) {
   try {
     const { courseId, title } = req.body;
-    const icon = req.file ? req.file.filename : null;
 
     const chapterRepository = getManager().getRepository(Chapter);
 
@@ -24,7 +24,7 @@ async function createChapter(req, res) {
     const newChapter = chapterRepository.create({
       courseId,
       title,
-      icon,
+
       orderIndex,
     });
 
@@ -35,7 +35,9 @@ async function createChapter(req, res) {
 
     const savedChapter = await chapterRepository.save(newChapter);
     logger.info(`message: success, ${savedChapter}, status: 201`);
-    res.status(201).json({ message: "success", savedChapter, status: 201 });
+    res
+      .status(201)
+      .json({ message: "با موفقیت ایجاد شد", savedChapter, status: 201 });
   } catch (error) {
     logger.error(`Error creating chapter: ${error}`);
 
@@ -62,10 +64,6 @@ async function editChapter(req, res) {
     }
     existingChapter.title = title;
 
-    if (req.file) {
-      existingChapter.icon = req.file.filename;
-    }
-
     // Save the updated chapter
     existingChapter.lastModified = new Date();
     const updatedChapter = await chapterRepository.save(existingChapter);
@@ -73,9 +71,8 @@ async function editChapter(req, res) {
     logger.info("Chapter edited", {
       chapterId,
       title,
-      icon: req.file ? req.file.filename : null,
     });
-    res.json({ message: "success", updatedChapter, status: 200 });
+    res.json({ message: "با موفقیت تغییر کرد", updatedChapter, status: 200 });
   } catch (error) {
     logger.error(`Error editing chapter: ${error}`);
     res
@@ -89,22 +86,36 @@ async function deleteChapter(req, res) {
     const chapterRepository = getManager().getRepository(Chapter);
     const chapterId = req.params.id;
 
-    const existingChapter = await chapterRepository.findOne({
-      where: { id: chapterId },
+    // Fetch associated parts
+    const parts = await getManager()
+      .getRepository(Part)
+      .createQueryBuilder("part")
+      .where("part.chapterId = :chapterId", { chapterId })
+      .getMany();
+
+    await getManager().transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .delete()
+        .from(Part)
+        .where("chapterId = :chapterId", { chapterId })
+        .execute();
+
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .delete()
+        .from(Chapter)
+        .where("id = :chapterId", { chapterId })
+        .execute();
     });
 
-    if (existingChapter) {
-      await chapterRepository.remove(existingChapter);
-      logger.info("Chapter deleted", { chapterId });
-      res.json({ message: "Chapter deleted successfully." });
-    } else {
-      res.status(404).json({ error: "Chapter not found." });
-    }
+    logger.info("Chapter deleted", { chapterId });
+    res.status(200).json({ message: "سرفصل با موفقیت پاک شد", status:200 });
   } catch (error) {
     logger.error(`Error deleting chapter: ${error}`);
     res
       .status(500)
-      .json({ error: "An error occurred while deleting the chapter." });
+      .json({ error: "Internal Server Error" });
   }
 }
 
@@ -155,6 +166,38 @@ async function getChapterById(req, res) {
       .json({ error: "An error occurred while creating the getProductByIdd." });
   }
 }
+async function getAllChpaterWithParts(req, res) {
+  try {
+    const { courseId } = req.params;
+
+    const response = await getManager()
+      .createQueryBuilder(Chapter, "chapter")
+      .leftJoinAndSelect("chapter.parts", "part")
+      .where("chapter.courseId = :courseId", { courseId })
+      .orderBy("chapter.orderIndex", "ASC")
+      .select([
+        "chapter.id",
+        "chapter.courseId",
+        "chapter.title",
+        "chapter.icon",
+        "chapter.orderIndex",
+        "chapter.createdAt",
+        "chapter.lastModified",
+      ])
+      .addSelect(["part.id", "part.title"])
+      .getRawMany();
+
+    const totalCount = response.length;
+    const status = 200;
+
+    res.json({ chapters: response, totalCount, status });
+  } catch (error) {
+    logger.error(`Error in getChpaterWithParts: ${error}`);
+    res.status(500).json({
+      error: "An error occurred while retrieving chapters with parts.",
+    });
+  }
+}
 
 module.exports = {
   createChapter,
@@ -162,4 +205,6 @@ module.exports = {
   deleteChapter,
   getAllChpters,
   getChapterById,
+  getAllChpaterWithParts,
+  
 };

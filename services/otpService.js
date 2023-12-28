@@ -8,8 +8,6 @@ const OTP = require("../model/OTP");
 const User = require("../model/users");
 const OTP_EXPIRATION_TIME_MS = 60 * 1000; // 60 seconds
 
-
-
 async function sendOTP(phone) {
   // Define the OTP variable outside the try block for better scoping
   let otp;
@@ -34,7 +32,7 @@ async function sendOTP(phone) {
       // If an OTP record exists, update the existing record
       existingOTP.otp = await bcrypt.hash(otp, 10);
       existingOTP.isVerified = false;
-      existingOTP.createdAt = new Date()
+      existingOTP.createdAt = new Date();
       existingOTP.expirationTime = new Date(
         Date.now() + OTP_EXPIRATION_TIME_MS
       );
@@ -49,7 +47,7 @@ async function sendOTP(phone) {
         phone,
         otp: hashedOTP,
         expirationTime,
-        createdAt:new Date()
+        createdAt: new Date(),
       });
 
       // Save the new OTP record
@@ -82,8 +80,10 @@ async function verifyOTP(phone, otp) {
 
     if (currentTime - otpTimestamp > otpExpirationTime) {
       console.log("OTP has expired.");
-      otpRecord.expirationTime = new Date(currentTime + otpExpirationTime);
-      await otpRepository.save(otpRecord);
+      //otpRecord.expirationTime = new Date(currentTime + otpExpirationTime);
+      //await otpRepository.save(otpRecord);
+      res.status(401).json({ error: "زمان رمز یکبار مصرف منقضی شده است" });
+      //return false;
     }
 
     const isValidOTP = await bcrypt.compare(otp, otpRecord.otp);

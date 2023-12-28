@@ -2,17 +2,38 @@
 const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
+// const SecureLink = require("../model/secureLink");
+const axios = require("axios");
 const logger = require("../services/logger");
 const ffmpeg = require("fluent-ffmpeg");
+const crypto = require("crypto");
 const dotenv = require("dotenv").config();
-//ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
-ffmpeg.setFfprobePath(`${process.env.FFPROB_PATH}`);
+const { getVideoDurationFromApi } = require("../services/video.api");
+
+ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
+//ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
 
 async function createPart(req, res) {
   try {
-    const { chapterId, title, description, videoPath } = req.body;
-    //const icon = req.file ? req.file.filename : null;
-    const videoDuration = await getVideoDuration(videoPath);
+    const {
+      courseId,
+      chapterId,
+      title,
+      description,
+      videoPath,
+      isFree,
+      videoType,
+    } = req.body;
+
+    let videoDuration;
+
+    if (videoType === "normal") {
+      videoDuration = req.body.videoDuration;
+    } else if (videoType === "embed") {
+      videoDuration = await getVideoDurationFromApi(videoPath);
+    } else {
+      videoDuration = "00:00:00";
+    }
 
     const partRepository = getManager().getRepository(Part);
     const chapterRepository = getManager().getRepository(Chapter);
@@ -24,26 +45,46 @@ async function createPart(req, res) {
       return res.status(400).json({ error: "Chapter not found." });
     }
 
+    const [result] = await partRepository.query(
+      'SELECT COUNT(*) FROM parts WHERE "chapterId" = $1',
+      [chapterId]
+    );
+    const partCount = parseInt(result.count);
+
+    console.log(`>> partCount ${partCount}`);
+
+    const orderIndex = partCount;
+    console.log(`>> orderIndex ${orderIndex}`);
+
     const newPart = partRepository.create({
+      courseId,
       chapterId,
       title,
       description,
-      // icon,
+      orderIndex,
       videoPath,
       videoDuration,
+      isFree,
+      videoType,
     });
 
     const savedPart = await partRepository.save(newPart);
 
+    // const secureLink = await createSecureLink(videoPath);
+    // savedPart.secureLink = secureLink;
+
     logger.info("Part created", {
+      courseId,
       chapterId,
       title,
       description,
       videoPath,
       videoDuration,
+      orderIndex,
+      isFree,
     });
 
-    res.status(201).json(savedPart);
+    res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
   } catch (error) {
     logger.error(`Error creating part: ${error}`);
 
@@ -55,9 +96,11 @@ async function createPart(req, res) {
 
 async function editPart(req, res) {
   try {
-    const { title, description, icon, videoPath } = req.body;
+    const { title, description, icon, videoPath, orderIndex, isFree } =
+      req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
+    //const videoDuration = await getVideoDuration(videoPath);
 
     const existingPart = await partRepository.findOne({
       where: { id: partId },
@@ -68,6 +111,9 @@ async function editPart(req, res) {
       existingPart.description = description;
       existingPart.icon = icon;
       existingPart.videoPath = videoPath;
+      existingPart.orderIndex = orderIndex; // Add this line
+      existingPart.isFree = isFree; // Add this line
+      //existingPart.videoDuration = videoDuration;
 
       // Save the updated part
       existingPart.lastModified = new Date();
@@ -79,9 +125,16 @@ async function editPart(req, res) {
         description,
         icon,
         videoPath,
+        orderIndex,
+        isFree,
+        //videoDuration,
       });
 
-      res.json(updatedPart);
+      res.status(200).json({
+        message: "پارت با موفقیت بروزرسانی شد",
+        updatedPart,
+        status: 200,
+      });
     } else {
       res.status(404).json({ error: "Part not found." });
     }
@@ -92,6 +145,7 @@ async function editPart(req, res) {
       .json({ error: "An error occurred while editing the part." });
   }
 }
+
 async function editPartWithChapterId(req, res) {
   try {
     const { title, description, videoPath } = req.body;
@@ -152,36 +206,52 @@ async function deletePart(req, res) {
 
       logger.info("Part deleted successfully", { partId });
 
-      res.json({ message: "Part deleted successfully." });
+      res.status(200).json({ message: "پارت با موفقیت پاک شد", status: 200 });
     } else {
-      res.status(404).json({ error: "Part not found." });
+      res.status(404).json({ error: "پارت پیدا نشد", status: 404 });
     }
   } catch (error) {
     logger.error(`Error deleting part: ${error}`);
 
-    res
-      .status(500)
-      .json({ error: "An error occurred while deleting the part." });
+    res.status(500).json({ error: "Internal Error Server" });
   }
 }
-async function gatAllPart(req, res) {
+async function gatAllPartwithCourseId(req, res) {
   try {
+    const { courseId } = req.params;
+
     const partRepository = getManager().getRepository(Part);
-    const parts = await partRepository.find();
 
-    logger.info("All parts retrieved", { parts });
+    // Retrieve parts and count
+    const parts = await partRepository.find({
+      where: { courseId },
+    });
 
-    res.json({ parts, status: 200 });
+    if (parts.length === 0) {
+      logger.warn("No parts found for the specified course ID", { courseId });
+      return res.status(404).json({ error: "پارت یافت نشد برای دوره" });
+    }
+
+    const totalDuration = calculateTotalDuration(parts);
+
+    logger.info("All parts retrieved for course ID", {
+      courseId,
+      parts,
+      totalDuration,
+    });
+
+    res.json({ parts, totalDuration, status: 200 });
   } catch (error) {
-    logger.error(`Error retrieving all parts: ${error}`);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving all parts." });
+    logger.error(`Error retrieving parts with course ID: ${error}`);
+    res.status(500).json({
+      error: "An error occurred while retrieving parts with course ID.",
+    });
   }
 }
+
 async function getAllPartsWithChapterId(req, res) {
   try {
-    const chapterId = req.params.chapterId;
+    const { chapterId, courseId } = req.params;
 
     const partRepository = getManager().getRepository(Part);
     const parts = await partRepository.find({
@@ -206,29 +276,92 @@ async function getAllPartsWithChapterId(req, res) {
   }
 }
 
-async function getVideoDuration(videoPath) {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(videoPath, (err, metadata) => {
-      if (err) {
-        console.error(`Error getting video duration: ${err}`);
-        reject(err);
-      } else {
-        const durationInSeconds = metadata.format.duration;
-        const formattedDuration = formatVideoDuration(durationInSeconds);
-        resolve(formattedDuration);
-      }
+// async function createSecureLink(originalLink) {
+//   const token = crypto.randomBytes(16).toString("hex");
+
+//   const secureLinkRepository = getManager().getRepository(SecureLink);
+//   const secureLink = secureLinkRepository.create({
+//     originalLink,
+//     token,
+//   });
+
+//   await secureLinkRepository.save(secureLink);
+
+//   return token;
+// }
+async function getAllChaptersAndParts(req, res) {
+  try {
+    const { courseId } = req.params;
+
+    const chapters = await getManager()
+      .createQueryBuilder(Chapter, "chapter")
+      .leftJoin("chapter.parts", "part")
+      .select([
+        "chapter.id",
+        "chapter.title",
+        "chapter.orderIndex",
+        "chapter.courseId",
+      ])
+      .addSelect([
+        "part.id",
+        "part.title",
+        "part.description",
+        "part.videoDuration",
+        "part.isFree",
+        "part.orderIndex",
+      ])
+      .where("chapter.courseId = :courseId", { courseId })
+      .orderBy("chapter.orderIndex", "ASC")
+      .addOrderBy("part.orderIndex", "ASC")
+      .getMany();
+
+    if (chapters.length === 0) {
+      logger.warn("No chapters found for the specified course ID", {
+        courseId,
+      });
+
+      return res.status(404).json({ error: "فصلی یافت نشد برای دوره" });
+    }
+
+    res.json({ chapters, status: 200 });
+  } catch (error) {
+    logger.error(
+      `Error retrieving chapters and parts with course ID: ${error}`
+    );
+
+    res.status(500).json({
+      error:
+        "An error occurred while retrieving chapters and parts with course ID.",
     });
-  });
+  }
 }
 
-function formatVideoDuration(durationInSeconds) {
-  const hours = Math.floor(durationInSeconds / 3600);
-  const minutes = Math.floor((durationInSeconds % 3600) / 60);
-  const seconds = Math.floor(durationInSeconds % 60);
+async function getVideoPathWithPartId(req, res) {
+  try {
+    const { partId } = req.params;
 
-  return `${hours}:${String(minutes).padStart(2, "0")}:${String(
-    seconds
-  ).padStart(2, "0")}`;
+    const partRepository = getManager().getRepository(Part);
+
+    const part = await partRepository.findOne({
+      where: { id: partId },
+    });
+
+    if (!part) {
+      logger.warn("Part not found for the specified part ID", { partId });
+      return res.status(404).json({ error: "پارت یافت نشد", status: 404 });
+    }
+
+    if (part.isFree) {
+      return res.status(200).json({ videoPath: part.videoPath, status: 200 });
+    } else {
+      return res.status(403).json({ error: "شما دسترسی ندارید", status: 403 });
+    }
+  } catch (error) {
+    logger.error(`Error retrieving video path with part ID: ${error}`);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
 }
 
 module.exports = {
@@ -236,6 +369,8 @@ module.exports = {
   editPart,
   editPartWithChapterId,
   deletePart,
-  gatAllPart,
+  gatAllPartwithCourseId,
   getAllPartsWithChapterId,
+  getAllChaptersAndParts,
+  getVideoPathWithPartId,
 };

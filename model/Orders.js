@@ -24,6 +24,18 @@ const Order = new EntitySchema({
     totalPrice: {
       type: "int",
     },
+    paymentType: {
+      type: "enum",
+      enum: ["online", "cbc", "hand"], //zarinpal, cart by cart, hand
+      nullable: true,
+      default: "online",
+    },
+    gatewayPay: {
+      type: "enum",
+      enum: ["zarinpal", "payping"],
+      default: "zarinpal",
+      nullable:true
+    },
     refId: {
       type: "varchar",
       nullable: true,
@@ -40,9 +52,9 @@ const Order = new EntitySchema({
 
       joinColumn: { name: "userPhone", referencedColumnName: "phone" },
     },
-    orderItems: {
+    enrollments: {
       type: "one-to-many",
-      target: "OrderItem",
+      target: "Enrollment",
       inverseSide: "order",
     },
   },

@@ -1,10 +1,10 @@
-//model/orderItem.js
+//model/Enrollment.js
 
 const { EntitySchema } = require("typeorm");
 
-const OrderItem = new EntitySchema({
-  name: "OrderItem",
-  tableName: "orderItems",
+const Enrollment = new EntitySchema({
+  name: "Enrollment",
+  tableName: "enrollments",
   columns: {
     id: {
       type: "int",
@@ -32,10 +32,10 @@ const OrderItem = new EntitySchema({
     course: {
       target: "Course",
       type: "many-to-one",
-      inverseSide: "orderItems",
+      inverseSide: "enrollments",
       joinColumn: { name: "courseId", referencedColumnName: "id" },
     },
   },
 });
 
-module.exports = OrderItem;
+module.exports = Enrollment;
