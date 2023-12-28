@@ -1,5 +1,5 @@
 const ApiVideoClient = require("@api.video/nodejs-client");
-
+const logger = require("../services/logger")
 async function getVideoDurationFromApi(videoPath) {
   try {
     const client = new ApiVideoClient({
@@ -8,11 +8,10 @@ async function getVideoDurationFromApi(videoPath) {
     const videoId = videoPath;
     const result = await client.videos.getStatus(videoId);
     const response = result.encoding.metadata.duration;
-    console.log(response);
-    //console.log(Object.keys(response));
     return response;
   } catch (error) {
-    console.error(`Error getting video duration from API: ${error.message}`);
+    logger.error("Error getting video duration from API", error);
+    console.error(`>>>> Error getting video duration from API: ${error.message}`);
     console.error("Full error response:", error.response.data);
     throw error;
   }

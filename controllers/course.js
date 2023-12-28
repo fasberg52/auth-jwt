@@ -99,7 +99,7 @@ async function getAllCourse(req, res) {
     // }
   } catch (error) {
     //console.log(error);
-    logger.error("Error in getAllCourse", { error });
+    logger.error("Error in getAllCourse",  error );
 
     res
       .status(500)
@@ -320,8 +320,8 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany()
-      .execute()
-  
+      .execute();
+
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
       const total = totalCount;

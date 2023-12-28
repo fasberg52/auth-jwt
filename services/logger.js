@@ -24,8 +24,8 @@ logger.error = (message, error) => {
   if (error) {
     const stack = error.stack || "";
     const stackLines = stack.split("\n").slice(1); 
-    const stackInfo = stackLines.map((line) => line.trim()).join("\n");
-    message = `${message}\n${stackInfo}`;
+    const stackInfo = stackLines.reduce((acc, line) => acc + line.trim() + "\n", "");
+   message = `${message}\n${stackInfo}`;
   }
 
   logger.log({ level: "error", message, error });

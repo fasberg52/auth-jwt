@@ -174,3 +174,59 @@ Error splitting the argument list: Option not found
 2023-12-28T08:54:05.002Z error: Error in getCourseById for courseId my-course
  
 [object Object]
+2023-12-28T08:57:54.119Z error: Error in getAllCourse
+ 
+[object Object]
+2023-12-28T08:58:33.411Z error: Error in getAllCourse
+at PostgresQueryRunner.query (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\driver\postgres\PostgresQueryRunner.js:211:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async SelectQueryBuilder.loadRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2183:25)
+at async SelectQueryBuilder.getRawMany (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:646:29)
+at async SelectQueryBuilder.executeEntitiesAndRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:1973:26)
+at async SelectQueryBuilder.getManyAndCount (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:850:36)
+at async getAllCourse (E:\Desktop\postgress\controllers\course.js:51:35) 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:00:13.901Z error: Error in getAllCourse
+at PostgresQueryRunner.query (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\driver\postgres\PostgresQueryRunner.js:211:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async SelectQueryBuilder.loadRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2183:25)
+at async SelectQueryBuilder.getRawMany (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:646:29)
+at async SelectQueryBuilder.executeEntitiesAndRawResults (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:1973:26)
+at async SelectQueryBuilder.getManyAndCount (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:850:36)
+at async getAllCourse (E:\Desktop\postgress\controllers\course.js:51:35)
+ 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:00:55.171Z error: Error in getAllCourse 
+QueryFailedError: column course.idasd does not exist
+2023-12-28T09:01:32.102Z error: Error in getAllCourse
+ 
+[object Object]
+2023-12-28T09:04:06.757Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:05:11.567Z error: Error creating part: ReferenceError: logger is not defined 
+2023-12-28T09:05:43.539Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:05:43.546Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:06:40.600Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:06:40.602Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-28T09:08:22.306Z error: Error getting video duration from API
+at new ApiVideoError (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\ApiVideoError.js:8:22)
+at HttpClient.call (E:\Desktop\postgress\node_modules\.pnpm\@api.video+nodejs-client@2.5.5\node_modules\@api.video\nodejs-client\lib\HttpClient.js:102:19)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+at async getVideoDurationFromApi (E:\Desktop\postgress\services\video.api.js:9:20)
+at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
+ 
+Error: The requested resource could not be found.
+2023-12-28T09:08:22.312Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
