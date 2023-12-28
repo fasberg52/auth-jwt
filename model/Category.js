@@ -11,6 +11,7 @@ const Category = new EntitySchema({
     },
     name: {
       type: "varchar",
+      default: null,
     },
     description: {
       type: "varchar",
