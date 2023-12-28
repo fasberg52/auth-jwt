@@ -140,6 +140,7 @@ async function signUpUsers(req, res) {
       token,
       username: user.phone,
       register: true,
+      status: 200,
     }); // Sending a response for success  }
   } catch (error) {
     console.log(error);
