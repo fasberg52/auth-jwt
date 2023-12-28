@@ -1,5 +1,6 @@
 const courseController = require("../../controllers/course");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
+const { validToken } = require("../../middleware/ajvMiddlerware");
 const { checkAccessEnroll } = require("../../middleware/checkAccessEnroll");
 const { checkRole } = require("../../middleware/checkAccess");
 const secureLink = require("../../controllers/secureLink");
@@ -10,13 +11,13 @@ const router = express.Router();
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
 
 router.post(
-  "/my-courses",
+  " /my-course",
   jwtAuthMiddleware,
+ // validToken,
   courseController.getCourseUserWithToken
 );
 
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
-
 
 router.get("/play/:secureLink", secureLink.createSecureLink);
 router.get(

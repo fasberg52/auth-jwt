@@ -7,7 +7,19 @@ const {
   partValidator,
   courseValidator,
   updateUserValidator,
+  tokenValidator,
 } = require("../utils/ajv");
+
+function validToken(req, res, next) {
+  const valid = tokenValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: tokenValidator.errors[0].message,
+    });
+  }
+}
 
 function validUpdateUser(req, res, next) {
   const valid = updateUserValidator(req.body);
@@ -83,5 +95,6 @@ module.exports = {
   validParts,
   validCourse,
   validUpdateUser,
+  validToken,
   // Other validation functions
 };

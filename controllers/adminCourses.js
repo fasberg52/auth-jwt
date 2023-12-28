@@ -210,9 +210,7 @@ async function getAdminCourseById(req, res) {
       res.status(404).json({ error: "Course not found." });
     }
   } catch (error) {
-    // logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
-    //   error,
-    // });
+     logger.error(`Error in getAdminCourseById  ${error}`);
 
     console.log(`>>>>${error}`);
     res

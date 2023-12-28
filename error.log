@@ -150,3 +150,27 @@ Error splitting the argument list: Option not found
 2023-12-25T12:34:13.772Z error: Error in getCourseUserWithToken: TypeError: enrolledCourses.map is not a function
 2023-12-25T12:38:56.730Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
 2023-12-27T10:23:23.680Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data')
+2023-12-28T05:17:08.849Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-28T05:48:13.942Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:03:15.622Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:04:48.873Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:21:53.198Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:22:20.893Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:23:18.850Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:25:19.463Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:25:50.700Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:26:00.570Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:37:20.979Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:37:44.229Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:43:07.820Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:45:52.041Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:46:39.223Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:47:00.402Z error: Error in getCourseUserWithToken: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+2023-12-28T07:48:27.753Z error: Error in getCourseById for courseId my-courses
+2023-12-28T07:49:23.806Z error: Error in getCourseById for courseId my-coursessss
+2023-12-28T08:47:12.368Z error: Error in getCourseById for courseId my-course
+ 
+[object Object]
+2023-12-28T08:54:05.002Z error: Error in getCourseById for courseId my-course
+ 
+[object Object]

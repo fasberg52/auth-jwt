@@ -276,6 +276,7 @@ async function getCourseById(req, res) {
 async function getCourseUserWithToken(req, res) {
   try {
     const { token } = req.body;
+    console.log(">>>>>>>>>>> token is here");
     if (!token) {
       res.status(400).json("توکن وارد شده صحیح نیست");
     }
@@ -318,8 +319,9 @@ async function getCourseUserWithToken(req, res) {
     const enrolledCourses = await enrolledCoursesQuery
       .skip(skip)
       .take(take)
-      .getRawMany();
-
+      .getRawMany()
+      .execute()
+  
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
       const total = totalCount;

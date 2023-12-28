@@ -1,5 +1,7 @@
 const Users = require("../model/users");
 const Order = require("../model/Orders");
+const Enrollment = require("../model/Enrollment");
+const Cart = require("../model/Cart")
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
@@ -201,8 +203,14 @@ async function deleteUsers(req, res) {
       });
 
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({ error: "کاربر پیدا نشد" });
       }
+      await transactionalEntityManager
+        .createQueryBuilder()
+        .update(Cart)
+        .set({ user: null })
+        .where("user.phone = :phone", { phone: phone })
+        .execute();
 
       await transactionalEntityManager
         .createQueryBuilder()
@@ -211,10 +219,9 @@ async function deleteUsers(req, res) {
         .where("user.phone = :phone", { phone: phone })
         .execute();
 
-      // Delete the user
       await transactionalEntityManager.remove(Users, user);
 
-      return res.json({ message: "User deleted successfully" });
+      return res.json({ message: "کاربر با موفقیت پاک شد" });
     });
   } catch (error) {
     console.log(error);

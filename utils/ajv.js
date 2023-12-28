@@ -128,6 +128,19 @@ const updateUserSchema = {
   },
 };
 
+const checkToken = {
+  type: "object",
+  properties: {
+    token: { type: "string" },
+  },
+  required: ["token"],
+  errorMessage: {
+    properties: {
+      title: "شما باید توکن را وارد کنید",
+    },
+  },
+};
+const tokenValidator = ajv.compile(checkToken);
 const phoneValidator = ajv.compile(phoneSchema);
 const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
 const signUpValidator = ajv.compile(signUpSchema);
@@ -141,4 +154,5 @@ module.exports = {
   partValidator,
   courseValidator,
   updateUserValidator,
+  tokenValidator,
 };
