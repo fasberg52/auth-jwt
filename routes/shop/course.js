@@ -11,9 +11,9 @@ const router = express.Router();
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
 
 router.post(
-  " /my-course",
+  "/my-courses",
   jwtAuthMiddleware,
- // validToken,
+  validToken,
   courseController.getCourseUserWithToken
 );
 

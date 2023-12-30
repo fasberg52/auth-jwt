@@ -320,7 +320,6 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany()
-      .execute();
 
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {

@@ -230,3 +230,8 @@ at async createPart (E:\Desktop\postgress\controllers\part.js:33:23)
  
 Error: The requested resource could not be found.
 2023-12-28T09:08:22.312Z error: Error creating part: TypeError: Cannot read properties of undefined (reading 'data') 
+2023-12-30T06:39:26.012Z error: Error in getCourseById for courseId my-courses
+ 
+[object Object]
+2023-12-30T06:41:57.630Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
+2023-12-30T06:41:59.719Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
