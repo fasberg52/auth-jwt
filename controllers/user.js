@@ -146,14 +146,46 @@ async function editDataUser(req, res) {
   }
 }
 
-function existPanel(req, res) {
-  const { isVerified } = req.body;
+async function exitPanel(req, res) {
+  try {
+    const { isVerified } = req.body;
+    const otpRepository = getManager().getRepository(OTP);
 
+    const token = req.body.token;
+    console.log("Received Token:", token);
 
+    if (!token) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
+    }
+
+    const decodedToken = verifyAndDecodeToken(token);
+    console.log("Decoded Token:", decodedToken);
+
+    if (!decodedToken || !decodedToken.phone) {
+      return res.status(401).json({ error: "توکن اشتباه است" });
+    }
+
+    const phone = decodedToken.phone;
+
+    const existingUser = await otpRepository.findOne({
+      where: { phone },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "کاربری پیدا نشد" });
+    }
+
+    if (isVerified === "false") {
+      await otpRepository.save(existingUser);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
   editDataUser,
-  existPanel
+  exitPanel,
 };

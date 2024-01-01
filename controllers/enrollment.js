@@ -78,7 +78,9 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
         .status(401)
         .json({ error: "شما در این دوره ثبت نام نکرده اید" });
     }
+    console.log(enrollment.order.id);
 
+    console.log(enrollment.order.orderStatus);
     if (enrollment.order.orderStatus !== "success") {
       return res.status(403).json({ error: "شما دوره نخریده اید" });
     }
