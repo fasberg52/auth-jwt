@@ -100,14 +100,11 @@ async function editDataUser(req, res) {
     const token = req.body.token;
     console.log("Received Token:", token);
 
-    if (!token) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
+  
     const decodedToken = verifyAndDecodeToken(token);
     console.log("Decoded Token:", decodedToken);
 
-    if (!decodedToken || !decodedToken.phone) {
+    if (!decodedToken || !decodedToken.phone || !token) {
       return res.status(401).json({ error: "توکن اشتباه است" });
     }
 
@@ -146,7 +143,7 @@ async function editDataUser(req, res) {
   }
 }
 
-async function exitPanel(req, res) {
+async function logoutPanel(req, res) {
   try {
     const { isVerified } = req.body;
     const otpRepository = getManager().getRepository(OTP);
@@ -178,6 +175,10 @@ async function exitPanel(req, res) {
     if (isVerified === "false") {
       await otpRepository.save(existingUser);
     }
+
+    return res
+      .status(200)
+      .json({ message: "کد اعتبارسنجی باطل شد", status: 200 });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -187,5 +188,5 @@ module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
   editDataUser,
-  exitPanel,
+  logoutPanel,
 };
