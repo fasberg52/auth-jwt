@@ -138,22 +138,11 @@ async function editDataUser(req, res) {
     if (req.body.grade) {
       user.grade = req.body.grade;
     }
-
+    user.updatedAt = new Date();
+    delete user.password;
     await userRepository.save(user);
 
-    const response = {
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone,
-      role: user.roles,
-      imageUrl: user.imageUrl,
-      grade: user.grade,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
-
-    res.status(200).json({ message: "با موفقیت بروز شد", response, status: 200 });
+    res.status(200).json({ message: "با موفقیت بروز شد", user, status: 200 });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });

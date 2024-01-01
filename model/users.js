@@ -40,6 +40,11 @@ const User = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
+    updatedAt: {
+      type: "timestamp",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: true,
+    },
     lastLogin: {
       type: "timestamp",
       nullable: true,
