@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.post("/profile", jwtAuthMiddleware, getUserDataWithToken);
 router.post("/orders", jwtAuthMiddleware, getAllOrderUser);
-router.patch("/profile", jwtAuthMiddleware, editDataUser);
-router.patch("/logout", jwtAuthMiddleware, logoutPanel);
+router.put("/profile", jwtAuthMiddleware, editDataUser);
+router.post("/logout", jwtAuthMiddleware, logoutPanel);
 module.exports = router;

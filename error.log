@@ -235,3 +235,4 @@ Error: The requested resource could not be found.
 [object Object]
 2023-12-30T06:41:57.630Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
 2023-12-30T06:41:59.719Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
+2024-01-01T12:07:46.135Z error: Error retrieving parts with course ID: ReferenceError: calculateTotalDuration is not defined 

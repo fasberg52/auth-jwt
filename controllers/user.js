@@ -39,11 +39,9 @@ async function getUserDataWithToken(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        createdAt: moment(existingUser.createdAt).format("jYYYY/jMMMM/jDD"),
-        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMMMM/jDD"),
-        lastLogin: existingUser.lastLogin
-          ? moment(existingUser.lastLogin).format("jYYYY/jMMMM/jDD")
-          : null,
+        createdAt: existingUser.createdAt,
+        updatedAt: existingUser.updatedAt,
+        lastLogin: existingUser.lastLogin ? existingUser.lastLogin : null,
       };
 
       res.json(userWithJalaliDates);
@@ -100,7 +98,6 @@ async function editDataUser(req, res) {
     const token = req.body.token;
     console.log("Received Token:", token);
 
-  
     const decodedToken = verifyAndDecodeToken(token);
     console.log("Decoded Token:", decodedToken);
 
@@ -145,15 +142,14 @@ async function editDataUser(req, res) {
 
 async function logoutPanel(req, res) {
   try {
-    const { isVerified } = req.body;
-    const otpRepository = getManager().getRepository(OTP);
+    const authHeader = req.header("Authorization");
 
-    const token = req.body.token;
-    console.log("Received Token:", token);
-
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ error: "توکن وجود ندارد" });
     }
+
+    const token = authHeader.split(" ")[1];
+    console.log("Received Token:", token);
 
     const decodedToken = verifyAndDecodeToken(token);
     console.log("Decoded Token:", decodedToken);
@@ -164,26 +160,26 @@ async function logoutPanel(req, res) {
 
     const phone = decodedToken.phone;
 
-    const existingUser = await otpRepository.findOne({
-      where: { phone },
+    const otpRepository = getManager().getRepository(OTP);
+    const existingOTP = await otpRepository.findOne({
+      where: { phone: phone },
     });
 
-    if (!existingUser) {
+    if (!existingOTP) {
       return res.status(404).json({ error: "کاربری پیدا نشد" });
     }
 
-    if (isVerified === "false") {
-      await otpRepository.save(existingUser);
-    }
+    await otpRepository.remove(existingOTP);
 
     return res
       .status(200)
-      .json({ message: "کد اعتبارسنجی باطل شد", status: 200 });
+      .json({ message: "کاربر با موفقیت خارج شد", status: 200 });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
