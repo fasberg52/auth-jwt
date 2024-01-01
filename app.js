@@ -27,7 +27,13 @@ async function main() {
     app.use("/app/uploads", express.static("uploads"));
     app.use("/public", express.static("public"));
 
-    app.use(cors());
+    app.use(
+      cors({
+        origin: "*",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
+      })
+    );
 
     routerConfig(app);
     app.listen(process.env.PORT, () => {

@@ -99,7 +99,7 @@ async function getAllCourse(req, res) {
     // }
   } catch (error) {
     //console.log(error);
-    logger.error("Error in getAllCourse",  error );
+    logger.error("Error in getAllCourse", error);
 
     res
       .status(500)
@@ -319,7 +319,7 @@ async function getCourseUserWithToken(req, res) {
     const enrolledCourses = await enrolledCoursesQuery
       .skip(skip)
       .take(take)
-      .getRawMany()
+      .getRawMany();
 
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
