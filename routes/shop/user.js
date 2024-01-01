@@ -6,6 +6,6 @@ const {
 } = require("../../controllers/user");
 const router = express.Router();
 
-router.get("/profile", jwtAuthMiddleware, getUserDataWithToken);
+router.post("/profile", jwtAuthMiddleware, getUserDataWithToken);
 router.post("/orders", jwtAuthMiddleware, getAllOrderUser);
 module.exports = router;
