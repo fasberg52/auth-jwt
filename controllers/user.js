@@ -1,12 +1,9 @@
 const User = require("../model/users");
-const Order = require("../model/Orders");
-
-const jwt = require("jsonwebtoken");
+const OTP = require("../model/OTP");
 
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
-const { convertToJalaliDate } = require("../services/jalaliService");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
@@ -148,8 +145,15 @@ async function editDataUser(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+function existPanel(req, res) {
+  const { isVerified } = req.body;
+
+
+}
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
   editDataUser,
+  existPanel
 };
