@@ -24,10 +24,16 @@ async function createCartItem(req, res) {
       .innerJoin("order.user", "user")
       .where("course.id = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
       .getCount();
+
     if (isEnrolled) {
-      res.status(400).json({ error: "این دوره در سبد خرید موجود است", status: 400 });
+      return res.status(400).json({
+        error: "شما قبلا ثبت نام کرده اید",
+        status: 400,
+      });
     }
+
     let userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
@@ -66,17 +72,18 @@ async function createCartItem(req, res) {
       });
       await cartItemsRepository.save(newCartItem);
       //console.log(newCartItem);
-      res.status(201).json({
+      return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,
         status: 201,
       });
     }
   } catch (error) {
-    //console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
+
 async function getUserCart(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -90,7 +97,9 @@ async function getUserCart(req, res) {
     });
 
     if (!userCart) {
-      return res.status(404).json({ error: "Cart not found for the user" });
+      return res
+        .status(200)
+        .json({ cartData: [], totalCartPrice: 0, status: 200 });
     }
 
     const cartItems = await cartItemsRepository

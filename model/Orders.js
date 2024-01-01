@@ -34,7 +34,7 @@ const Order = new EntitySchema({
       type: "enum",
       enum: ["zarinpal", "payping"],
       default: "zarinpal",
-      nullable:true
+      nullable: true,
     },
     refId: {
       type: "varchar",

@@ -118,7 +118,7 @@ async function createPayment(req, res) {
   } catch (error) {
     console.error(`createPayment error: ${error}`);
 
-    return res.status(500).json(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -262,6 +262,10 @@ async function verifyPayment(req, res) {
             .status(400)
             .json({ error: "Invalid order or order is not pending" });
         }
+
+        await clearUserCart(req.query.Phone);
+
+        
         existingOrder.userPhone = phone;
         existingOrder.totalPrice = amountInTomans;
         existingOrder.orderStatus = "success";
@@ -271,8 +275,6 @@ async function verifyPayment(req, res) {
         console.log(`existingOrder >> ${existingOrder}`);
         console.log(`Order updated successfully. Order ID: ${updateOrder.id}`);
 
-        // Clear the user's shopping cart (You can implement this function)
-        //await clearUserCart(userPhone);
         return res.render("payment", {
           orderStatus: "success",
           updateOrder,
@@ -298,10 +300,11 @@ async function verifyPayment(req, res) {
       existingOrder.userPhone = phone;
       existingOrder.totalPrice = amountInTomans;
       existingOrder.orderStatus = "cancelled";
-      const updateOrder = await orderRepository.save(existingOrder);
-      console.log("phone : " + phone);
 
-      console.log(`Order created successfully. Order ID: ${updateOrder.id}`);
+      const updateOrder = await orderRepository.save(existingOrder);
+
+      //await clearUserCart(req.query.Phone);
+
       return res.render("payment", {
         orderStatus: "cancelled",
         error: "پرداخت انجام شده از طرف سرویس دهنده تایید نشد",
@@ -490,7 +493,6 @@ module.exports = {
   checkOutCart,
   createPayment,
   verifyPayment,
-  clearUserCart,
   getAllOrders,
   getOrderById,
   createOrder,

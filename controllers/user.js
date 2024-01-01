@@ -1,12 +1,9 @@
 const User = require("../model/users");
-const Order = require("../model/Orders");
-
-const jwt = require("jsonwebtoken");
+const OTP = require("../model/OTP");
 
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
-const { convertToJalaliDate } = require("../services/jalaliService");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
@@ -42,11 +39,9 @@ async function getUserDataWithToken(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        createdAt: moment(existingUser.createdAt).format("jYYYY/jMMMM/jDD"),
-        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMMMM/jDD"),
-        lastLogin: existingUser.lastLogin
-          ? moment(existingUser.lastLogin).format("jYYYY/jMMMM/jDD")
-          : null,
+        createdAt: existingUser.createdAt,
+        updatedAt: existingUser.updatedAt,
+        lastLogin: existingUser.lastLogin ? existingUser.lastLogin : null,
       };
 
       res.json(userWithJalaliDates);
@@ -88,15 +83,106 @@ async function getAllOrderUser(req, res) {
     if (!user) {
       return res.status(404).json({ error: "کاربری پیدا نشد" });
     }
- 
-    return res.status(200).json({ orders : user.orders, status: 200 });
+
+    return res.status(200).json({ orders: user.orders, status: 200 });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
+async function editDataUser(req, res) {
+  try {
+    const userRepository = getManager().getRepository(User);
+
+    const token = req.body.token;
+    console.log("Received Token:", token);
+
+    const decodedToken = verifyAndDecodeToken(token);
+    console.log("Decoded Token:", decodedToken);
+
+    if (!decodedToken || !decodedToken.phone || !token) {
+      return res.status(401).json({ error: "توکن اشتباه است" });
+    }
+
+    const phone = decodedToken.phone;
+
+    const user = await userRepository.findOne({
+      where: { phone },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "کاربری پیدا نشد" });
+    }
+
+    if (req.body.firstName) {
+      user.firstName = req.body.firstName;
+    }
+
+    if (req.body.lastName) {
+      user.lastName = req.body.lastName;
+    }
+    if (req.body.imageUrl) {
+      user.imageUrl = req.body.imageUrl;
+    }
+
+    if (req.body.grade) {
+      user.grade = req.body.grade;
+    }
+    user.updatedAt = new Date();
+    delete user.password;
+    await userRepository.save(user);
+
+    res.status(200).json({ message: "با موفقیت بروز شد", user, status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function logoutPanel(req, res) {
+  try {
+    const authHeader = req.header("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    console.log("Received Token:", token);
+
+    const decodedToken = verifyAndDecodeToken(token);
+    console.log("Decoded Token:", decodedToken);
+
+    if (!decodedToken || !decodedToken.phone) {
+      return res.status(401).json({ error: "توکن اشتباه است" });
+    }
+
+    const phone = decodedToken.phone;
+
+    const otpRepository = getManager().getRepository(OTP);
+    const existingOTP = await otpRepository.findOne({
+      where: { phone: phone },
+    });
+
+    if (!existingOTP) {
+      return res.status(404).json({ error: "کاربری پیدا نشد" });
+    }
+
+    await otpRepository.remove(existingOTP);
+
+    return res
+      .status(200)
+      .json({ message: "کاربر با موفقیت خارج شد", status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
+  editDataUser,
+  logoutPanel,
 };
