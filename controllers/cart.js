@@ -24,6 +24,7 @@ async function createCartItem(req, res) {
       .innerJoin("order.user", "user")
       .where("course.id = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
       .getCount();
 
     if (isEnrolled) {
@@ -96,7 +97,9 @@ async function getUserCart(req, res) {
     });
 
     if (!userCart) {
-      return res.status(404).json({ error: "Cart not found for the user" });
+      return res
+        .status(200)
+        .json({ cartData: [], totalCartPrice: 0, status: 200 });
     }
 
     const cartItems = await cartItemsRepository

@@ -265,6 +265,7 @@ async function verifyPayment(req, res) {
 
         await clearUserCart(req.query.Phone);
 
+        
         existingOrder.userPhone = phone;
         existingOrder.totalPrice = amountInTomans;
         existingOrder.orderStatus = "success";
@@ -296,16 +297,13 @@ async function verifyPayment(req, res) {
           .status(400)
           .json({ error: "Invalid order or order is not pending" });
       }
-
-
       existingOrder.userPhone = phone;
       existingOrder.totalPrice = amountInTomans;
       existingOrder.orderStatus = "cancelled";
+
       const updateOrder = await orderRepository.save(existingOrder);
 
-
-      await clearUserCart(req.query.Phone);
-
+      //await clearUserCart(req.query.Phone);
 
       return res.render("payment", {
         orderStatus: "cancelled",
