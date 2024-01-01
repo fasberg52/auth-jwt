@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const path = require("path");
 const bodyParser = require("body-parser");
+const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
 const app = express();
 app.disable("x-powered-by");
@@ -26,7 +27,7 @@ async function main() {
     app.use(express.json());
     app.use("/app/uploads", express.static("uploads"));
     app.use("/public", express.static("public"));
-
+    app.use(loggerMiddleware);
     app.use(cors());
 
     routerConfig(app);

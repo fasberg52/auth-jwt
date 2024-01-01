@@ -1,3 +1,4 @@
+//controllers/course.js
 const Courses = require("../model/Course");
 const jalaliMoment = require("jalali-moment");
 const { getManager } = require("typeorm");
@@ -99,7 +100,7 @@ async function getAllCourse(req, res) {
     // }
   } catch (error) {
     //console.log(error);
-    logger.error("Error in getAllCourse",  error );
+    logger.error("Error in getAllCourse", error);
 
     res
       .status(500)
