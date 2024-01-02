@@ -9,7 +9,7 @@ function createToken(user) {
   });
   return token;
 }
-
+  
  function sendOTPSMS(phone, otp) {
   const OtpApi = Kavenegar.KavenegarApi({
     apikey: process.env.KAVENEGAR_API_KEY,
