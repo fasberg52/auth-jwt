@@ -27,7 +27,7 @@ async function main() {
     app.use(express.json());
     app.use("/app/uploads", express.static("uploads"));
     app.use("/public", express.static("public"));
-
+    app.use(loggerMiddleware);
     app.use(
       cors({
         origin: "*",
