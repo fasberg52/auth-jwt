@@ -66,6 +66,8 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
       .innerJoinAndSelect("order.user", "user")
       .where("enrollment.courseId = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("order.orderStatus = 'success'") // Add this line to filter by successful orders
+      //.orderBy("order.createdAt", "DESC") // Order by creation date in descending order
       .getOne();
 
     if (
