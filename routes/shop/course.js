@@ -1,8 +1,7 @@
 const courseController = require("../../controllers/course");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { validToken } = require("../../middleware/ajvMiddlerware");
-const { checkAccessEnroll } = require("../../middleware/checkAccessEnroll");
-const { checkRole } = require("../../middleware/checkAccess");
+
 const secureLink = require("../../controllers/secureLink");
 const enrollmentController = require("../../controllers/enrollment");
 const express = require("express");
