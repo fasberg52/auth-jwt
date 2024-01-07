@@ -1,0 +1,32 @@
+###
+POST http://localhost:3000/auth/otp
+Content-Type: application/json
+
+#input
+{
+	"phone": "09218913541"
+}
+
+#output
+
+# {
+#   "message": "رمز یکبار مصرف ارسال شد",
+#   "registred": false,
+#   "login": true
+# }
+
+###
+POST http://localhost:3000/auth/verify/otp
+Content-Type: application/json
+
+{
+	"phone": "09218913541",
+	"otp": "51308"
+}
+
+# error handling
+
+# 401 Unauthorized
+# {
+#   "error": "رمز یکبار مصرف اشتباه است"
+# }
