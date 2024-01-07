@@ -1,3 +1,4 @@
+//controllers/course.js
 const Courses = require("../model/Course");
 const jalaliMoment = require("jalali-moment");
 const { getManager } = require("typeorm");
