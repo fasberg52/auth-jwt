@@ -29,14 +29,15 @@ async function getVideoPathAfterEnroll(req, res) {
       !enrollment ||
       !enrollment.order ||
       !enrollment.order.user ||
-      !enrollment.order.user.phone
+      !enrollment.order.user.phone ||
+      enrollment.order.orderStatus !== "success"
     ) {
-      return res.status(401).json({ error: "شما ثبت نام نکرده اید" });
+      return res.status(401).json({ error: "شما این دوره را نخریده اید" });
     }
 
-    if (enrollment.order.orderStatus !== "success") {
-      return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
-    }
+    // if (enrollment.order.orderStatus !== "success") {
+    //   return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
+    // }
 
     const videoPaths = await partRepository
       .createQueryBuilder("part")
