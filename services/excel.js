@@ -1,8 +1,12 @@
-const ExcelJS = require('exceljs');
-
+const ExcelJS = require("exceljs");
+const User = require("../model/users");
+const { getManager } = require("typeorm");
+const logger = require("../services/logger");
 async function exportUsersToExcel(req, res) {
   try {
-    const userRepository = getManager().getRepository(Users);
+    const month = req.query.month || "01";
+
+    const userRepository = getManager().getRepository(User);
 
     const queryBuilder = userRepository
       .createQueryBuilder("user")
@@ -14,40 +18,46 @@ async function exportUsersToExcel(req, res) {
         "user.roles",
         "user.grade",
       ])
+      .where(`EXTRACT(MONTH FROM user.createdAt) = :month`, { month })
+
       .orderBy("user.id", "DESC");
 
     const users = await queryBuilder.getMany();
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Users');
+    const worksheet = workbook.addWorksheet("Users");
 
-    // Add headers
-    worksheet.addRow(['ID', 'First Name', 'Last Name', 'Phone', 'Roles', 'Grade']);
+    worksheet.addRow([
+      "آیدی",
+      "نام",
+      "نام خانوادگی",
+      "شماره تماس",
+      "پایه تحصیلی",
+    ]);
 
-    // Add data
-    users.forEach(user => {
+    users.forEach((user) => {
       worksheet.addRow([
         user.id,
         user.firstName,
         user.lastName,
         user.phone,
-        user.roles,
         user.grade,
       ]);
     });
 
-    // Set content type and disposition for the response
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=users.xlsx');
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=users.xlsx");
 
-    // Write the workbook to the response
     await workbook.xlsx.write(res);
+
     res.end();
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "An error occurred while exporting users to Excel." });
+    logger.error({ message: "Error in Excel for users", error });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
-
-module.exports = {exportUsersToExcel}
+module.exports = { exportUsersToExcel };

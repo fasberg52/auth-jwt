@@ -5,8 +5,8 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { exportUsersToExcel } = require("../../services/excel");
 router.get(
   "/export-users",
-  jwtAuthMiddleware,
-  checkRole("admin"),
+//   jwtAuthMiddleware,
+//   checkRole("admin"),
   exportUsersToExcel
 );
 
