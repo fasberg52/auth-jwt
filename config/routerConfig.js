@@ -29,7 +29,7 @@ async function routerConfig(app) {
   app.use("/cache", cacheRouter);
   app.use("/", userRouter);
   app.use("/category", categoryRouter);
-  app.use("execel", excelRouter);
+  app.use("/execel", excelRouter);
 }
 
 module.exports = {
