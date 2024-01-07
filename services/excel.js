@@ -50,3 +50,4 @@ async function exportUsersToExcel(req, res) {
 }
 
 
+module.exports = {exportUsersToExcel}
