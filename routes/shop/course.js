@@ -21,7 +21,7 @@ router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 
 router.get("/play/:secureLink", secureLink.createSecureLink);
 router.get(
-  "/:courseId/part/:partId/access-enroll",
+  "/courseId/:courseId/part/:partId/access-enroll",
   jwtAuthMiddleware,
   enrollmentController.getVideoPathAfterEnrollWithPartId
 );
