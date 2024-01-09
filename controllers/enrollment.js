@@ -68,25 +68,26 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
       .where("enrollment.courseId = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
       .andWhere("order.orderStatus = 'success'")
-      //.orderBy("order.createdAt", "DESC") 
+      //.orderBy("order.createdAt", "DESC")
       .getOne();
 
     if (
       !enrollment ||
       !enrollment.order ||
       !enrollment.order.user ||
-      !enrollment.order.user.phone
+      !enrollment.order.user.phone ||
+      enrollment.order.orderStatus !== "success"
     ) {
       return res
-        .status(401)
+        .status(403)
         .json({ error: "شما در این دوره ثبت نام نکرده اید" });
     }
     console.log(enrollment.order.id);
 
-    console.log(enrollment.order.orderStatus);
-    if (enrollment.order.orderStatus !== "success") {
-      return res.status(403).json({ error: "شما دوره نخریده اید" });
-    }
+    // console.log(enrollment.order.orderStatus);
+    // if (enrollment.order.orderStatus !== "success") {
+    //   return res.status(403).json({ error: "شما دوره نخریده اید" });
+    // }
 
     const result = await partRepository
       .createQueryBuilder("part")
