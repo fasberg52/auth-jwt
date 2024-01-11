@@ -55,6 +55,14 @@ const Course = new EntitySchema({
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: true,
     },
+    backgroundColor: {
+      type: "text",
+      nullable: true,
+    },
+    backgroundImage: {
+      type: "text",
+      nullable: true,
+    },
   },
   relations: {
     category: {

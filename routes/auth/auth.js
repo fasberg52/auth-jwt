@@ -45,9 +45,19 @@ router.post("/validate-token", (req, res) => {
           .status(401)
           .json({ error: "Token is invalid or expired", result: false });
       }
+      const response = {
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
+        phone : decoded.phone,
+        imageUrl : decoded.imageUrl,
+        grade : decoded.grade,
+        createdAt: new Date(decoded.createdAt).getTime(),
+        lastLogin : new Date(decoded.lastLogin).getTime()
+
+      };
 
       // Token is valid, you can access the decoded payload
-      res.json({ message: "Token is valid", decoded, result: true });
+      res.json({ message: "Token is valid", response, result: true });
     });
   } catch (error) {
     console.log(error);
