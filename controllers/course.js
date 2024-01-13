@@ -73,11 +73,7 @@ async function getAllCourse(req, res) {
       .take(pageSize)
       .getManyAndCount();
 
-    const jalaliCourses = courses.map((course) => ({
-      ...course,
-      createdAt: convertToJalaliDate(course.createdAt),
-      lastModified: convertToJalaliDate(course.lastModified),
-    }));
+    
 
     // await cacheService.set(
     //   cacheKey,
@@ -94,8 +90,9 @@ async function getAllCourse(req, res) {
     });
 
     res.json({
-      courses: jalaliCourses,
+      courses,
       totalCount,
+      totalPages
     });
     // }
   } catch (error) {
@@ -233,6 +230,8 @@ async function getCourseById(req, res) {
         "course.discountPrice",
         "course.discountStart",
         "course.discountExpiration",
+        "course.backgroundColor",
+        "course.backgroundImage",
         "course.imageUrl",
         "course.bannerUrl",
         "course.videoUrl",

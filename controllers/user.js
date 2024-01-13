@@ -3,7 +3,6 @@ const OTP = require("../model/OTP");
 
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
-const moment = require("jalali-moment");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
@@ -31,20 +30,25 @@ async function getUserDataWithToken(req, res) {
     });
 
     if (existingUser) {
-      const userWithJalaliDates = {
-        id: existingUser.id,
-        firstName: existingUser.firstName,
-        lastName: existingUser.lastName,
-        phone: existingUser.phone,
-        role: existingUser.roles,
-        imageUrl: existingUser.imageUrl,
-        grade: existingUser.grade,
-        createdAt: existingUser.createdAt,
-        updatedAt: existingUser.updatedAt,
-        lastLogin: existingUser.lastLogin ? existingUser.lastLogin : null,
-      };
-
-      res.json(userWithJalaliDates);
+      if (existingUser) {
+        const user = {
+          id: existingUser.id,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          phone: existingUser.phone,
+          role: existingUser.roles,
+          imageUrl: existingUser.imageUrl,
+          grade: existingUser.grade,
+          createdAt: new Date(existingUser.createdAt).getTime(),
+          updatedAt: existingUser.updatedAt
+            ? new Date(existingUser.updatedAt).getTime()
+            : null,
+          lastLogin: existingUser.lastLogin
+            ? new Date(existingUser.lastLogin).getTime()
+            : null,
+        };
+        res.json(user);
+      }
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }

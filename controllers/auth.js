@@ -191,7 +191,7 @@ async function verifyWithOTP(req, res) {
     const isValidOTP = await verifyOTP(phone, otp);
 
     if (!isValidOTP) {
-      res.status(401).json({ error: "رمز یکبار مصرف اشتباه است" }); // Sending a response for invalid OTP
+      res.status(401).json({ error: "رمز یکبار مصرف اشتباه است" });
       return;
     }
 
@@ -221,7 +221,7 @@ async function verifyWithOTP(req, res) {
     }
 
     const token = createToken(user);
-    res.status(200).json({ token, username: user.phone }); // Sending a response for success
+    res.status(200).json({ token, username: user.phone }); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred while verifying OTP" });

@@ -1,13 +1,11 @@
 // controllers/upload.js
 
 const { getManager } = require("typeorm");
-const { createSubdirectory } = require("../utils/multerUtils"); // Adjust the path accordingly
+const { createSubdirectory } = require("../utils/multerUtils"); 
 const fs = require("fs");
 const path = require("path");
 const Upload = require("../model/Upload");
 const moment = require("jalali-moment");
-const { existsSync } = require("fs-extra");
-const { json } = require("body-parser");
 
 async function createUpload(req, res) {
   try {
@@ -30,7 +28,7 @@ async function createUpload(req, res) {
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
-      path: req.uploadFilename, // Use req.uploadFilename directly here
+      path: req.uploadFilename, 
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);

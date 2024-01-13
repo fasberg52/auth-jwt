@@ -1,0 +1,28 @@
+###
+GET http://localhost:3000/course/{courseId}
+Authorization: Bearer ...
+
+#output
+# {
+# 	"access": false,
+# 	"id": 43,
+# 	"title": "فیزیک صدیقی",
+# 	"description": null,
+# 	"price": 150000,
+# 	"discountPrice": null,
+# 	"discountStart": null,
+# 	"discountExpiration": null,
+# 	"imageUrl": null,
+# 	"bannerUrl": null,
+# 	"videoUrl": "ahsdkjash",
+# 	"createdAt": "17/مهر/1402",
+# 	"lastModified": null,
+# 	"category": null
+# }
+
+#error handling 
+#404 => course not found
+
+
+###
+GET http://localhost:3000/admin/course/{courseId}

@@ -29,14 +29,15 @@ async function getVideoPathAfterEnroll(req, res) {
       !enrollment ||
       !enrollment.order ||
       !enrollment.order.user ||
-      !enrollment.order.user.phone
+      !enrollment.order.user.phone ||
+      enrollment.order.orderStatus !== "success"
     ) {
-      return res.status(401).json({ error: "شما ثبت نام نکرده اید" });
+      return res.status(401).json({ error: "شما این دوره را نخریده اید" });
     }
 
-    if (enrollment.order.orderStatus !== "success") {
-      return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
-    }
+    // if (enrollment.order.orderStatus !== "success") {
+    //   return res.status(401).json({ error: "شمااین دوره را خرید نکرده اید" });
+    // }
 
     const videoPaths = await partRepository
       .createQueryBuilder("part")
@@ -66,26 +67,27 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
       .innerJoinAndSelect("order.user", "user")
       .where("enrollment.courseId = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
-      .andWhere("order.orderStatus = 'success'") // Add this line to filter by successful orders
-      //.orderBy("order.createdAt", "DESC") // Order by creation date in descending order
+      .andWhere("order.orderStatus = 'success'")
+      //.orderBy("order.createdAt", "DESC")
       .getOne();
 
     if (
       !enrollment ||
       !enrollment.order ||
       !enrollment.order.user ||
-      !enrollment.order.user.phone
+      !enrollment.order.user.phone ||
+      enrollment.order.orderStatus !== "success"
     ) {
       return res
-        .status(401)
+        .status(403)
         .json({ error: "شما در این دوره ثبت نام نکرده اید" });
     }
     console.log(enrollment.order.id);
 
-    console.log(enrollment.order.orderStatus);
-    if (enrollment.order.orderStatus !== "success") {
-      return res.status(403).json({ error: "شما دوره نخریده اید" });
-    }
+    // console.log(enrollment.order.orderStatus);
+    // if (enrollment.order.orderStatus !== "success") {
+    //   return res.status(403).json({ error: "شما دوره نخریده اید" });
+    // }
 
     const result = await partRepository
       .createQueryBuilder("part")
