@@ -100,18 +100,22 @@ async function getAllOrderUser(req, res) {
 
 async function editDataUser(req, res) {
   try {
-    const userRepository = getManager().getRepository(User);
+    const authHeader = req.header("Authorization");
 
-    const token = req.body.token;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
+    }
+
+    const token = authHeader.split(" ")[1];
 
     const decodedToken = verifyAndDecodeToken(token);
 
-    if (!decodedToken || !decodedToken.phone || !token) {
+    if (!decodedToken || !decodedToken.phone) {
       return res.status(401).json({ error: "توکن اشتباه است" });
     }
 
     const phone = decodedToken.phone;
-
+    const userRepository = getManager().getRepository(User);
     const user = await userRepository.findOne({
       where: { phone },
     });
