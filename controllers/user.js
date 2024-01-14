@@ -235,7 +235,7 @@ async function createProfilePictureUpload(req, res) {
     await userRepository.save(user);
     console.log("File successfully saved to database:", saveNewUpload);
 
-    res.status(200).json({
+    res.status(201).json({
       message: "عکس پروفایل با موفقیت آپلود شد",
 
       saveNewUpload: {
@@ -246,7 +246,7 @@ async function createProfilePictureUpload(req, res) {
         createdAt: saveNewUpload.createdAt,
         imageUrl: user.imageUrl,
       },
-      status: 200,
+      status: 201,
     });
   } catch (error) {
     console.error("createProfilePictureUpload error:", error);
