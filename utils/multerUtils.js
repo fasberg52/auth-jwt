@@ -37,31 +37,26 @@ const storage = multer.diskStorage({
 
     let counter = req.fileCounter || 0;
     let filename;
-    let baseName; // Declare baseName here to make it accessible in both branches
-    let extension; // Declare extension here to make it accessible in the entire function
+    let baseName; 
+    let extension;
 
     if (counter === 0) {
-      // For the first upload, use the original filename
       filename = originalname;
       baseName = path.basename(originalname, path.extname(originalname));
       extension = path.extname(originalname);
     } else {
-      // For subsequent uploads, append the counter to the original filename
       extension = path.extname(originalname);
       baseName = path.basename(originalname, extension);
       filename = `${baseName}-${counter}${extension}`;
     }
 
-    // Check if the filename already exists, increment counter if needed
     while (fs.existsSync(path.join(req.uploadDir, filename))) {
       counter++;
       filename = `${baseName}-${counter}${extension}`;
     }
 
-    // Pass the updated counter to the next upload
     req.fileCounter = counter + 1;
 
-    // Pass the uploadRepository to generateUniqueFilename
     req.uploadFilename = filename;
     cb(null, filename);
   },

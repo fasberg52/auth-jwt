@@ -184,7 +184,6 @@ async function getUploadById(req, res) {
 }
 
 async function updateUpload(req, res) {
-  // Implement the logic to update an upload by ID
 }
 
 async function deleteUpload(req, res) {

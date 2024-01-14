@@ -21,7 +21,6 @@ router.post(
   checkRole("admin"),
   upload.single("path"),
   handleMulterErrors,
-
   createUpload
 );
 

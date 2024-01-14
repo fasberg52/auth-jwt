@@ -1,6 +1,10 @@
 const User = require("../model/users");
-const OTP = require("../model/OTP");
+const Upload = require("../model/Upload");
 
+const OTP = require("../model/OTP");
+const { createSubdirectory } = require("../utils/multerUtils");
+const fs = require("fs");
+const path = require("path");
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 
@@ -184,9 +188,86 @@ async function logoutPanel(req, res) {
   }
 }
 
+async function createProfilePictureUpload(req, res) {
+  try {
+    const sizeFile = req.file.size;
+
+    const originalFilename = req.file.originalname;
+
+    const authHeader = req.header("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    console.log("Received Token:", token);
+
+    const decodedToken = verifyAndDecodeToken(token);
+    console.log("Decoded Token:", decodedToken);
+
+    if (!decodedToken || !decodedToken.phone) {
+      return res.status(401).json({ error: "توکن اشتباه است" });
+    }
+
+    const phone = decodedToken.phone;
+
+    console.log(phone);
+    const userRepository = getManager().getRepository(User);
+
+    const user = await userRepository.findOne({ where: { phone: phone } });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "کاربری پیدا نشد",
+        status: 404,
+      });
+    }
+
+    const subdirectory = createSubdirectory(new Date());
+
+    const filePath = path.resolve(
+      __dirname,
+      "../uploads",
+      subdirectory,
+      originalFilename
+    );
+    const uploadRepository = getManager().getRepository(Upload);
+
+    const newUpload = uploadRepository.create({
+      path: req.uploadFilename,
+    });
+
+    const saveNewUpload = await uploadRepository.save(newUpload);
+    user.imageUrl = req.uploadFilename;
+    await userRepository.save(user);
+    console.log("File successfully saved to database:", saveNewUpload);
+
+    res.status(200).json({
+      message: "عکس پروفایل با موفقیت آپلود شد",
+
+      saveNewUpload: {
+        path: filePath,
+        sizeFile: sizeFile,
+        lastModified: saveNewUpload.lastModified,
+        id: saveNewUpload.id,
+        createdAt: saveNewUpload.createdAt,
+      },
+      status: 200,
+    });
+  } catch (error) {
+    console.error("createProfilePictureUpload error:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      status: 500,
+    });
+  }
+}
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
   editDataUser,
   logoutPanel,
+  createProfilePictureUpload,
 };
