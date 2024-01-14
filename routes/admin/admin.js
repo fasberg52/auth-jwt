@@ -8,6 +8,7 @@ const courseController = require("../../controllers/adminCourses");
 const categoryController = require("../../controllers/category");
 const tagController = require("../../controllers/tag");
 const orderController = require("../../controllers/order");
+const couponController = require("../../controllers/coupon");
 const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
@@ -134,8 +135,17 @@ router.get(
 router.get(
   "/order/:id",
   jwtAuthMiddleware,
-//  checkRole("admin"),
+  //  checkRole("admin"),
   orderController.getOrderById
+);
+
+//Coupon Code Admin
+
+router.post(
+  "coupon",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  couponController.applyCoupon
 );
 
 module.exports = router;

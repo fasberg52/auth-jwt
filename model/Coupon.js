@@ -19,4 +19,4 @@ const Coupon = new EntitySchema({
   },
 });
 
-modules.exports = Coupon;
+module.exports = Coupon;
