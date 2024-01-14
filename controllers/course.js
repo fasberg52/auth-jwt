@@ -241,10 +241,15 @@ async function getCourseById(req, res) {
       .getOne();
 
     if (existingCourse) {
-      existingCourse.discountStart;
-      existingCourse.discountExpiration;
-      existingCourse.createdAt;
-      existingCourse.lastModified;
+      if (
+        existingCourse.discountExpiration &&
+        new Date() > existingCourse.discountExpiration
+      ) {
+        existingCourse.discountExpiration = null;
+        existingCourse.discountStart = null;
+        existingCourse.discountPrice = null;
+        await courseRepository.save(existingCourse);
+      }
 
       if (!isEnrolled) {
         logger.info(`getCourseById successful for courseId ${courseId}`);

@@ -81,6 +81,8 @@ async function editCourse(req, res) {
     const courseRepository = getManager().getRepository(Courses);
     const idCourse = req.params.id;
 
+
+
     const existingCourse = await courseRepository.findOne({
       where: { id: idCourse },
     });
@@ -94,7 +96,6 @@ async function editCourse(req, res) {
       existingCourse.videoUrl = videoUrl;
       existingCourse.discountPrice = discountPrice;
 
-      // Check if discountStart and discountExpiration are provided
       const startMoment = discountStart;
       const expirationMoment = discountExpiration;
       existingCourse.discountStart = startMoment ? startMoment.toDate() : null;
