@@ -73,8 +73,6 @@ async function getAllCourse(req, res) {
       .take(pageSize)
       .getManyAndCount();
 
-    
-
     // await cacheService.set(
     //   cacheKey,
     //   { courses: jalaliCourses, totalCount },
@@ -92,7 +90,7 @@ async function getAllCourse(req, res) {
     res.json({
       courses,
       totalCount,
-      totalPages
+      totalPages,
     });
     // }
   } catch (error) {
@@ -243,16 +241,10 @@ async function getCourseById(req, res) {
       .getOne();
 
     if (existingCourse) {
-      existingCourse.discountStart = convertToJalaliDate(
-        existingCourse.discountStart
-      );
-      existingCourse.discountExpiration = convertToJalaliDate(
-        existingCourse.discountExpiration
-      );
-      existingCourse.createdAt = convertToJalaliDate(existingCourse.createdAt);
-      existingCourse.lastModified = convertToJalaliDate(
-        existingCourse.lastModified
-      );
+      existingCourse.discountStart;
+      existingCourse.discountExpiration;
+      existingCourse.createdAt;
+      existingCourse.lastModified;
 
       if (!isEnrolled) {
         logger.info(`getCourseById successful for courseId ${courseId}`);

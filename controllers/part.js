@@ -310,7 +310,7 @@ async function getAllChaptersAndParts(req, res) {
         "part.isFree",
         "part.orderIndex",
       ])
-      .where("chapter.courseId = :courseId", { courseId })
+      .where("chapter.courseId = :courseId", { courseId: parseInt(courseId) })
       .orderBy("chapter.orderIndex", "ASC")
       .addOrderBy("part.orderIndex", "ASC")
       .getMany();

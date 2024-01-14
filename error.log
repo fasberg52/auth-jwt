@@ -236,3 +236,5 @@ Error: The requested resource could not be found.
 2023-12-30T06:41:57.630Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
 2023-12-30T06:41:59.719Z error: Error in getCourseUserWithToken: TypeError: enrolledCoursesQuery.skip(...).take(...).getRawMany(...).execute is not a function 
 2024-01-01T12:07:46.135Z error: Error retrieving parts with course ID: ReferenceError: calculateTotalDuration is not defined 
+2024-01-13T07:11:35.612Z error: Error retrieving chapters and parts with course ID: QueryFailedError: invalid input syntax for type integer: "null" 
+2024-01-13T07:11:50.902Z error: Error retrieving chapters and parts with course ID: QueryFailedError: invalid input syntax for type integer: "asd" 

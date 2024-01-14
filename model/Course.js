@@ -58,10 +58,12 @@ const Course = new EntitySchema({
     backgroundColor: {
       type: "text",
       nullable: true,
+      default:"196,0,136,0.711922268907563"
     },
     backgroundImage: {
       type: "text",
       nullable: true,
+      default:"103,3,73,1"
     },
   },
   relations: {

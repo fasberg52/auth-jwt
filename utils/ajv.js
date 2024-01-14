@@ -76,7 +76,7 @@ const createPartSchema = {
       // pattern: "^(.*\\.(mp4|m4v))$"
     },
   },
-  required: ["title", "chapterId", "description", "videoPath"],
+  required: ["title", "chapterId", "videoPath"],
   errorMessage: {
     properties: {
       title: "ورودی باید استرینگ باشد",
