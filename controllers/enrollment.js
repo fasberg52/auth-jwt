@@ -91,7 +91,11 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
 
     const result = await partRepository
       .createQueryBuilder("part")
-      .select(["part.videoPath as videoPath", "part.videoType as videoType"])
+      .select([
+        "part.videoPath as videoPath",
+        "part.videoType as videoType",
+        "part.noteUrl as noteUrl",
+      ])
       .where("part.courseId = :courseId", { courseId })
       .andWhere("part.id = :partId", { partId })
       .getRawOne();

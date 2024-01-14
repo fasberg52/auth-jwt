@@ -55,6 +55,11 @@ const Part = new EntitySchema({
       nullable: true,
     },
 
+    noteUrl: {
+      type: "text",
+      nullable: true,
+    },
+
     orderIndex: {
       type: "int",
       default: 0,

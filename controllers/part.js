@@ -23,6 +23,7 @@ async function createPart(req, res) {
       videoPath,
       isFree,
       videoType,
+      noteUrl,
     } = req.body;
 
     let videoDuration;
@@ -66,6 +67,7 @@ async function createPart(req, res) {
       videoDuration,
       isFree,
       videoType,
+      noteUrl,
     });
 
     const savedPart = await partRepository.save(newPart);
@@ -82,6 +84,7 @@ async function createPart(req, res) {
       videoDuration,
       orderIndex,
       isFree,
+      noteUrl,
     });
 
     res.status(201).json({ message: "جلسه ساخته شد", savedPart, status: 201 });
@@ -96,7 +99,7 @@ async function createPart(req, res) {
 
 async function editPart(req, res) {
   try {
-    const { title, description, icon, videoPath, orderIndex, isFree } =
+    const { title, description, icon, videoPath, orderIndex, isFree, noteUrl } =
       req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
@@ -111,8 +114,9 @@ async function editPart(req, res) {
       existingPart.description = description;
       existingPart.icon = icon;
       existingPart.videoPath = videoPath;
-      existingPart.orderIndex = orderIndex; // Add this line
-      existingPart.isFree = isFree; // Add this line
+      existingPart.orderIndex = orderIndex;
+      existingPart.isFree = isFree;
+      existingPart.noteUrl = noteUrl;
       //existingPart.videoDuration = videoDuration;
 
       // Save the updated part
@@ -127,6 +131,7 @@ async function editPart(req, res) {
         videoPath,
         orderIndex,
         isFree,
+        noteUrl,
         //videoDuration,
       });
 

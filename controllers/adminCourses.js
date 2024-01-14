@@ -2,12 +2,9 @@
 const Courses = require("../model/Course");
 const Category = require("../model/Category");
 const { getManager } = require("typeorm");
-const upload = require("../utils/multerUtils");
 const logger = require("../services/logger");
-const jalaliMoment = require("jalali-moment");
 async function addCourse(req, res) {
   try {
-    console.log("Request Body:", req.body);
     const {
       title,
       description,
@@ -39,13 +36,8 @@ async function addCourse(req, res) {
         .findOne({ where: { id: categoryId } });
     }
 
-    const startMoment = discountStart
-      ? jalaliMoment(discountStart, "jYYYY-jM-jD")
-      : null;
-    const expirationMoment = discountExpiration
-      ? jalaliMoment(discountExpiration, "jYYYY-jM-jD")
-      : null;
-
+    const startMoment = discountStart;
+    const expirationMoment = discountExpiration;
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
@@ -63,7 +55,6 @@ async function addCourse(req, res) {
     const result = await courseRepository.save(newCourse);
     console.log(`result >>> ${result}`);
 
-    
     return res
       .status(201)
       .json({ message: "دوره با موفقیت ایجاد شد", result, status: 201 });
@@ -104,13 +95,8 @@ async function editCourse(req, res) {
       existingCourse.discountPrice = discountPrice;
 
       // Check if discountStart and discountExpiration are provided
-      const startMoment = discountStart
-        ? jalaliMoment(discountStart, "jYYYY-jMMMM-jD")
-        : null;
-      const expirationMoment = discountExpiration
-        ? jalaliMoment(discountExpiration, "jYYYY-jMMMM-jD")
-        : null;
-
+      const startMoment = discountStart;
+      const expirationMoment = discountExpiration;
       existingCourse.discountStart = startMoment ? startMoment.toDate() : null;
       existingCourse.discountExpiration = expirationMoment
         ? expirationMoment.toDate()
@@ -210,7 +196,7 @@ async function getAdminCourseById(req, res) {
       res.status(404).json({ error: "Course not found." });
     }
   } catch (error) {
-     logger.error(`Error in getAdminCourseById  ${error}`);
+    logger.error(`Error in getAdminCourseById  ${error}`);
 
     console.log(`>>>>${error}`);
     res
