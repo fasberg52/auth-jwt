@@ -1,7 +1,7 @@
 // controllers/upload.js
 
 const { getManager } = require("typeorm");
-const { createSubdirectory } = require("../utils/multerUtils"); 
+const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
 const path = require("path");
 const Upload = require("../model/Upload");
@@ -15,7 +15,6 @@ async function createUpload(req, res) {
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
 
-    // Pass the current date to createSubdirectory
     const subdirectory = createSubdirectory(new Date());
 
     const filePath = path.resolve(
@@ -28,14 +27,10 @@ async function createUpload(req, res) {
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
-      path: req.uploadFilename, 
+      path: req.uploadFilename,
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
-
-    const jalaliCreatedAt = moment(saveNewUpload.createdAt).format(
-      "jYYYY/jM/jD HH:mm:ss"
-    );
 
     console.log("File successfully saved to database:", saveNewUpload);
 
@@ -47,13 +42,12 @@ async function createUpload(req, res) {
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
-        createdAt: jalaliCreatedAt,
+        createdAt: saveNewUpload.createdAt,
       },
       status: 200,
     });
   } catch (error) {
     console.log("createUpload error " + error);
-    // If an error occurs, you can handle it appropriately
     res.status(500).json({
       message: "Internal Server Error",
       status: 500,
@@ -79,7 +73,7 @@ async function getAllUploads(req, res) {
       },
     });
 
-      const uploadsData = uploads.map((upload) => {
+    const uploadsData = uploads.map((upload) => {
       const subdirectory = createSubdirectory(upload.createdAt);
 
       const filePath = upload.path
