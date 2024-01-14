@@ -12,22 +12,23 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 async function getUserDataWithToken(req, res) {
   try {
-    const userRepository = getManager().getRepository(User);
-    const token = req.body.token;
-    console.log("Received Token:", token);
+    const authHeader = req.header("Authorization");
 
-    if (!token) {
-      return res.status(401).json({ error: "Missing token" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "توکن وجود ندارد" });
     }
 
+    const token = authHeader.split(" ")[1];
+
     const decodedToken = verifyAndDecodeToken(token);
-    console.log("Decoded Token:", decodedToken);
 
     if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "Invalid or missing token" });
+      return res.status(401).json({ error: "توکن اشتباه است" });
     }
 
     const phone = decodedToken.phone;
+
+    const userRepository = getManager().getRepository(User);
 
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
@@ -67,14 +68,12 @@ async function getAllOrderUser(req, res) {
     const userRepository = getManager().getRepository(User);
 
     const token = req.body.token;
-    console.log("Received Token:", token);
 
     if (!token) {
       return res.status(401).json({ error: "توکن وجود ندارد" });
     }
 
     const decodedToken = verifyAndDecodeToken(token);
-    console.log("Decoded Token:", decodedToken);
 
     if (!decodedToken || !decodedToken.phone) {
       return res.status(401).json({ error: "توکن اشتباه است" });
@@ -104,10 +103,8 @@ async function editDataUser(req, res) {
     const userRepository = getManager().getRepository(User);
 
     const token = req.body.token;
-    console.log("Received Token:", token);
 
     const decodedToken = verifyAndDecodeToken(token);
-    console.log("Decoded Token:", decodedToken);
 
     if (!decodedToken || !decodedToken.phone || !token) {
       return res.status(401).json({ error: "توکن اشتباه است" });
@@ -157,10 +154,8 @@ async function logoutPanel(req, res) {
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("Received Token:", token);
 
     const decodedToken = verifyAndDecodeToken(token);
-    console.log("Decoded Token:", decodedToken);
 
     if (!decodedToken || !decodedToken.phone) {
       return res.status(401).json({ error: "توکن اشتباه است" });
@@ -201,10 +196,8 @@ async function createProfilePictureUpload(req, res) {
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("Received Token:", token);
 
     const decodedToken = verifyAndDecodeToken(token);
-    console.log("Decoded Token:", decodedToken);
 
     if (!decodedToken || !decodedToken.phone) {
       return res.status(401).json({ error: "توکن اشتباه است" });
@@ -212,7 +205,6 @@ async function createProfilePictureUpload(req, res) {
 
     const phone = decodedToken.phone;
 
-    console.log(phone);
     const userRepository = getManager().getRepository(User);
 
     const user = await userRepository.findOne({ where: { phone: phone } });
@@ -252,6 +244,7 @@ async function createProfilePictureUpload(req, res) {
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
         createdAt: saveNewUpload.createdAt,
+        imageUrl: user.imageUrl,
       },
       status: 200,
     });
