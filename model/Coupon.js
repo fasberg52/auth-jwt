@@ -9,7 +9,7 @@ const Coupon = new EntitySchema({
       primary: true,
       generated: true,
     },
-    name: {
+    code: {
       type: "text",
     },
     discountPersentage: {
