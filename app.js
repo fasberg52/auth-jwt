@@ -3,6 +3,7 @@ const express = require("express");
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");
+const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const path = require("path");
@@ -35,7 +36,7 @@ async function main() {
         credentials: true,
       })
     );
-
+    app.use(compression());
     routerConfig(app);
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
