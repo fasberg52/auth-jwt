@@ -35,25 +35,24 @@ async function getUserDataWithToken(req, res) {
     });
 
     if (existingUser) {
-      if (existingUser) {
-        const user = {
-          id: existingUser.id,
-          firstName: existingUser.firstName,
-          lastName: existingUser.lastName,
-          phone: existingUser.phone,
-          role: existingUser.roles,
-          imageUrl: existingUser.imageUrl,
-          grade: existingUser.grade,
-          createdAt: new Date(existingUser.createdAt).getTime(),
-          updatedAt: existingUser.updatedAt
-            ? new Date(existingUser.updatedAt).getTime()
-            : null,
-          lastLogin: existingUser.lastLogin
-            ? new Date(existingUser.lastLogin).getTime()
-            : null,
-        };
-        res.json(user);
-      }
+
+      const user = {
+        id: existingUser.id,
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        phone: existingUser.phone,
+        role: existingUser.roles,
+        imageUrl: existingUser.imageUrl,
+        grade: existingUser.grade,
+        createdAt: new Date(existingUser.createdAt).getTime(),
+        updatedAt: existingUser.updatedAt
+          ? new Date(existingUser.updatedAt).getTime()
+          : null,
+        lastLogin: existingUser.lastLogin
+          ? new Date(existingUser.lastLogin).getTime()
+          : null,
+      };
+      res.status(200).json( user );
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }
@@ -235,7 +234,7 @@ async function createProfilePictureUpload(req, res) {
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
-    user.imageUrl = req.uploadFilename;
+    user.imageUrl = filePath;
     await userRepository.save(user);
     console.log("File successfully saved to database:", saveNewUpload);
 
@@ -243,7 +242,7 @@ async function createProfilePictureUpload(req, res) {
       message: "عکس پروفایل با موفقیت آپلود شد",
 
       saveNewUpload: {
-        path: filePath,
+      //  path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,

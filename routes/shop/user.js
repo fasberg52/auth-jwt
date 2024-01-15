@@ -11,7 +11,7 @@ const { upload } = require("../../utils/multerUtils");
 
 const router = express.Router();
 
-router.post("/profile", jwtAuthMiddleware, getUserDataWithToken);
+router.get("/profile", jwtAuthMiddleware, getUserDataWithToken);
 router.post("/orders", jwtAuthMiddleware, getAllOrderUser);
 router.put("/profile", jwtAuthMiddleware, editDataUser);
 router.post("/logout", jwtAuthMiddleware, logoutPanel);

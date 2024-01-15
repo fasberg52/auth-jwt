@@ -51,6 +51,13 @@ const User = new EntitySchema({
     },
   },
   relations: {
+    uploads: {
+      type: "one-to-one",
+      target: "Upload",
+      cascade: true,
+      nullable: true,
+      onDelete: "SET NULL",
+    },
     orders: {
       type: "one-to-many",
       target: "Order",

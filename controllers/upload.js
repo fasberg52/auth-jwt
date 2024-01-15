@@ -129,11 +129,18 @@ async function removeUploadByPath(req, res) {
       upload.path
     );
 
-    // Use fs.promises.unlink for a Promise-based version
     await fs.promises.unlink(filePath);
 
-    // Remove the record from the database
     await uploadRepository.remove(upload);
+
+    const user = await userRepository.findOne({
+      where: { imageUrl: upload.path },
+    });
+
+    if (user) {
+      user.imageUrl = null;
+      await userRepository.save(user);
+    }
 
     res.status(200).json({
       message: "فایل با موفقیت پاک شد",
