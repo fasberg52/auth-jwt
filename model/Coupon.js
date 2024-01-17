@@ -17,6 +17,12 @@ const Coupon = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    createdAt: {
+      type: "timestamp",
+    },
+    expireTime: {
+      type: "timestamp",
+    },
   },
 });
 
