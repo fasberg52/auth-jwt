@@ -12,6 +12,11 @@ router.delete(
   cartController.removeCartItem
 );
 router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
+router.post(
+  "/cart/:cartId/apply-coupon",
+  jwtAuthMiddleware,
+  cartController.applyCoupon
+);
 
 // router.post(
 //   "/orders",
@@ -26,12 +31,7 @@ router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
 //   cartController.orderDetails
 // );
 
-
-
 module.exports = router;
-
-
-
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ module.exports = router;
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: با موفیت ثبت شد 
+ *         description: با موفیت ثبت شد
  *         content:
  *           application/json:
  *             schema:
@@ -127,7 +127,7 @@ module.exports = router;
  *         description: The ID of the cart item to remove
  *     responses:
  *       200:
- *         description: آیتم حذف شد 
+ *         description: آیتم حذف شد
  *       404:
  *         description: سبد خرید پیدا نشد
  *       500:

@@ -21,7 +21,7 @@ const Cart = new EntitySchema({
       type: "many-to-one",
       inverseSide: "cart",
     },
-    coupon: {
+    coupons: {
       type: "one-to-many",
       target: "Coupon",
       inverseSide: true,

@@ -463,7 +463,7 @@
         .getOne();
 
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return res.status(404).json({ error: "سفارش پیدا نشد" });
       }
       order.orderDate = convertToJalaliDate(order.orderDate);
 

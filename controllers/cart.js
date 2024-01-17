@@ -94,6 +94,8 @@ async function getUserCart(req, res) {
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
 
+    const couponCode = req.query.couponCode;
+
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
@@ -101,7 +103,12 @@ async function getUserCart(req, res) {
     if (!userCart) {
       return res
         .status(200)
-        .json({ cartData: [], totalCartPrice: 0, status: 200 });
+        .json({
+          cartData: [],
+          totalCartPrice: 0,
+          totalCartPriceCoupon: 0,
+          status: 200,
+        });
     }
 
     const cartItems = await cartItemsRepository
@@ -112,12 +119,12 @@ async function getUserCart(req, res) {
     let totalCartPrice = 0;
 
     const cartDataPromises = cartItems.map(async (cartItem) => {
-      //console.log("Processing cartItem: ", cartItem);
       if (cartItem.courseId) {
         try {
           const course = await courseRepository.findOne({
             where: { id: cartItem.courseId },
           });
+
           if (course) {
             const discountedPrice = course.discountPrice || course.price;
             const itemPrice = discountedPrice * cartItem.quantity;
@@ -135,16 +142,33 @@ async function getUserCart(req, res) {
               itemPrice,
             };
           }
-        } catch (error) {}
+        } catch (error) {
+          console.error("Error processing cart item:", error);
+        }
       }
     });
 
     const cartData = await Promise.all(cartDataPromises);
-    // console.log("Final cartData: ", cartData);
 
-    res.status(200).json({ cartData, totalCartPrice, status: 200 });
+    let totalCartPriceCoupon = totalCartPrice;
+
+    if (couponCode) {
+      const coupon = await getManager()
+        .getRepository(Coupon)
+        .findOne({ where: { code: couponCode } });
+
+      if (coupon) {
+        const couponDiscount =
+          (totalCartPrice * coupon.discountPersentage) / 100;
+        totalCartPriceCoupon = totalCartPrice - couponDiscount;
+      }
+    }
+
+    res
+      .status(200)
+      .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
   } catch (error) {
-    // console.error("Error: ", error);
+    console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -179,8 +203,39 @@ async function removeCartItem(req, res) {
   }
 }
 
+async function applyCoupon(req, res) {
+  try {
+    const { coupon } = req.body;
+
+    if (!coupon) {
+      return res.status(400).json({ error: "کد تخفیف را وارد کنید" });
+    }
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const appliedCoupon = await couponRepository.findOne({
+      where: { code: coupon },
+    });
+
+    if (!appliedCoupon) {
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
+    }
+
+    req.appliedCoupon = appliedCoupon;
+
+    res
+      .status(200)
+      .json({ message: "کد تخفیف با موفقیت اعمال شد", appliedCoupon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+
 module.exports = {
   createCartItem,
   getUserCart,
   removeCartItem,
+  applyCoupon,
 };

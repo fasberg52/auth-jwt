@@ -26,12 +26,10 @@ const Coupon = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
-    cartId: {
-      type: "int",
-    },
+ 
   },
   relations: {
-    cart: {
+    carts: {
       type: "many-to-one",
       target: "Cart",
       joinColumn: true,

@@ -36,8 +36,6 @@ async function addCourse(req, res) {
         .findOne({ where: { id: categoryId } });
     }
 
-    const startMoment = discountStart;
-    const expirationMoment = discountExpiration;
     const courseRepository = getManager().getRepository(Courses);
     const newCourse = courseRepository.create({
       title,
@@ -48,8 +46,8 @@ async function addCourse(req, res) {
       videoUrl,
       category,
       discountPrice,
-      discountStart: startMoment ? startMoment.toDate() : null,
-      discountExpiration: expirationMoment ? expirationMoment.toDate() : null,
+      discountStart,
+      discountExpiration,
     });
 
     const result = await courseRepository.save(newCourse);
@@ -81,8 +79,6 @@ async function editCourse(req, res) {
     const courseRepository = getManager().getRepository(Courses);
     const idCourse = req.params.id;
 
-
-
     const existingCourse = await courseRepository.findOne({
       where: { id: idCourse },
     });
@@ -95,13 +91,8 @@ async function editCourse(req, res) {
       existingCourse.bannerUrl = bannerUrl;
       existingCourse.videoUrl = videoUrl;
       existingCourse.discountPrice = discountPrice;
-
-      const startMoment = discountStart;
-      const expirationMoment = discountExpiration;
-      existingCourse.discountStart = startMoment ? startMoment.toDate() : null;
-      existingCourse.discountExpiration = expirationMoment
-        ? expirationMoment.toDate()
-        : null;
+      existingCourse.discountStart = discountStart;
+      existingCourse.discountExpiration = discountExpiration;
 
       if (categoryId !== undefined && categoryId !== null) {
         const category = await getManager()
