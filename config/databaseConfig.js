@@ -13,6 +13,7 @@ const Upload = require("../model/Upload");
 const Enrollment = require("../model/Enrollment");
 const Tags = require("../model/Tags");
 const SecureLink = require("../model/secureLink");
+const Coupon = require("../model/Coupon");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -41,6 +42,7 @@ async function setupDatabase() {
         Enrollment,
         Tags,
         SecureLink,
+        Coupon,
       ],
       synchronize: true,
     });

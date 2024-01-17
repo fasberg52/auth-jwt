@@ -238,3 +238,4 @@ Error: The requested resource could not be found.
 2024-01-01T12:07:46.135Z error: Error retrieving parts with course ID: ReferenceError: calculateTotalDuration is not defined 
 2024-01-13T07:11:35.612Z error: Error retrieving chapters and parts with course ID: QueryFailedError: invalid input syntax for type integer: "null" 
 2024-01-13T07:11:50.902Z error: Error retrieving chapters and parts with course ID: QueryFailedError: invalid input syntax for type integer: "asd" 
+2024-01-17T07:16:27.972Z error: Error in CreateCoupon EntityMetadataNotFoundError: No metadata for "Coupon" was found. 

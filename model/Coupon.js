@@ -5,7 +5,7 @@ const Coupon = new EntitySchema({
   tableName: "coupons",
   columns: {
     id: {
-      type: "id",
+      type: "int",
       primary: true,
       generated: true,
     },
