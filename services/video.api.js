@@ -1,4 +1,4 @@
-const ApiVideoClient = require("@api.video/nodejs-client");
+// const ApiVideoClient = require("@api.video/nodejs-client");
 const logger = require("../services/logger")
 async function getVideoDurationFromApi(videoPath) {
   try {

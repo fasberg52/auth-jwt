@@ -32,6 +32,12 @@ async function main() {
     app.use(
       cors({
         origin: "*",
+        // origin: [
+        //   "https://baclass.iran.liara.run",
+        //   "https://beta.balcass.online",
+        //   "http://192.168.1.113",
+        //   "http://192.168.1.113:5173",
+        // ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })

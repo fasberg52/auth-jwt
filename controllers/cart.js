@@ -112,15 +112,12 @@ async function getUserCart(req, res) {
     const cartDataPromises = cartItems.map(async (cartItem) => {
       //console.log("Processing cartItem: ", cartItem);
       if (cartItem.courseId) {
-        //console.log("Course data exists for cartItem: ", cartItem.courseId);
         try {
           const course = await courseRepository.findOne({
             where: { id: cartItem.courseId },
           });
-          // console.log("Fetched course data: ", course);
           if (course) {
             const discountedPrice = course.discountPrice || course.price;
-            // console.log(`discountedPrice>>> ${discountedPrice}`);
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;
@@ -130,13 +127,14 @@ async function getUserCart(req, res) {
               courseId: course.id,
               imageUrl: course.imageUrl,
               quantity: cartItem.quantity,
-              price: discountedPrice,
+              price: course.price,
+              discountPrice:discountedPrice,
               title: course.title,
               itemPrice,
             };
           }
         } catch (error) {
-          //console.error("Error fetching course: ", error);
+          
         }
       }
     });
