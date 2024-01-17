@@ -27,7 +27,7 @@ const Enrollment = new EntitySchema({
       type: "many-to-one",
       target: "Order",
       joinColumn: true,
-      joinColumn: { name: "orderId", referencedColumnName: "id" }, // Join column details
+      joinColumn: { name: "orderId", referencedColumnName: "id" }, 
     },
     course: {
       target: "Course",

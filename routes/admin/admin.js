@@ -142,10 +142,10 @@ router.get(
 //Coupon Code Admin
 
 router.post(
-  "coupon",
+  "/coupon",
   jwtAuthMiddleware,
   checkRole("admin"),
-  couponController.applyCoupon
+  couponController.createCoupon
 );
 
 module.exports = router;
