@@ -88,6 +88,7 @@ const Part = new EntitySchema({
       joinColumn: { name: "secureLinkId", referencedColumnName: "id" },
     },
   },
+
 });
 
 module.exports = Part;

@@ -395,8 +395,7 @@
         });
       }
 
-      // Use a single andWhere clause for orderStatus
-      if (orderStatus) {
+        if (orderStatus) {
         queryBuilder.andWhere("order.orderStatus = :orderStatus", {
           orderStatus,
         });

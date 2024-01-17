@@ -1,4 +1,5 @@
-const { typeorm, EntitySchema } = require("typeorm");
+//model/Coupon.js
+const { EntitySchema } = require("typeorm");
 
 const Coupon = new EntitySchema({
   name: "Coupon",
@@ -24,6 +25,16 @@ const Coupon = new EntitySchema({
     expireTime: {
       type: "timestamp",
       nullable: true,
+    },
+    cartId: {
+      type: "int",
+    },
+  },
+  relations: {
+    cart: {
+      type: "many-to-one",
+      target: "Cart",
+      joinColumn: true,
     },
   },
 });

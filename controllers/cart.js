@@ -5,6 +5,8 @@ const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
+const Coupon = require("../model/Coupon");
+
 async function createCartItem(req, res) {
   try {
     const { courseId } = req.body;
@@ -128,14 +130,12 @@ async function getUserCart(req, res) {
               imageUrl: course.imageUrl,
               quantity: cartItem.quantity,
               price: course.price,
-              discountPrice:discountedPrice,
+              discountPrice: discountedPrice,
               title: course.title,
               itemPrice,
             };
           }
-        } catch (error) {
-          
-        }
+        } catch (error) {}
       }
     });
 
@@ -148,109 +148,6 @@ async function getUserCart(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-// async function checkOutCart(req, res) {
-//   try {
-//     const user = req.user; // Retrieve user information from the request
-
-//     const connection = getConnection();
-//     const cartRepository = connection.getRepository(Cart);
-//     const cartItemsRepository = connection.getRepository(CartItems);
-
-//     // Find the user's shopping cart
-//     const userCart = await cartRepository.findOne({
-//       where: { user: user },
-//     });
-
-//     if (!userCart) {
-//       return res.status(404).json({ error: "Cart not found for the user" });
-//     }
-
-//     // Find cart items
-//     const cartItems = await cartItemsRepository.find({
-//       where: { cart: userCart },
-//     });
-
-//     let totalPrice = 0;
-
-//     // Create purchase history records and calculate total price
-//     for (const cartItem of cartItems) {
-//       // const purchaseHistoryItem = purchaseHistoryRepository.create({
-//       //   user: user,
-//       //   courseId: cartItem.courseId,
-//       //   quantity: cartItem.quantity,
-//       // });
-
-//       // Calculate and accumulate the total price
-//       totalPrice += cartItem.price * cartItem.quantity;
-
-//       // await purchaseHistoryRepository.save(purchaseHistoryItem);
-//     }
-
-//     // Clear the shopping cart
-//     await cartItemsRepository.remove(cartItems);
-
-//     res
-//       .status(200)
-//       .json({ message: "Checkout completed successfully", totalPrice });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// }
-
-// async function saveOrder(req, res) {
-//   try {
-//     const userPhone = req.user.phone;
-//     const connection = getConnection();
-//     const cartRepository = connection.getRepository(Cart);
-//     const cartItemsRepository = connection.getRepository(CartItems);
-//     const courseRepository = connection.getRepository(Courses);
-
-//     const userCart = await cartRepository.findOne({
-//       where: { user: { phone: userPhone } },
-//     });
-
-//     if (!userCart) {
-//       return res.status(404).json({ error: "Cart not found for the user" });
-//     }
-
-//     const cartItems = await cartItemsRepository.find({
-//       where: { cart: userCart.id },
-//     });
-
-//     let totalPrice = 0;
-
-//     for (const cartItem of cartItems) {
-//       if (cartItem.courseId) {
-//         const course = await courseRepository.findOne({
-//           where: { id: cartItem.courseId },
-//         });
-
-//         if (course) {
-//           totalPrice += course.price * cartItem.quantity;
-//         }
-//       }
-//     }
-
-//     const orderRepository = getManager().getRepository(Order);
-//     const newOrder = orderRepository.create({
-//       user: userPhone,
-//       totalPrice: totalPrice,
-//       orderStatus: "pending",
-//     });
-//     await orderRepository.save(newOrder);
-
-//     res.status(201).json({ message: "Order placed successfully." });
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while placing the order." });
-//   }
-// }
-
-// async function orderDetails(req, res) {}
 
 async function removeCartItem(req, res) {
   try {
@@ -286,6 +183,4 @@ module.exports = {
   createCartItem,
   getUserCart,
   removeCartItem,
-  // saveOrder,
-  // orderDetails,
 };

@@ -88,7 +88,7 @@ async function applyCoupon(req, res) {
   const { coupon } = req.body;
 
   if (!coupon) {
-    res.status(400).json({ error: "کد وجود ندارد" });
+    res.status(400).json({ error: "کد تخفیف را وارد کنید" });
   }
 
   const couponRepository = getManager().getRepository(Coupon);
@@ -99,6 +99,9 @@ async function applyCoupon(req, res) {
   if (!appliedCoupon) {
     return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
   }
+
+  
+
 }
 
 module.exports = { applyCoupon, createCoupon, getByIdCoupon, getAllCoupons };
