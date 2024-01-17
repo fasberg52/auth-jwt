@@ -1,15 +1,37 @@
 const Coupon = require("../model/Coupon");
 const logger = require("../services/logger");
-const { getManager } = require("typeorm");
+const { getManager, QueryFailedError } = require("typeorm");
 
 async function createCoupon(req, res) {
   try {
-    const { code, discountPersentage } = req.body;
+    const { code, discountPersentage, expireTime } = req.body;
     const couponRepository = getManager().getRepository(Coupon);
+    const exitingCode = await couponRepository.findOne({
+      where: { code: code },
+    });
+    if (exitingCode) {
+      return res
+        .status(400)
+        .json({ error: "کد تخفیف تکراری است", status: 400 });
+    }
+
+    const createdAt = new Date();
+
+    if (expireTime) {
+      const expireDate = new Date(expireTime);
+
+      if (expireDate <= createdAt) {
+        return res
+          .status(400)
+          .json({ error: "تاریخ انقضا اشتباه است", status: 400 });
+      }
+    }
 
     const newCoupon = couponRepository.create({
       code,
       discountPersentage,
+      createdAt,
+      expireTime,
     });
     await couponRepository.save(newCoupon);
     res.status(201).json({ message: "کوپن ساخته شد", newCoupon, status: 201 });
@@ -38,7 +60,10 @@ async function getByIdCoupon(req, res) {
   }
 }
 
-async function getAllCoupons(req, res) {}
+async function getAllCoupons(req, res) {
+  const couponRepository = getManager().getRepository(Coupon);
+  const coupons = await couponRepository.findAndCount();
+}
 
 async function editCoupon(req, res) {}
 
