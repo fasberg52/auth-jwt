@@ -28,7 +28,7 @@ async function getByIdCoupon(req, res) {
       where: { id: couponId },
     });
     if (!existingCoupon) {
-      res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
     }
 
     res.status(200).json(existingCoupon);
@@ -61,4 +61,4 @@ async function applyCoupon(req, res) {
   }
 }
 
-module.exports = { applyCoupon, createCoupon ,getByIdCoupon};
+module.exports = { applyCoupon, createCoupon, getByIdCoupon };

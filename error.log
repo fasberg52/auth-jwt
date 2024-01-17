@@ -242,3 +242,4 @@ Error: The requested resource could not be found.
 2024-01-17T07:19:09.081Z error: Error in CreateCoupon QueryFailedError: null value in column "createdAt" of relation "coupons" violates not-null constraint 
 2024-01-17T07:19:58.131Z error: Error in CreateCoupon QueryFailedError: null value in column "expireTime" of relation "coupons" violates not-null constraint 
 2024-01-17T07:21:48.279Z error: Error in CreateCoupon QueryFailedError: null value in column "createdAt" of relation "coupons" violates not-null constraint 
+2024-01-17T07:59:22.568Z error: Error in Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client 

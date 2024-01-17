@@ -147,6 +147,12 @@ router.post(
   checkRole("admin"),
   couponController.createCoupon
 );
+router.get(
+  "/coupon/:couponId",
+  jwtAuthMiddleware,
+  //checkRole("admin"),
+  couponController.getByIdCoupon
+);
 
 module.exports = router;
 
