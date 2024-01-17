@@ -1,6 +1,6 @@
 const Coupon = require("../model/Coupon");
 const logger = require("../services/logger");
-const { getManager, QueryFailedError } = require("typeorm");
+const { getManager, QueryFailedError, Like } = require("typeorm");
 
 async function createCoupon(req, res) {
   try {
@@ -61,8 +61,23 @@ async function getByIdCoupon(req, res) {
 }
 
 async function getAllCoupons(req, res) {
-  const couponRepository = getManager().getRepository(Coupon);
-  const coupons = await couponRepository.findAndCount();
+  try {
+    const { search } = req.query;
+
+    let query = {};
+
+    if (search) {
+      query = { where: { code: Like(`%${search}%`) } };
+    }
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const [coupons, totalCount] = await couponRepository.findAndCount(query);
+
+    res.json({ coupons, totalCount, status: 200 });
+  } catch (error) {
+    logger.error(`error in getAllCoupons ${error}`);
+    res.status(500).json("Internal Server Error");
+  }
 }
 
 async function editCoupon(req, res) {}
@@ -86,4 +101,4 @@ async function applyCoupon(req, res) {
   }
 }
 
-module.exports = { applyCoupon, createCoupon, getByIdCoupon };
+module.exports = { applyCoupon, createCoupon, getByIdCoupon, getAllCoupons };

@@ -245,3 +245,4 @@ Error: The requested resource could not be found.
 2024-01-17T07:59:22.568Z error: Error in Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client 
 2024-01-17T08:03:08.578Z error: Error in CreateCoupon QueryFailedError: duplicate key value violates unique constraint "UQ_e025109230e82925843f2a14c48" 
 2024-01-17T08:14:48.097Z error: Error in CreateCoupon QueryFailedError: duplicate key value violates unique constraint "UQ_e025109230e82925843f2a14c48" 
+2024-01-17T08:53:27.022Z error: error in getAllCoupons ReferenceError: Like is not defined 

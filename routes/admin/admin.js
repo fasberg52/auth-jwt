@@ -154,6 +154,13 @@ router.get(
   couponController.getByIdCoupon
 );
 
+router.get(
+  "/coupon",
+  jwtAuthMiddleware,
+  //checkRole("admin"),
+  couponController.getAllCoupons
+);
+
 module.exports = router;
 
 /**
