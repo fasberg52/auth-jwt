@@ -19,6 +19,31 @@ async function createCoupon(req, res) {
   }
 }
 
+async function getByIdCoupon(req, res) {
+  try {
+    const { couponId } = req.params;
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const existingCoupon = await couponRepository.findOne({
+      where: { id: couponId },
+    });
+    if (!existingCoupon) {
+      res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+    }
+
+    res.status(200).json(existingCoupon);
+  } catch (error) {
+    logger.error(`Error in ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function getAllCoupons(req, res) {}
+
+async function editCoupon(req, res) {}
+
+async function deleteCoupon(req, res) {}
+
 async function applyCoupon(req, res) {
   const { coupon } = req.body;
 
@@ -36,4 +61,4 @@ async function applyCoupon(req, res) {
   }
 }
 
-module.exports = { applyCoupon, createCoupon };
+module.exports = { applyCoupon, createCoupon ,getByIdCoupon};
