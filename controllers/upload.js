@@ -108,12 +108,11 @@ async function removeUploadByPath(req, res) {
 
     const uploadRepository = getManager().getRepository(Upload);
 
-    // Find the upload by path
+   
     const upload = await uploadRepository.findOne({
       where: { path: uploadPath },
     });
 
-    // Check if upload is null
     if (!upload) {
       return res.status(404).json({
         message: "فایلی پیدا نشد",
@@ -121,7 +120,6 @@ async function removeUploadByPath(req, res) {
       });
     }
 
-    // Check if upload has createdAt property before using it
     const subdirectory = createSubdirectory(upload.createdAt || new Date());
     const filePath = path.resolve(
       __dirname,
@@ -133,14 +131,7 @@ async function removeUploadByPath(req, res) {
 
     await uploadRepository.remove(upload);
 
-    const user = await userRepository.findOne({
-      where: { imageUrl: upload.path },
-    });
-
-    if (user) {
-      user.imageUrl = null;
-      await userRepository.save(user);
-    }
+    
 
     res.status(200).json({
       message: "فایل با موفقیت پاک شد",

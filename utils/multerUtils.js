@@ -20,7 +20,7 @@ const generateUniqueFilename = (originalname, counter) => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const now = new Date()
+    const now = new Date();
     const subdirectory = createSubdirectory(now);
     req.uploadDir = path.join(__dirname, "../uploads", subdirectory);
 
@@ -33,32 +33,37 @@ const storage = multer.diskStorage({
       });
   },
   filename: async (req, file, cb) => {
-    const originalname = file.originalname;
+    try {
+      const originalname = file.originalname;
 
-    let counter = req.fileCounter || 0;
-    let filename;
-    let baseName; 
-    let extension;
+      let counter = req.fileCounter || 0;
+      let filename;
+      let baseName;
+      let extension;
 
-    if (counter === 0) {
-      filename = originalname;
-      baseName = path.basename(originalname, path.extname(originalname));
-      extension = path.extname(originalname);
-    } else {
-      extension = path.extname(originalname);
-      baseName = path.basename(originalname, extension);
-      filename = `${baseName}-${counter}${extension}`;
+      if (counter === 0) {
+        filename = originalname;
+        baseName = path.basename(originalname, path.extname(originalname));
+        extension = path.extname(originalname);
+      } else {
+        extension = path.extname(originalname);
+        baseName = path.basename(originalname, extension);
+        filename = `${baseName}-${counter}${extension}`;
+      }
+
+      while (fs.existsSync(path.join(req.uploadDir, filename))) {
+        counter++;
+        filename = `${baseName}-${counter}${extension}`;
+      }
+
+      req.fileCounter = counter + 1;
+
+      req.uploadFilename = filename;
+
+      cb(null, filename);
+    } catch (error) {
+      return cb(error);
     }
-
-    while (fs.existsSync(path.join(req.uploadDir, filename))) {
-      counter++;
-      filename = `${baseName}-${counter}${extension}`;
-    }
-
-    req.fileCounter = counter + 1;
-
-    req.uploadFilename = filename;
-    cb(null, filename);
   },
 });
 

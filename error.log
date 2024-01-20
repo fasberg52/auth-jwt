@@ -246,3 +246,7 @@ Error: The requested resource could not be found.
 2024-01-17T08:03:08.578Z error: Error in CreateCoupon QueryFailedError: duplicate key value violates unique constraint "UQ_e025109230e82925843f2a14c48" 
 2024-01-17T08:14:48.097Z error: Error in CreateCoupon QueryFailedError: duplicate key value violates unique constraint "UQ_e025109230e82925843f2a14c48" 
 2024-01-17T08:53:27.022Z error: error in getAllCoupons ReferenceError: Like is not defined 
+2024-01-18T05:59:30.658Z error: Error editing part: ReferenceError: videoType is not defined 
+2024-01-18T06:27:58.749Z error: Error retrieving parts with course ID: ReferenceError: calculateTotalDuration is not defined 
+2024-01-18T07:30:10.266Z error: Error retrieving video durations with course ID: ReferenceError: parts is not defined 
+2024-01-18T07:30:58.216Z error: Error retrieving video durations with course ID: ReferenceError: parts is not defined 

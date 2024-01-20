@@ -73,7 +73,7 @@ async function createCartItem(req, res) {
         quantity: defaultQuantity,
       });
       await cartItemsRepository.save(newCartItem);
-      //console.log(newCartItem);
+
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,

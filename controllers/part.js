@@ -99,11 +99,29 @@ async function createPart(req, res) {
 
 async function editPart(req, res) {
   try {
-    const { title, description, icon, videoPath, orderIndex, isFree, noteUrl } =
-      req.body;
+    const {
+      title,
+      description,
+      icon,
+      videoPath,
+      orderIndex,
+      videoType,
+      isFree,
+      noteUrl,
+    } = req.body;
     const partRepository = getManager().getRepository(Part);
     const partId = req.params.id;
     //const videoDuration = await getVideoDuration(videoPath);
+
+    let videoDuration;
+
+    if (videoType === "normal") {
+      videoDuration = req.body.videoDuration;
+    } else if (videoType === "embed") {
+      videoDuration = await getVideoDurationFromApi(videoPath);
+    } else {
+      videoDuration = "00:00:00";
+    }
 
     const existingPart = await partRepository.findOne({
       where: { id: partId },
@@ -117,7 +135,7 @@ async function editPart(req, res) {
       existingPart.orderIndex = orderIndex;
       existingPart.isFree = isFree;
       existingPart.noteUrl = noteUrl;
-      //existingPart.videoDuration = videoDuration;
+      existingPart.videoDuration = videoDuration;
 
       // Save the updated part
       existingPart.lastModified = new Date();
@@ -132,6 +150,7 @@ async function editPart(req, res) {
         orderIndex,
         isFree,
         noteUrl,
+        videoDuration,
         //videoDuration,
       });
 
@@ -227,29 +246,27 @@ async function gatAllPartwithCourseId(req, res) {
 
     const partRepository = getManager().getRepository(Part);
 
-    // Retrieve parts and count
-    const parts = await partRepository.find({
+    const result = await partRepository.find({
       where: { courseId },
+      select: ["videoDuration"],
     });
 
-    if (parts.length === 0) {
+    if (result.length === 0) {
       logger.warn("No parts found for the specified course ID", { courseId });
       return res.status(404).json({ error: "پارت یافت نشد برای دوره" });
     }
 
-    const totalDuration = calculateTotalDuration(parts);
-
-    logger.info("All parts retrieved for course ID", {
+    logger.info("Video durations retrieved for course ID", {
       courseId,
-      parts,
-      totalDuration,
+      result,
     });
 
-    res.json({ parts, totalDuration, status: 200 });
+    res.json({ result, status: 200 });
   } catch (error) {
-    logger.error(`Error retrieving parts with course ID: ${error}`);
+    logger.error(`Error retrieving video durations with course ID: ${error}`);
     res.status(500).json({
-      error: "An error occurred while retrieving parts with course ID.",
+      error:
+        "An error occurred while retrieving video durations with course ID.",
     });
   }
 }
