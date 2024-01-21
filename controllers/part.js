@@ -46,15 +46,22 @@ async function createPart(req, res) {
       return res.status(400).json({ error: "Chapter not found." });
     }
 
-    const [result] = await partRepository.query(
-      'SELECT COUNT(*) FROM parts WHERE "chapterId" = $1',
-      [chapterId]
-    );
-    const partCount = parseInt(result.count);
+    // const [result] = await partRepository.query(
+    //   'SELECT COUNT(*) FROM parts WHERE "chapterId" = $1',
+    //   [chapterId]
+    // );
+    // const partCount = parseInt(result.count);
 
-    console.log(`>> partCount ${partCount}`);
+    // console.log(`>> partCount ${partCount}`);
 
-    const orderIndex = partCount;
+    // const orderIndex = partCount;
+
+    const partCount = await partRepository.count({
+      where: { chapterId },
+    });
+
+    const orderIndex = partCount + 1;
+    
     console.log(`>> orderIndex ${orderIndex}`);
 
     const newPart = partRepository.create({
