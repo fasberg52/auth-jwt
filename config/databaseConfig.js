@@ -44,7 +44,7 @@ async function setupDatabase() {
         SecureLink,
         Coupon,
       ],
-      synchronize: false,
+      synchronize: true,
     });
 
     console.log("Database connection established");

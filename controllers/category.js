@@ -1,6 +1,6 @@
 // category.js
 
-const { getManager } = require("typeorm");
+const { getManager, getRepository,createTrees } = require("typeorm");
 const Category = require("../model/Category");
 const fs = require("fs");
 const multer = require("multer");
@@ -9,43 +9,19 @@ const upload = multer({ dest: "uploads/" });
 
 async function getAllCategories(req, res) {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const skip = (page - 1) * pageSize;
-
-    const sortBy = req.query.sortBy || "id";
-    const sortOrder = req.query.sortOrder || "DESC";
-
-    const categoryRepository = getManager().getRepository(Category);
-    const [categories, totalCount] = await categoryRepository.findAndCount({
-      skip,
-      take: pageSize,
-      order: {
-        [sortBy]: sortOrder,
-      },
+    const categoryRepository = getRepository(Category);
+    const categories = await categoryRepository.find({
+      relations: ["parent", "children"],
     });
 
-    const data = categories.map((category) => {
-      return {
-        id: category.id,
-        name: category.name,
-        description: category.description,
-        icon: category.icon,
-        createdAt: category.createdAt
-          ? moment(category.createdAt).format("jYYYY/jMM/jDD")
-          : null,
-        lastModified: category.lastModified
-          ? moment(category.lastModified).format("jYYYY/jMM/jDD")
-          : null,
-      };
-    });
-
-    res.status(200).json({ data, totalCount, status: 200 });
+    res.status(200).json({ categories, status: 200 });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
 
 // async function createCategory(req, res) {
 //   try {
@@ -62,9 +38,6 @@ async function getAllCategories(req, res) {
 //     });
 //   }
 // }
-
-
-
 
 async function createCategory(req, res) {
   try {

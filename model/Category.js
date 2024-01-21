@@ -34,16 +34,20 @@ const Category = new EntitySchema({
       type: "varchar",
       nullable: true,
     },
+    parentId: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     parent: {
-      type: "ManyToOne",
+      type: "many-to-one",
       target: "Category",
       inverseSide: "children",
       nullable: true,
     },
     children: {
-      type: "OneToMany",
+      type: "one-to-many",
       target: "Category",
       inverseSide: "parent",
     },
