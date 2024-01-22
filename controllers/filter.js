@@ -98,7 +98,7 @@ async function editFilter(req, res) {
 
     const updatedFilter = await filterRepository.save(existingFilter);
     res.status(200).json({
-      message: "با موفقیت ایجاد شد",
+      message: "با موفقیت ویرایش شد",
       updatedFilter,
       status: 200,
     });
@@ -128,12 +128,12 @@ async function getAllFilters(req, res) {
 
 async function deleteFilter(req, res) {
   try {
-    const { id } = req.params;
+    const { filterId } = req.params;
 
     const filterRepository = getRepository(Filter);
 
     const filterToDelete = await filterRepository.findOne({
-      where: { id },
+      where: { id: filterId },
       relations: ["children"],
     });
 

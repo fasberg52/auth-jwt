@@ -132,6 +132,12 @@ router.put(
   checkRole("admin"),
   filterController.editFilter
 );
+router.delete(
+  "/filter/:filterId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  filterController.deleteFilter
+);
 router.get("/filter", jwtAuthMiddleware, filterController.getAllFilters);
 
 router.get(
