@@ -9,6 +9,7 @@ const categoryController = require("../../controllers/category");
 const tagController = require("../../controllers/tag");
 const orderController = require("../../controllers/order");
 const couponController = require("../../controllers/coupon");
+const filterController = require("../../controllers/filter");
 const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
@@ -115,6 +116,15 @@ router.post(
   jwtAuthMiddleware,
   checkRole("admin"),
   tagController.createTag
+);
+
+//Filters
+
+router.post(
+  "/fitler",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  filterController.createFilter
 );
 
 router.get(
