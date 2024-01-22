@@ -1,18 +1,21 @@
 // category.js
 
-const { getManager, getRepository,createTrees } = require("typeorm");
+const { getManager, getRepository } = require("typeorm");
 const Category = require("../model/Category");
 const fs = require("fs");
-const multer = require("multer");
-const moment = require("jalali-moment");
-const upload = multer({ dest: "uploads/" });
+
 
 async function getAllCategories(req, res) {
   try {
     const categoryRepository = getRepository(Category);
-    const categories = await categoryRepository.find({
-      relations: ["parent", "children"],
-    });
+
+    const categories = await categoryRepository
+      .createQueryBuilder("category")
+      .select(["category.id", "category.name", "category.parentId"])
+      .addSelect(["child.id", "child.name", "child.parentId"])
+      .leftJoin("category.children", "child")
+      .orderBy("category.id", "ASC")
+      .getMany();
 
     res.status(200).json({ categories, status: 200 });
   } catch (error) {
@@ -20,7 +23,6 @@ async function getAllCategories(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 
 
 // async function createCategory(req, res) {

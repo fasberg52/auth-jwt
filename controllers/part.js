@@ -3,10 +3,7 @@ const { getManager } = require("typeorm");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
 // const SecureLink = require("../model/secureLink");
-const axios = require("axios");
 const logger = require("../services/logger");
-const crypto = require("crypto");
-const dotenv = require("dotenv").config();
 const { getVideoDurationFromApi } = require("../services/video.api");
 
 
