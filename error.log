@@ -250,3 +250,9 @@ Error: The requested resource could not be found.
 2024-01-18T06:27:58.749Z error: Error retrieving parts with course ID: ReferenceError: calculateTotalDuration is not defined 
 2024-01-18T07:30:10.266Z error: Error retrieving video durations with course ID: ReferenceError: parts is not defined 
 2024-01-18T07:30:58.216Z error: Error retrieving video durations with course ID: ReferenceError: parts is not defined 
+2024-01-22T08:17:32.972Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:18:44.757Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:19:00.334Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:20:18.788Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:20:21.728Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:20:42.193Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 

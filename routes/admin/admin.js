@@ -121,7 +121,7 @@ router.post(
 //Filters
 
 router.post(
-  "/fitler",
+  "/filter",
   jwtAuthMiddleware,
   checkRole("admin"),
   filterController.createFilter

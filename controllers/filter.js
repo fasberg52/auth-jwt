@@ -22,7 +22,7 @@ async function createFilter(req, res) {
       name,
     });
 
-    const result = await filterRepository(newFilter);
+    const result = await filterRepository.save(newFilter); 
 
     res
       .status(201)

@@ -14,6 +14,7 @@ const Enrollment = require("../model/Enrollment");
 const Tags = require("../model/Tags");
 const SecureLink = require("../model/secureLink");
 const Coupon = require("../model/Coupon");
+const Filter = require("../model/Filter");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -43,8 +44,9 @@ async function setupDatabase() {
         Tags,
         SecureLink,
         Coupon,
+        Filter,
       ],
-      synchronize: false,
+      synchronize: true,
     });
 
     console.log("Database connection established");
