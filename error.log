@@ -271,3 +271,11 @@ Error: The requested resource could not be found.
 2024-01-22T09:10:29.558Z error: Error in getCourseById for courseId filter
  
 [object Object]
+2024-01-22T10:20:07.045Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'where') 
+2024-01-22T10:27:30.061Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
+2024-01-22T10:30:18.849Z error: Error in editFilter >> Error: You must provide selection conditions in order to find a single row. 
+2024-01-22T10:31:19.364Z error: Error in editFilter >> Error: You must provide selection conditions in order to find a single row. 
+2024-01-22T10:31:44.165Z error: Error in editFilter >> Error: You must provide selection conditions in order to find a single row. 
+2024-01-22T10:32:09.465Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
+2024-01-22T10:32:21.986Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
+2024-01-22T10:33:36.984Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 

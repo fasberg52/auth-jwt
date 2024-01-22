@@ -45,30 +45,59 @@ async function editFilter(req, res) {
 
     const filterRepository = getRepository(Filter);
 
-    const existingFilter = await filterRepository.findOne(id);
+    const existingFilter = await filterRepository.findOne({
+      where: { id },
+      relations: ["children"],
+    });
 
     if (!existingFilter) {
-      return res.status(404).json({ error: "Filter not found" });
+      return res.status(404).json({ error: "فیلتر وجود ندارد" });
     }
 
     existingFilter.name = name;
 
-    const updatedFilter = await filterRepository.save(existingFilter);
-
-    // Add new child filters
     if (children && children.length > 0) {
-      const childFilters = children.map((child) =>
-        filterRepository.create({
-          name: child.name,
-          parent: updatedFilter,
-        })
-      );
+      const updatedChildren = [];
 
-      await filterRepository.save(childFilters);
+      for (const child of children) {
+        const existingChild = existingFilter.children.find(
+          (c) => c.id === child.id
+        );
+
+        if (existingChild) {
+          existingChild.name = child.name;
+          await filterRepository.save(existingChild);
+          updatedChildren.push(existingChild);
+        } else {
+          const newChild = filterRepository.create({
+            name: child.name,
+            parent: existingFilter,
+          });
+          existingFilter.children.push(newChild);
+          await filterRepository.save(newChild);
+          updatedChildren.push(newChild);
+        }
+      }
+
+      existingFilter.children.forEach(async (child) => {
+        if (
+          !updatedChildren.find((updatedChild) => updatedChild.id === child.id)
+        ) {
+          await filterRepository.remove(child);
+        }
+      });
+
+      existingFilter.children = updatedChildren;
+    } else {
+      existingFilter.children.forEach(async (child) => {
+        await filterRepository.remove(child);
+      });
+      existingFilter.children = [];
     }
 
+    const updatedFilter = await filterRepository.save(existingFilter);
     res.status(200).json({
-      message: "Filter updated successfully",
+      message: "با موفقیت ایجاد شد",
       updatedFilter,
       status: 200,
     });
@@ -96,4 +125,8 @@ async function getAllFilters(req, res) {
   }
 }
 
-module.exports = { createFilter, getAllFilters, editFilter };
+async function deletFilter(req, res) {
+
+  
+}
+module.exports = { createFilter, getAllFilters, editFilter, deletFilter };

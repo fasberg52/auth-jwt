@@ -126,6 +126,12 @@ router.post(
   checkRole("admin"),
   filterController.createFilter
 );
+router.put(
+  "/filter",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  filterController.editFilter
+);
 router.get("/filter", jwtAuthMiddleware, filterController.getAllFilters);
 
 router.get(
