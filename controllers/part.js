@@ -5,13 +5,10 @@ const Chapter = require("../model/Chapter");
 // const SecureLink = require("../model/secureLink");
 const axios = require("axios");
 const logger = require("../services/logger");
-const ffmpeg = require("fluent-ffmpeg");
 const crypto = require("crypto");
 const dotenv = require("dotenv").config();
 const { getVideoDurationFromApi } = require("../services/video.api");
 
-ffmpeg.setFfmpegPath("C:/Program Files (x86)/ffmpeg/bin/ffmpeg");
-//ffmpeg.setFfprobePath(`${process.env.FFPROBE_PATH}`);
 
 async function createPart(req, res) {
   try {

@@ -45,15 +45,16 @@ async function createCategory(req, res) {
 
     let parentCategory = null;
     if (parent && parent.id) {
-      const parentRepository = getManager().getRepository(Category);
+      const parentRepository = getRepository(Category);
       parentCategory = await parentRepository.findOne({
         where: { id: parent.id },
       });
       if (!parentCategory) {
-        return res.status(404).json({ error: "دسته واد پیدا نشد" });
+        return res.status(404).json({ error: "دسته پیدا نشد" });
       }
     }
-    const categoryRepository = getManager().getRepository(Category);
+
+    const categoryRepository = getRepository(Category);
 
     const newCategory = categoryRepository.create({
       name,
@@ -68,6 +69,12 @@ async function createCategory(req, res) {
 
     const savedCategory = await categoryRepository.save(newCategory);
 
+    if (!savedCategory) {
+      return res.status(500).json({
+        error: "Failed to save the category",
+      });
+    }
+
     res
       .status(201)
       .json({ message: "با موفقیت ساخته شد", savedCategory, status: 201 });
@@ -78,6 +85,7 @@ async function createCategory(req, res) {
     });
   }
 }
+
 async function updateCategory(req, res) {
   try {
     const categoryId = req.params.categoryId;
