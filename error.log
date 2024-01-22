@@ -259,3 +259,15 @@ Error: The requested resource could not be found.
 2024-01-22T08:22:51.816Z error: Error in createFilter >> ReferenceError: id is not defined 
 2024-01-22T08:28:51.950Z error: Error in createFilter >> ReferenceError: Cannot access 'filterRepository' before initialization 
 2024-01-22T08:29:44.209Z error: Error in createFilter >> ReferenceError: Cannot access 'filterRepository' before initialization 
+2024-01-22T09:08:05.542Z error: Error in getCourseById for courseId filter
+ 
+[object Object]
+2024-01-22T09:09:47.893Z error: Error in getCourseById for courseId filter
+ 
+[object Object]
+2024-01-22T09:10:15.315Z error: Error in getCourseById for courseId filter
+ 
+[object Object]
+2024-01-22T09:10:29.558Z error: Error in getCourseById for courseId filter
+ 
+[object Object]

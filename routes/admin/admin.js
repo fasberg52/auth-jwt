@@ -126,6 +126,7 @@ router.post(
   checkRole("admin"),
   filterController.createFilter
 );
+router.get("/filter", jwtAuthMiddleware, filterController.getAllFilters);
 
 router.get(
   "/tags",

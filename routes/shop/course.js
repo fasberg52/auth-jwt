@@ -1,4 +1,5 @@
 const courseController = require("../../controllers/course");
+
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { validToken } = require("../../middleware/ajvMiddlerware");
 
@@ -29,5 +30,8 @@ router.get(
   jwtAuthMiddleware,
   enrollmentController.getVideoPathAfterEnroll
 );
+
+
+
 
 module.exports = router;
