@@ -2,6 +2,7 @@ const Filter = require("../model/Filter");
 
 const { getRepository } = require("typeorm");
 const logger = require("../services/logger");
+const { filter } = require("compression");
 async function createFilter(req, res) {
   try {
     const { name, children } = req.body;
@@ -125,8 +126,39 @@ async function getAllFilters(req, res) {
   }
 }
 
-async function deletFilter(req, res) {
+async function deleteFilter(req, res) {
+  try {
+    const { id } = req.params;
 
-  
+    const filterRepository = getRepository(Filter);
+
+    const filterToDelete = await filterRepository.findOne({
+      where: { id },
+      relations: ["children"],
+    });
+
+    if (!filterToDelete) {
+      return res.status(404).json({ error: "فیلتر وجود ندارد" });
+    }
+
+    if (filterToDelete.children && filterToDelete.children.length > 0) {
+      await Promise.all(
+        filterToDelete.children.map(async (child) => {
+          await filterRepository.remove(child);
+        })
+      );
+    }
+
+    await filterRepository.remove(filterToDelete);
+
+    res.status(200).json({
+      message: "با موفقیت حذف شد",
+      status: 200,
+    });
+  } catch (error) {
+    logger.error(`Error in deleteFilter >> ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
-module.exports = { createFilter, getAllFilters, editFilter, deletFilter };
+
+module.exports = { createFilter, getAllFilters, editFilter, deleteFilter };
