@@ -256,3 +256,6 @@ Error: The requested resource could not be found.
 2024-01-22T08:20:18.788Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
 2024-01-22T08:20:21.728Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
 2024-01-22T08:20:42.193Z error: Error in createFilter >> EntityMetadataNotFoundError: No metadata for "Filter" was found. 
+2024-01-22T08:22:51.816Z error: Error in createFilter >> ReferenceError: id is not defined 
+2024-01-22T08:28:51.950Z error: Error in createFilter >> ReferenceError: Cannot access 'filterRepository' before initialization 
+2024-01-22T08:29:44.209Z error: Error in createFilter >> ReferenceError: Cannot access 'filterRepository' before initialization 
