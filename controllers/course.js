@@ -1,11 +1,11 @@
 //controllers/course.js
 const Courses = require("../model/Course");
-const jalaliMoment = require("jalali-moment");
-const { getManager } = require("typeorm");
+const Filter = require("../model/Filter");
+
+const { getManager, Brackets } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
-const User = require("../model/users");
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 //const cacheService = require("../services/cacheService");
@@ -14,21 +14,13 @@ async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 20;
+    const pageSize = parseInt(req.query.page) || 10;
     const sortBy = req.query.sortBy || "id";
     const sortOrder = req.query.sortOrder || "DESC";
-    const filters = req.query.filters || [];
+    const searchQuery = req.query.search || "";
 
-    if (isNaN(page) || isNaN(pageSize) || page < 1 || pageSize < 1) {
-      return res.status(400).json({ error: "Invalid page or pageSize" });
-    }
-
-    const totalCourseCount = await courseRepository.count();
-
-    const totalPages = Math.ceil(totalCourseCount / pageSize);
-
-    if (page > totalPages) {
-      return res.status(400).json({ error: `Invalid page number` });
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ error: "Invalid page number" });
     }
 
     const offset = (page - 1) * pageSize;
@@ -36,6 +28,7 @@ async function getAllCourse(req, res) {
     const queryBuilder = courseRepository
       .createQueryBuilder("course")
       .leftJoinAndSelect("course.category", "category")
+      .leftJoin("course.filters", "filter")
       .select([
         "course.id",
         "course.title",
@@ -49,16 +42,13 @@ async function getAllCourse(req, res) {
         "course.discountExpiration",
         "course.createdAt",
         "course.lastModified",
-      ])
-      .addSelect(["category.name"]);
+        "filter.id",
+        "filter.name",
+      ]);
 
-    if (filters.length > 0) {
-      queryBuilder.andWhere((qb) => {
-        filters.forEach((filter, index) => {
-          qb.orWhere(`category.name = :filter${index}`, {
-            [`filter${index}`]: filter,
-          });
-        });
+    if (searchQuery) {
+      queryBuilder.andWhere("course.title ILIKE :searchQuery", {
+        searchQuery: `%${searchQuery}%`,
       });
     }
 
@@ -71,10 +61,10 @@ async function getAllCourse(req, res) {
     res.json({
       courses,
       totalCount,
-      totalPages,
+      totalPages: Math.ceil(totalCount / pageSize),
     });
   } catch (error) {
-    logger.error("Error in getAllCourse", error);
+    console.error("Error in getAllCourse", error);
     res
       .status(500)
       .json({ error: "An error occurred while fetching courses." });

@@ -160,7 +160,6 @@ async function getAdminCourseById(req, res) {
     const courseRepository = getManager().getRepository(Courses);
     const courseId = req.params.courseId;
 
-    // Fetch the course with related chapters, parts, and category
     const existingCourse = await courseRepository
       .createQueryBuilder("course")
       .leftJoin("course.category", "category")
@@ -182,7 +181,7 @@ async function getAdminCourseById(req, res) {
         "course.lastModified",
       ])
       .addSelect(["category.id", "category.name"])
-      .addSelect(["filter.id", "filter.name"])
+      .addSelect(["filter.id"])
       .addSelect(["chapter.id", "chapter.title", "chapter.orderIndex"])
       .addSelect([
         "part.id",
@@ -202,6 +201,13 @@ async function getAdminCourseById(req, res) {
 
     if (existingCourse) {
       logger.info(`getCourseById successful for courseId ${courseId}`);
+
+      // const filterIds = existingCourse.filters.map(filter => filter.id);
+
+      // delete existingCourse.filters;
+
+
+      // existingCourse.filters = filterIds;
 
       res.json(existingCourse);
     } else {

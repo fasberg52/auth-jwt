@@ -2,7 +2,6 @@ const Filter = require("../model/Filter");
 
 const { getRepository } = require("typeorm");
 const logger = require("../services/logger");
-const { filter } = require("compression");
 async function createFilter(req, res) {
   try {
     const { name, children } = req.body;
@@ -135,8 +134,6 @@ async function getAllFilters(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
 
 async function deleteFilter(req, res) {
   try {
