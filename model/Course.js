@@ -58,11 +58,19 @@ const Course = new EntitySchema({
     backgroundColor: {
       type: "text",
       nullable: true,
-      default:"rgba(196,0,136,0.711922268907563)"
+      default: "rgba(196,0,136,0.711922268907563)",
     },
-
   },
   relations: {
+    filters: {
+      type: "many-to-many",
+      target: "Filter",
+      joinTable: {
+        name: "course_filters",
+        joinColumn: { name: "courseId", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "filterId", referencedColumnName: "id" },
+      },
+    },
     category: {
       type: "many-to-one",
       target: "Category",

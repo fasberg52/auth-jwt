@@ -279,3 +279,27 @@ Error: The requested resource could not be found.
 2024-01-22T10:32:09.465Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
 2024-01-22T10:32:21.986Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
 2024-01-22T10:33:36.984Z error: Error in editFilter >> TypeError: Cannot read properties of undefined (reading 'find') 
+2024-01-23T07:19:32.944Z error: Error in getAllFilters >> TypeError: Cannot read properties of undefined (reading 'operator') 
+2024-01-23T07:21:35.899Z error: Error in getAllFilters >> TypeError: Cannot read properties of undefined (reading 'operator') 
+2024-01-23T07:55:13.804Z error: Error in getAllFilters >> TypeORMError: QueryBuilder parameter keys may only contain numbers, letters, underscores, or periods. 
+2024-01-23T07:57:10.805Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T07:57:32.151Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T07:58:47.185Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T08:01:00.606Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T08:01:40.222Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T08:02:33.705Z error: Error in getAllFilters >> TypeORMError: QueryBuilder parameter keys may only contain numbers, letters, underscores, or periods. 
+2024-01-23T08:03:34.469Z error: Error in getAllFilters >> TypeError: search.split is not a function 
+2024-01-23T08:07:11.865Z error: Error in getAllFilters >> ReferenceError: Brackets is not defined 
+2024-01-23T08:08:04.806Z error: Error in getAllFilters >> ReferenceError: Brackets is not defined 
+2024-01-23T08:09:53.742Z error: Error in getAllFilters >> ReferenceError: Brackets is not defined 
+2024-01-23T08:55:00.479Z error: Error in getAllCourse
+at E:\Desktop\postgress\controllers\course.js:57:17
+at SelectQueryBuilder.getWhereCondition (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\QueryBuilder.js:1097:20)
+at SelectQueryBuilder.andWhere (E:\Desktop\postgress\node_modules\.pnpm\typeorm@0.3.17_pg@8.11.3\node_modules\typeorm\query-builder\SelectQueryBuilder.js:359:29)
+at getAllCourse (E:\Desktop\postgress\controllers\course.js:56:20)
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+ 
+TypeError: filters.forEach is not a function
+2024-01-23T08:56:51.633Z error: Error in getCourseById for courseId 98
+ 
+[object Object]

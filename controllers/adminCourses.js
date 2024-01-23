@@ -1,6 +1,8 @@
 //adminCourseController.js
 const Courses = require("../model/Course");
 const Category = require("../model/Category");
+const Filter = require("../model/Filter");
+
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 async function addCourse(req, res) {
@@ -16,6 +18,7 @@ async function addCourse(req, res) {
       discountPrice,
       discountStart,
       discountExpiration,
+      filters,
     } = req.body;
 
     if (discountPrice && discountPrice >= price) {
@@ -50,6 +53,12 @@ async function addCourse(req, res) {
       discountExpiration,
     });
 
+    if (filters && filters.length > 0) {
+      const filterRepository = getManager().getRepository(Filter);
+      const courseFilters = await filterRepository.findByIds(filters);
+      newCourse.filters = courseFilters;
+    }
+
     const result = await courseRepository.save(newCourse);
     console.log(`result >>> ${result}`);
 
@@ -75,12 +84,15 @@ async function editCourse(req, res) {
       discountPrice,
       discountStart,
       discountExpiration,
+      filters,
     } = req.body;
+
     const courseRepository = getManager().getRepository(Courses);
     const idCourse = req.params.id;
 
     const existingCourse = await courseRepository.findOne({
       where: { id: idCourse },
+      relations: ["filters"],
     });
 
     if (existingCourse) {
@@ -102,7 +114,14 @@ async function editCourse(req, res) {
         existingCourse.category = category;
       }
 
-      // Save the updated course
+      if (filters && filters.length > 0) {
+        const filterRepository = getManager().getRepository(Filter);
+        const courseFilters = await filterRepository.findByIds(filters);
+        existingCourse.filters = courseFilters;
+      } else {
+        existingCourse.filters = [];
+      }
+
       existingCourse.lastModified = new Date();
       const result = await courseRepository.save(existingCourse);
 
@@ -110,7 +129,6 @@ async function editCourse(req, res) {
         .status(200)
         .json({ message: "دوره بروز رسانی شد", result, status: 200 });
     } else {
-      // Move the 404 response here
       res.status(404).json({ error: "دوره ای پیدا نشد" });
     }
   } catch (error) {
@@ -148,6 +166,7 @@ async function getAdminCourseById(req, res) {
       .leftJoin("course.category", "category")
       .leftJoin("course.chapters", "chapter")
       .leftJoin("chapter.parts", "part")
+      .leftJoin("course.filters","filter")
       .select([
         "course.id",
         "course.title",
@@ -163,6 +182,7 @@ async function getAdminCourseById(req, res) {
         "course.lastModified",
       ])
       .addSelect(["category.id", "category.name"])
+      .addSelect(["filter.id", "filter.name"])
       .addSelect(["chapter.id", "chapter.title", "chapter.orderIndex"])
       .addSelect([
         "part.id",

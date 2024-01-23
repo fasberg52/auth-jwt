@@ -11,30 +11,16 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 //const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
-  //const cacheKey = "allCourses";
-  //console.log(`cacheKey >>> ${cacheKey}`);
-
   try {
-    // const cachedData = await cacheService.get(cacheKey);
-    // console.log(`cacheKey >>> ${cachedData}`);
-    // if (cachedData !== undefined) {
-    //   console.log("Data found in cache. Returning cached data.");
-    //   const { courses } = cachedData;
-    //   console.log(cacheKey);
-    //   // If data is found in the cache, return it
-    //   return res.json({ courses: courses });
-    // } else {
-    //console.log("Data not found in cache. Fetching from the database.");
-
     const courseRepository = getManager().getRepository(Courses);
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
     const sortBy = req.query.sortBy || "id";
     const sortOrder = req.query.sortOrder || "DESC";
-    const search = req.query.search || "";
+    const filters = req.query.filters || [];
 
     if (isNaN(page) || isNaN(pageSize) || page < 1 || pageSize < 1) {
-      return res.status(400).json({ error: "صفحه مورد نظر وجود ندارد" });
+      return res.status(400).json({ error: "Invalid page or pageSize" });
     }
 
     const totalCourseCount = await courseRepository.count();
@@ -42,14 +28,12 @@ async function getAllCourse(req, res) {
     const totalPages = Math.ceil(totalCourseCount / pageSize);
 
     if (page > totalPages) {
-      return res
-        .status(400)
-        .json({ error: `بیشتر از ${totalPages} صفحه نداریم` });
+      return res.status(400).json({ error: `Invalid page number` });
     }
 
     const offset = (page - 1) * pageSize;
 
-    const [courses, totalCount] = await courseRepository
+    const queryBuilder = courseRepository
       .createQueryBuilder("course")
       .leftJoinAndSelect("course.category", "category")
       .select([
@@ -66,40 +50,34 @@ async function getAllCourse(req, res) {
         "course.createdAt",
         "course.lastModified",
       ])
-      .addSelect(["category.name"])
-      .where("course.title LIKE :search", { search: `%${search}%` })
+      .addSelect(["category.name"]);
+
+    if (filters.length > 0) {
+      queryBuilder.andWhere((qb) => {
+        filters.forEach((filter, index) => {
+          qb.orWhere(`category.name = :filter${index}`, {
+            [`filter${index}`]: filter,
+          });
+        });
+      });
+    }
+
+    const [courses, totalCount] = await queryBuilder
       .orderBy(`course.${sortBy}`, sortOrder)
       .skip(offset)
       .take(pageSize)
       .getManyAndCount();
-
-    // await cacheService.set(
-    //   cacheKey,
-    //   { courses: jalaliCourses, totalCount },
-    //   86400 * 1000
-    // );
-
-    logger.info("getAllCourse successful", {
-      page,
-      pageSize,
-      sortBy,
-      sortOrder,
-      search,
-    });
 
     res.json({
       courses,
       totalCount,
       totalPages,
     });
-    // }
   } catch (error) {
-    //console.log(error);
     logger.error("Error in getAllCourse", error);
-
     res
       .status(500)
-      .json({ error: "An error occurred while creating the getAllCourse." });
+      .json({ error: "An error occurred while fetching courses." });
   }
 }
 

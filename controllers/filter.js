@@ -110,14 +110,24 @@ async function editFilter(req, res) {
 
 async function getAllFilters(req, res) {
   try {
+    const { search } = req.query;
+
     const filterRepository = getRepository(Filter);
 
-    const filtersWithHierarchy = await filterRepository
+    const queryBuilder = filterRepository
       .createQueryBuilder("filter")
       .leftJoin("filter.children", "children")
       .select(["filter.id", "filter.name", "children.id", "children.name"])
-      .where("filter.parent IS NULL")
-      .getMany();
+      .where("filter.parent IS NULL");
+
+    if (search) {
+      queryBuilder.andWhere(
+        "(filter.name LIKE :search OR children.name LIKE :search)",
+        { search: `%${search}%` }
+      );
+    }
+
+    const filtersWithHierarchy = await queryBuilder.getMany();
 
     res.status(200).json({ filters: filtersWithHierarchy });
   } catch (error) {
@@ -125,6 +135,8 @@ async function getAllFilters(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
 
 async function deleteFilter(req, res) {
   try {
