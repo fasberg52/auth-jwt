@@ -2,7 +2,7 @@
 const Courses = require("../model/Course");
 const Filter = require("../model/Filter");
 
-const { getManager, Brackets } = require("typeorm");
+const { getManager, Brackets, getRepository } = require("typeorm");
 const { convertToJalaliDate } = require("../services/jalaliService");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
@@ -13,11 +13,13 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
+    const filterRepository = getRepository(Filter);
+
     const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.page) || 10;
+    const pageSize = parseInt(req.query.pageSize) || 10;
     const sortBy = req.query.sortBy || "id";
     const sortOrder = req.query.sortOrder || "DESC";
-    const searchQuery = req.query.search || "";
+    const searchQuery = req.query.search || null;
 
     if (isNaN(page) || page < 1) {
       return res.status(400).json({ error: "Invalid page number" });
@@ -42,8 +44,6 @@ async function getAllCourse(req, res) {
         "course.discountExpiration",
         "course.createdAt",
         "course.lastModified",
-        "filter.id",
-        "filter.name",
       ]);
 
     if (searchQuery) {

@@ -1,0 +1,16 @@
+type Filter {
+  id: Int
+  name: String
+  slug: String
+}
+
+type Course {
+  id: Int
+  title: String
+  description: String
+  filters: [Filter]
+}
+
+type Query {
+  getFiltersForCourse(courseId: Int!): Course
+}

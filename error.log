@@ -666,3 +666,10 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-23T13:21:46.943Z error: Error in getCourseById for courseId allcoursesریاضی
  
 [object Object]
+2024-01-24T09:21:54.143Z error: Error in getAllFiltersWithQuery >> QueryFailedError: column course.grade does not exist 
+2024-01-24T09:23:02.192Z error: Error in getAllFiltersWithQuery >> QueryFailedError: column course.grade does not exist 
+2024-01-24T09:23:20.855Z error: Error in getAllFiltersWithQuery >> QueryFailedError: column course.grade does not exist 
+2024-01-24T09:25:16.021Z error: Error in getAllFiltersWithQuery >> QueryFailedError: column filters.grade does not exist 
+2024-01-24T09:26:24.185Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T09:26:39.275Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T09:26:43.635Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 

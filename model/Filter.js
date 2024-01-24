@@ -14,6 +14,11 @@ const Filter = new EntitySchema({
     name: {
       type: "varchar",
     },
+    slug: {
+      type: "varchar",
+      unique: true,
+      nullable: true,
+    },
     createdAt: {
       type: "timestamp",
       createDate: true,

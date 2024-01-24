@@ -1,5 +1,5 @@
 const courseController = require("../../controllers/course");
-
+const filterController = require("../../controllers/filter")
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { validToken } = require("../../middleware/ajvMiddlerware");
 
@@ -9,6 +9,8 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
+router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersWithQuery);
+
 
 router.post(
   "/my-courses",
