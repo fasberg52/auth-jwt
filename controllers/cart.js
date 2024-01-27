@@ -101,14 +101,12 @@ async function getUserCart(req, res) {
     });
 
     if (!userCart) {
-      return res
-        .status(200)
-        .json({
-          cartData: [],
-          totalCartPrice: 0,
-          totalCartPriceCoupon: 0,
-          status: 200,
-        });
+      return res.status(200).json({
+        cartData: [],
+        totalCartPrice: 0,
+        totalCartPriceCoupon: 0,
+        status: 200,
+      });
     }
 
     const cartItems = await cartItemsRepository
@@ -230,8 +228,6 @@ async function applyCoupon(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-
 
 module.exports = {
   createCartItem,

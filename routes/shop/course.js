@@ -9,6 +9,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
+//router.get("/search/allcourses", jwtAuthMiddleware, courseController.searchGetAllCourse);
 router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersWithQuery);
 
 
