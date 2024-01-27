@@ -28,8 +28,6 @@
     "express-rate-limit": "^7.1.4",
     "express-session": "^1.17.3",
     "fs-extra": "^11.1.1",
-    "graphql": "^15.3.0",
-    "graphql-http": "^1.22.0",
     "jalali-moment": "^3.3.11",
     "jsonwebtoken": "^9.0.1",
     "kavenegar": "^1.1.4",

@@ -10,19 +10,14 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
-// const CourseResolver = require("./model/courseResolver");
-// const {createHandler } =require("graphql-http")
+
 const app = express();
 
 app.disable("x-powered-by");
 
 
 
-// const resolvers = {
-//   Query: {
-//     getFiltersForCourse: CourseResolver.getFiltersForCourse,
-//   },
-// };
+
 async function main() {
   try {
    
@@ -47,15 +42,14 @@ async function main() {
         origin: [
           "https://baclass.iran.liara.run",
           "https://beta.balcass.online",
-          "http://192.168.70.101",
-          "http://192.168.70.101:5173",
+          "http://192.168.1.113",
+          "http://192.168.1.113:5173",
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
     );
     app.use(compression());
-   // app.use("/graphql",createHandler({schema,rootValue}))
 
     routerConfig(app);
     app.listen(process.env.PORT, () => {

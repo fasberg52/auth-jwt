@@ -56,12 +56,6 @@ dependencies:
   fs-extra:
     specifier: ^11.1.1
     version: 11.1.1
-  graphql:
-    specifier: ^15.3.0
-    version: 15.3.0
-  graphql-http:
-    specifier: ^1.22.0
-    version: 1.22.0(graphql@15.3.0)
   jalali-moment:
     specifier: ^3.3.11
     version: 3.3.11
@@ -1447,20 +1441,6 @@ packages:
   /graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
-
-  /graphql-http@1.22.0(graphql@15.3.0):
-    resolution: {integrity: sha512-9RBUlGJWBFqz9LwfpmAbjJL/8j/HCNkZwPBU5+Bfmwez+1Ay43DocMNQYpIWsWqH0Ftv6PTNAh2aRnnMCBJgLw==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      graphql: '>=0.11 <=16'
-    dependencies:
-      graphql: 15.3.0
-    dev: false
-
-  /graphql@15.3.0:
-    resolution: {integrity: sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==}
-    engines: {node: '>= 10.x'}
-    dev: false
 
   /has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
