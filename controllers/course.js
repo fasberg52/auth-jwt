@@ -50,6 +50,9 @@ async function getAllCourse(req, res) {
       queryBuilder.andWhere("course.title ILIKE :searchQuery", {
         searchQuery: `%${searchQuery}%`,
       });
+    } else if (req.query.search === "") {
+      const courses = [];
+      return res.status(200).json(courses);
     }
 
     const [courses, totalCount] = await queryBuilder
@@ -303,7 +306,6 @@ async function getCourseUserWithToken(req, res) {
       orderDate: convertToJalaliDate(course.orderDate),
     }));
 
-    console.log(jalaliEnrolledCourses);
     res.status(200).json({
       enrolledCourses: jalaliEnrolledCourses,
       totalCount,

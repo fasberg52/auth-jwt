@@ -689,3 +689,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-25T08:51:15.841Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near "ARRAY" 
 2024-01-25T08:51:49.933Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
 2024-01-25T08:51:53.533Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-27T10:06:18.902Z error: Error in getAllFiltersForCourses >> QueryFailedError: column course.image does not exist 

@@ -188,7 +188,10 @@ async function getAllFiltersForCourses(req, res) {
       .select([
         "course.id",
         "course.title",
-        "course.description",
+        "course.price",
+        "course.imageUrl",
+        "course.discountPrice",
+        "course.createdAt",
         "filter.id",
         "filter.name",
         "filter.slug",
@@ -216,7 +219,10 @@ async function getAllFiltersForCourses(req, res) {
         return {
           id: course.id,
           title: course.title,
-          description: course.description,
+          imageUrl: course.imageUrl,
+          price: course.price,
+          discountPrice: course.discountPrice,
+          createdAt:course.createdAt,
           filters: filters,
         };
       });
