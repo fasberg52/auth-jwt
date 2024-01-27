@@ -9,7 +9,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
-router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersWithQuery);
+router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersForCourses);
 
 
 router.post(

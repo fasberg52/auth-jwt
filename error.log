@@ -673,3 +673,19 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-24T09:26:24.185Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
 2024-01-24T09:26:39.275Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
 2024-01-24T09:26:43.635Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T17:31:39.423Z error: Error in createFilter >> TypeError: children.map is not a function 
+2024-01-24T19:04:51.498Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T21:01:32.339Z error: Error in getAllFiltersForCourses >> QueryFailedError: function group_concat(integer) does not exist 
+2024-01-24T21:03:15.506Z error: Error in getAllFiltersForCourses >> TypeError: searchQuery.split is not a function 
+2024-01-24T21:05:22.580Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near ":" 
+2024-01-24T21:05:38.709Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near ":" 
+2024-01-24T21:06:13.745Z error: Error in getAllFiltersForCourses >> ReferenceError: filterIds is not defined 
+2024-01-24T21:06:44.591Z error: Error in getAllFiltersForCourses >> ReferenceError: filterIds is not defined 
+2024-01-24T21:10:10.196Z error: Error in getAllFiltersForCourses >> QueryFailedError: invalid input syntax for type integer: "NaN" 
+2024-01-24T21:10:31.855Z error: Error in getAllFiltersForCourses >> QueryFailedError: invalid input syntax for type integer: "NaN" 
+2024-01-25T08:48:52.506Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:48:55.279Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:50:11.302Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:51:15.841Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near "ARRAY" 
+2024-01-25T08:51:49.933Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:51:53.533Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 

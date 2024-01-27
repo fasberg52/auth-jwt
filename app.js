@@ -10,22 +10,13 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
-// const CourseResolver = require("./model/courseResolver");
-// const {createHandler } =require("graphql-http")
 const app = express();
 
 app.disable("x-powered-by");
 
 
-
-// const resolvers = {
-//   Query: {
-//     getFiltersForCourse: CourseResolver.getFiltersForCourse,
-//   },
-// };
 async function main() {
   try {
-   
     await setupDatabase();
     configureSession(app);
     app.set("trust proxy", 1);
@@ -54,9 +45,8 @@ async function main() {
         credentials: true,
       })
     );
-    app.use(compression());
-   // app.use("/graphql",createHandler({schema,rootValue}))
 
+    app.use(compression());
     routerConfig(app);
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
