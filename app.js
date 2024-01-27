@@ -10,11 +10,20 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49214696cbf347cd1155ad8188b1e83207f66417
 const app = express();
 
 app.disable("x-powered-by");
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 49214696cbf347cd1155ad8188b1e83207f66417
 async function main() {
   try {
     await setupDatabase();
@@ -38,13 +47,17 @@ async function main() {
         origin: [
           "https://baclass.iran.liara.run",
           "https://beta.balcass.online",
-          "http://192.168.70.101",
-          "http://192.168.70.101:5173",
+          "http://192.168.1.113",
+          "http://192.168.1.113:5173",
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
     );
+<<<<<<< HEAD
+=======
+    app.use(compression());
+>>>>>>> 49214696cbf347cd1155ad8188b1e83207f66417
 
     app.use(compression());
     routerConfig(app);

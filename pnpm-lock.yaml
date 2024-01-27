@@ -62,6 +62,7 @@ dependencies:
   fs-extra:
     specifier: ^11.1.1
     version: 11.1.1
+<<<<<<< HEAD
   graphql:
     specifier: ^15.3.0
     version: 15.3.0
@@ -71,6 +72,8 @@ dependencies:
   graphql-playground-middleware-express:
     specifier: ^1.7.23
     version: 1.7.23(express@4.18.2)
+=======
+>>>>>>> 49214696cbf347cd1155ad8188b1e83207f66417
   jalali-moment:
     specifier: ^3.3.11
     version: 3.3.11
@@ -1586,6 +1589,7 @@ packages:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
 
+<<<<<<< HEAD
   /graphql-http@1.22.0(graphql@15.3.0):
     resolution: {integrity: sha512-9RBUlGJWBFqz9LwfpmAbjJL/8j/HCNkZwPBU5+Bfmwez+1Ay43DocMNQYpIWsWqH0Ftv6PTNAh2aRnnMCBJgLw==}
     engines: {node: '>=12'}
@@ -1615,6 +1619,8 @@ packages:
     engines: {node: '>= 10.x'}
     dev: false
 
+=======
+>>>>>>> 49214696cbf347cd1155ad8188b1e83207f66417
   /has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
