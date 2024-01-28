@@ -1,6 +1,7 @@
 const { getRepository } = require("typeorm");
 const OnlineClass = require("../model/onlineCourse");
 const Course = require("../model/Course");
+const moment = require("moment");
 async function createOnlineClass(req, res) {
   const { title, startDate, endDate, courseId } = req.body;
   const onlineClassRepository = getRepository(OnlineClass);
@@ -136,8 +137,9 @@ async function getTodayOnlineClasses(req, res) {
   try {
     const onlineClassRepository = getRepository(OnlineClass);
 
-    const todayStart = startOfDay(new Date());
-    const todayEnd = endOfDay(new Date());
+    // Calculate today's start and end using moment
+    const todayStart = moment().startOf("day");
+    const todayEnd = moment().endOf("day");
 
     const todayOnlineClasses = await onlineClassRepository
       .createQueryBuilder("onlineClass")
@@ -149,10 +151,11 @@ async function getTodayOnlineClasses(req, res) {
         "onlineClass.endDate",
         "course.id",
         "course.title",
+        "course.imageUrl"
       ])
       .where("onlineClass.startDate BETWEEN :todayStart AND :todayEnd", {
-        todayStart,
-        todayEnd,
+        todayStart: todayStart.toDate(),
+        todayEnd: todayEnd.toDate(),
       })
       .getMany();
 
@@ -162,6 +165,36 @@ async function getTodayOnlineClasses(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+async function getFutureOnlineClasses(req, res) {
+    try {
+      const onlineClassRepository = getRepository(OnlineClass);
+  
+      const tomorrowStart = moment().add(1, "day").startOf("day");
+  
+      const futureOnlineClasses = await onlineClassRepository
+        .createQueryBuilder("onlineClass")
+        .leftJoinAndSelect("onlineClass.course", "course")
+        .select([
+          "onlineClass.id",
+          "onlineClass.title",
+          "onlineClass.startDate",
+          "onlineClass.endDate",
+          "course.id",
+          "course.title",
+          "course.imageUrl"
+        ])
+        .where("onlineClass.startDate >= :tomorrowStart", {
+          tomorrowStart: tomorrowStart.toDate(),
+        })
+        .getMany();
+  
+      res.status(200).json({ futureOnlineClasses });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
 module.exports = {
   createOnlineClass,
   updateOnlineClass,
@@ -169,4 +202,5 @@ module.exports = {
   getOnlineClass,
   getAllOnlineClasses,
   getTodayOnlineClasses,
+  getFutureOnlineClasses
 };
