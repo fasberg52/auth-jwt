@@ -110,33 +110,63 @@ async function getOnlineClass(req, res) {
 }
 
 async function getAllOnlineClasses(req, res) {
-    try {
-      const onlineClassRepository = getRepository(OnlineClass);
-  
-      const onlineClasses = await onlineClassRepository
-        .createQueryBuilder("onlineClass")
-        .leftJoinAndSelect("onlineClass.course", "course")
-        .select([
-          "onlineClass.id",
-          "onlineClass.title",
-          "onlineClass.startDate",
-          "onlineClass.endDate",
-          "course.id",
-          "course.title",
-        ])
-        .getMany();
-  
-      res.status(200).json({ onlineClasses });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  }
+  try {
+    const onlineClassRepository = getRepository(OnlineClass);
 
+    const onlineClasses = await onlineClassRepository
+      .createQueryBuilder("onlineClass")
+      .leftJoinAndSelect("onlineClass.course", "course")
+      .select([
+        "onlineClass.id",
+        "onlineClass.title",
+        "onlineClass.startDate",
+        "onlineClass.endDate",
+        "course.id",
+        "course.title",
+      ])
+      .getMany();
+
+    res.status(200).json({ onlineClasses });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+async function getTodayOnlineClasses(req, res) {
+  try {
+    const onlineClassRepository = getRepository(OnlineClass);
+
+    const todayStart = startOfDay(new Date());
+    const todayEnd = endOfDay(new Date());
+
+    const todayOnlineClasses = await onlineClassRepository
+      .createQueryBuilder("onlineClass")
+      .leftJoinAndSelect("onlineClass.course", "course")
+      .select([
+        "onlineClass.id",
+        "onlineClass.title",
+        "onlineClass.startDate",
+        "onlineClass.endDate",
+        "course.id",
+        "course.title",
+      ])
+      .where("onlineClass.startDate BETWEEN :todayStart AND :todayEnd", {
+        todayStart,
+        todayEnd,
+      })
+      .getMany();
+
+    res.status(200).json({ todayOnlineClasses });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   createOnlineClass,
   updateOnlineClass,
   deleteOnlineClass,
   getOnlineClass,
-  getAllOnlineClasses
+  getAllOnlineClasses,
+  getTodayOnlineClasses,
 };

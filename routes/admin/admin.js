@@ -17,10 +17,11 @@ const {
   createOnlineClass,
   updateOnlineClass,
   deleteOnlineClass,
-  getOnlineClass
+  getOnlineClass,
+  getAllOnlineClasses,
 } = require("../../controllers/onlineClass");
 
-router.post(  
+router.post(
   "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
@@ -216,6 +217,12 @@ router.get(
   jwtAuthMiddleware,
   checkRole("admin"),
   getOnlineClass
+);
+router.get(
+  "/online-course",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  getAllOnlineClasses
 );
 
 module.exports = router;
