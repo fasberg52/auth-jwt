@@ -9,27 +9,22 @@ const User = require("../model/users");
 const OTP_EXPIRATION_TIME_MS = 60 * 1000; // 60 seconds
 
 async function sendOTP(phone) {
-  // Define the OTP variable outside the try block for better scoping
   let otp;
 
   try {
-    // Get the OTP repository
     const otpRepository = getManager().getRepository(OTP);
 
-    // Check if an OTP record already exists for the given phone number
     const existingOTP = await otpRepository.findOne({
       where: { phone: phone },
     });
 
-    // Generate a new OTP
     otp = generateNumericOTP(5).toString();
     console.log(`Generated OTP: ${otp}`);
 
-    // Send the OTP via SMS
+
     await sendOTPSMS(phone, otp);
 
     if (existingOTP) {
-      // If an OTP record exists, update the existing record
       existingOTP.otp = await bcrypt.hash(otp, 10);
       existingOTP.isVerified = false;
       existingOTP.createdAt = new Date();
@@ -37,10 +32,8 @@ async function sendOTP(phone) {
         Date.now() + OTP_EXPIRATION_TIME_MS
       );
 
-      // Save the updated record
       await otpRepository.save(existingOTP);
     } else {
-      // If no OTP record exists, create a new one
       const hashedOTP = await bcrypt.hash(otp, 10);
       const expirationTime = new Date(Date.now() + OTP_EXPIRATION_TIME_MS);
       const newOTP = otpRepository.create({
@@ -50,14 +43,11 @@ async function sendOTP(phone) {
         createdAt: new Date(),
       });
 
-      // Save the new OTP record
       await otpRepository.save(newOTP);
     }
 
-    // Return the generated OTP
     return otp;
   } catch (error) {
-    // Handle and log errors
     console.error("Error sending OTP:", error);
     throw error;
   }
@@ -74,8 +64,8 @@ async function verifyOTP(phone, otp) {
       return false;
     }
 
-    const currentTime = Date.now(); // Current time in milliseconds
-    const otpTimestamp = otpRecord.createdAt.getTime(); // Timestamp of OTP record in milliseconds
+    const currentTime = Date.now(); 
+    const otpTimestamp = otpRecord.createdAt.getTime(); 
     const otpExpirationTime = OTP_EXPIRATION_TIME_MS;
 
     if (currentTime - otpTimestamp > otpExpirationTime) {

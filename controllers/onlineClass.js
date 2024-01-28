@@ -3,6 +3,11 @@ const OnlineClass = require("../model/onlineCourse");
 const Course = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 
+const {
+  sendNotification,
+  scheduleNotifications,
+} = require("../services/sendMessage");
+
 const moment = require("moment");
 async function createOnlineClass(req, res) {
   const { title, startDate, endDate, courseId } = req.body;
@@ -197,6 +202,8 @@ async function getTodayOnlineClasses(req, res) {
         .status(404)
         .json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
     }
+    
+    scheduleNotifications(todayOnlineClasses);
 
     res.status(200).json({ todayOnlineClasses });
   } catch (error) {
@@ -204,36 +211,6 @@ async function getTodayOnlineClasses(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-// async function getFutureOnlineClasses(req, res) {
-//     try {
-//       const onlineClassRepository = getRepository(OnlineClass);
-
-//       const tomorrowStart = moment().add(1, "day").startOf("day");
-
-//       const futureOnlineClasses = await onlineClassRepository
-//         .createQueryBuilder("onlineClass")
-//         .leftJoinAndSelect("onlineClass.course", "course")
-//         .select([
-//           "onlineClass.id",
-//           "onlineClass.title",
-//           "onlineClass.startDate",
-//           "onlineClass.endDate",
-//           "course.id",
-//           "course.title",
-//           "course.imageUrl"
-//         ])
-//         .where("onlineClass.startDate >= :tomorrowStart", {
-//           tomorrowStart: tomorrowStart.toDate(),
-//         })
-//         .getMany();
-
-//       res.status(200).json({ futureOnlineClasses });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   }
 
 async function getFutureOnlineClasses(req, res) {
   try {
