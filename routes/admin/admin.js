@@ -20,7 +20,7 @@ const {
   getOnlineClass
 } = require("../../controllers/onlineClass");
 
-router.post(
+router.post(  
   "/user",
   jwtAuthMiddleware,
   checkRole("admin"),
@@ -212,7 +212,7 @@ router.delete(
 );
 
 router.get(
-  "/online-course/:onlineClassId ",
+  "/online-course/:onlineClassId",
   jwtAuthMiddleware,
   checkRole("admin"),
   getOnlineClass

@@ -13,7 +13,6 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
-    const filterRepository = getRepository(Filter);
 
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
@@ -60,6 +59,8 @@ async function getAllCourse(req, res) {
       .skip(offset)
       .take(pageSize)
       .getManyAndCount();
+
+
 
     res.json({
       courses,
