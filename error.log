@@ -690,3 +690,8 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-25T08:51:49.933Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
 2024-01-25T08:51:53.533Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
 2024-01-27T10:06:18.902Z error: Error in getAllFiltersForCourses >> QueryFailedError: column course.image does not exist 
+2024-01-28T10:19:26.228Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:19:58.468Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:20:39.826Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:20:53.317Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:21:13.292Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 

@@ -60,8 +60,6 @@ async function getAllCourse(req, res) {
       .take(pageSize)
       .getManyAndCount();
 
-
-
     res.json({
       courses,
       totalCount,
@@ -244,7 +242,6 @@ async function getCourseById(req, res) {
 async function getCourseUserWithToken(req, res) {
   try {
     const { token } = req.body;
-    console.log(">>>>>>>>>>> token is here");
     if (!token) {
       res.status(400).json("توکن وارد شده صحیح نیست");
     }
@@ -264,6 +261,26 @@ async function getCourseUserWithToken(req, res) {
 
     const skip = (page - 1) * pageSize;
     const take = pageSize;
+
+    const [sql, parameters] = enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .leftJoin("enrollment.course", "course")
+      .leftJoin("course.category", "category")
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select([
+        "course.id as id",
+        "course.title as title",
+        "course.price as price",
+        "course.discountPrice as discountPrice",
+        "course.imageUrl as imageUrl",
+      ])
+      .addSelect(["o.orderDate as orderDate"])
+      .getQueryAndParameters();
+    console.log("Generated SQL getCourseUserWithToken:", sql);
+    console.log("Parameters getCourseUserWithToken:", parameters);
 
     const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
@@ -288,6 +305,10 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany();
+    console.log(
+      "Enrolled Courses for getCourseUserWithToken:",
+      enrolledCourses
+    );
 
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
