@@ -10,6 +10,7 @@ const cacheRouter = require("../routes/admin/cache");
 const userRouter = require("../routes/shop/user");
 const excelRouter = require("../routes/admin/excel");
 const categoryRouter = require("../routes/shop/category");
+const onlineCourseAdminRouter = require("../routes/admin/onlineCourseAdmin")
 const swaggerUi = require("swagger-ui-express");
 
 const swaggerSpec = require("../utils/swagger");
@@ -30,6 +31,8 @@ async function routerConfig(app) {
   app.use("/", userRouter);
   app.use("/category", categoryRouter);
   app.use("/excel", excelRouter);
+  app.use("/online-course", onlineCourseAdminRouter);
+
 }
 
 module.exports = {

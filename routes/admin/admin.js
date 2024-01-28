@@ -13,6 +13,10 @@ const filterController = require("../../controllers/filter");
 const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
+const {
+  createOnlineClass,
+  updateOnlineClass,
+} = require("../../controllers/onlineClass");
 
 router.post(
   "/user",
@@ -182,6 +186,21 @@ router.get(
   jwtAuthMiddleware,
   //checkRole("admin"),
   couponController.getAllCoupons
+);
+
+// Online Course Router
+
+router.post(
+  "/online-course",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  createOnlineClass
+);
+router.put(
+  "/online-course",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  updateOnlineClass
 );
 
 module.exports = router;
