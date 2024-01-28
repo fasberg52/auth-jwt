@@ -14,7 +14,7 @@ const OnlineClass = new EntitySchema({
     endDate: {
       type: "timestamp",
     },
-    tiltle: {
+    title: {
       type: "varchar",
     },
     courseId: {
