@@ -197,14 +197,16 @@ async function getAllFiltersForCourses(req, res) {
         "filter.slug",
       ]);
 
-    let filterIds; // Declare filterIds outside the if statement
+    let filterIds; 
 
     if (searchQuery) {
       filterIds = searchQuery.split(",").map(Number);
 
       queryBuilder.andWhere(`filter.id IN (:...filterIds)`, { filterIds });
+    } else if (req.query.searchQuery === "") {
+      const courses = [];
+      return res.status(200).json(courses);
     }
-
     const coursesWithFilters = await queryBuilder.getMany();
 
     const formattedCourses = coursesWithFilters
@@ -222,7 +224,7 @@ async function getAllFiltersForCourses(req, res) {
           imageUrl: course.imageUrl,
           price: course.price,
           discountPrice: course.discountPrice,
-          createdAt:course.createdAt,
+          createdAt: course.createdAt,
           filters: filters,
         };
       });

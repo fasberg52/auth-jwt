@@ -1,7 +1,7 @@
 const cartController = require("../../controllers/cart");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { checkRole } = require("../../middleware/checkAccess");
-
+const { applyCouponMiddleware } = require("../../middleware/couponMiddlerware");
 const express = require("express");
 
 const router = express.Router();
@@ -11,7 +11,12 @@ router.delete(
   jwtAuthMiddleware,
   cartController.removeCartItem
 );
-router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
+router.get(
+  "/cart",
+  jwtAuthMiddleware,
+  applyCouponMiddleware,
+  cartController.getUserCart
+);
 router.post(
   "/cart/:cartId/apply-coupon",
   jwtAuthMiddleware,

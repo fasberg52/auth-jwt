@@ -101,6 +101,11 @@ const Course = new EntitySchema({
       target: "Enrollment",
       inverseSide: "course",
     },
+    onlineClass: {
+      type: "one-to-many",
+      target: "OnlineClass",
+      mappedBy: "course",
+    },
   },
 });
 
