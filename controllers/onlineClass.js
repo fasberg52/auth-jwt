@@ -2,7 +2,6 @@ const { getManager, getRepository } = require("typeorm");
 const OnlineClass = require("../model/onlineCourse");
 const Course = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
-const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 const moment = require("moment");
 async function createOnlineClass(req, res) {
@@ -138,27 +137,12 @@ async function getAllOnlineClasses(req, res) {
 }
 async function getTodayOnlineClasses(req, res) {
   try {
-    const authHeader = req.header("Authorization");
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const userPhone = decodedToken.phone;
+    const userPhone = req.user.phone;
     console.log(userPhone);
 
     const enrollmentRepository = getRepository(Enrollment);
     const onlineClassRepository = getRepository(OnlineClass);
 
-    // Query enrolled courses
     const enrolledCoursesQuery = await enrollmentRepository
       .createQueryBuilder("enrollment")
       .leftJoin("enrollment.course", "course")
@@ -176,7 +160,6 @@ async function getTodayOnlineClasses(req, res) {
       ])
       .addSelect(["o.orderDate as orderDate"]);
 
-    // Get enrolled courses and total count
     const totalCount = await enrolledCoursesQuery.getCount();
     const enrolledCourses = await enrolledCoursesQuery.getRawMany();
     console.log("Enrolled Courses for getTodayOnlineClasses:", enrolledCourses);
@@ -185,10 +168,8 @@ async function getTodayOnlineClasses(req, res) {
       return res.status(404).json({ error: "شما دسترسی ندارید" });
     }
 
-    // Extract course IDs
     const courseIds = enrolledCourses.map((enrollment) => enrollment.id);
 
-    // Query today's online classes
     const todayStart = moment().startOf("day");
     const todayEnd = moment().endOf("day");
     const todayOnlineClasses = await onlineClassRepository
@@ -212,7 +193,9 @@ async function getTodayOnlineClasses(req, res) {
       .getMany();
 
     if (todayOnlineClasses.length === 0) {
-      return res.status(404).json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
+      return res
+        .status(404)
+        .json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
     }
 
     res.status(200).json({ todayOnlineClasses });
@@ -221,8 +204,6 @@ async function getTodayOnlineClasses(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
 
 // async function getFutureOnlineClasses(req, res) {
 //     try {
@@ -256,20 +237,7 @@ async function getTodayOnlineClasses(req, res) {
 
 async function getFutureOnlineClasses(req, res) {
   try {
-    const authHeader = req.header("Authorization");
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-    const userPhone = decodedToken.phone;
+    const userPhone = req.user.phone;
     console.log(userPhone);
     const onlineClassRepository = getRepository(OnlineClass);
     const enrollmentRepository = getRepository(Enrollment);
@@ -315,13 +283,17 @@ async function getFutureOnlineClasses(req, res) {
         "onlineClass.endDate",
         "course.id",
         "course.title",
-        "course.imageUrl"
+        "course.imageUrl",
       ])
       .where("onlineClass.startDate >= :tomorrowStart", {
         tomorrowStart: tomorrowStart.toDate(),
       })
       .andWhere("course.id IN (:...courseIds)", { courseIds })
       .getMany();
+
+    if (futureOnlineClasses.length === 0) {
+      return res.status(404).json({ error: "دوره ای برای نمایش نیست" });
+    }
 
     res.status(200).json({ futureOnlineClasses });
   } catch (error) {

@@ -12,21 +12,7 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 async function getUserDataWithToken(req, res) {
   try {
-    const authHeader = req.header("Authorization");
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
+    const phone = req.user.phone;
 
     const userRepository = getManager().getRepository(User);
 
@@ -35,7 +21,6 @@ async function getUserDataWithToken(req, res) {
     });
 
     if (existingUser) {
-
       const user = {
         id: existingUser.id,
         firstName: existingUser.firstName,
@@ -52,7 +37,7 @@ async function getUserDataWithToken(req, res) {
           ? new Date(existingUser.lastLogin).getTime()
           : null,
       };
-      res.status(200).json( user );
+      res.status(200).json(user);
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }
@@ -150,21 +135,9 @@ async function editDataUser(req, res) {
 
 async function logoutPanel(req, res) {
   try {
-    const authHeader = req.header("Authorization");
+    
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
+    const phone = req.user.phone;
 
     const otpRepository = getManager().getRepository(OTP);
     const existingOTP = await otpRepository.findOne({
@@ -242,7 +215,7 @@ async function createProfilePictureUpload(req, res) {
       message: "عکس پروفایل با موفقیت آپلود شد",
 
       saveNewUpload: {
-      //  path: filePath,
+        //  path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
