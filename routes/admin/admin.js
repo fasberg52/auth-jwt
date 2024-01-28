@@ -16,6 +16,7 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const {
   createOnlineClass,
   updateOnlineClass,
+  deleteOnlineClass
 } = require("../../controllers/onlineClass");
 
 router.post(
@@ -201,6 +202,12 @@ router.put(
   jwtAuthMiddleware,
   checkRole("admin"),
   updateOnlineClass
+);
+router.delete(
+  "/online-course/:onlineClassId ",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  deleteOnlineClass
 );
 
 module.exports = router;

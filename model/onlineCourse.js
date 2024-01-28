@@ -19,6 +19,7 @@ const OnlineClass = new EntitySchema({
     },
     courseId: {
       type: "int",
+      nullable: true,
     },
   },
   relations: {

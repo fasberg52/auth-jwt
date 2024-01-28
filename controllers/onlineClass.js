@@ -5,7 +5,10 @@ async function createOnlineClass(req, res) {
   const { title, startDate, endDate, courseId } = req.body;
   const onlineClassRepository = getRepository(OnlineClass);
   const courseRepository = getRepository(Course);
-  const existingCourse = await courseRepository.findOne({ where: { id: id } });
+  const existingCourse = await courseRepository.findOne({
+    where: { id: courseId },
+  });
+
   if (!existingCourse) {
     return res.statur(404).json({ error: "این دوره وجود ندارد" });
   }
@@ -13,7 +16,7 @@ async function createOnlineClass(req, res) {
     title,
     startDate,
     endDate,
-    existingCourse,
+    course: existingCourse,
   });
   await onlineClassRepository.save(newOnlineClass);
 
@@ -32,9 +35,9 @@ async function updateOnlineClass(req, res) {
       return res.status(404).json({ error: "این دوره وجود ندارد" });
     }
 
-    const existingOnlineClass = await onlineClassRepository.findOne(
-      onlineClassId
-    );
+    const existingOnlineClass = await onlineClassRepository.findOne({
+      where: { id: onlineClassId },
+    });
 
     if (!existingOnlineClass) {
       return res.status(404).json({ error: "این کلاس آنلاین وجود ندارد" });
@@ -43,7 +46,7 @@ async function updateOnlineClass(req, res) {
     existingOnlineClass.title = title;
     existingOnlineClass.startDate = startDate;
     existingOnlineClass.endDate = endDate;
-    existingOnlineClass.existingCourse = existingCourse;
+    existingOnlineClass.course = existingCourse;
 
     await onlineClassRepository.save(existingOnlineClass);
 
@@ -76,6 +79,39 @@ async function deleteOnlineClass(req, res) {
   }
 }
 
-async function getOnlineClass(req, res) {}
+async function getOnlineClass(req, res) {
+  try {
+    const { onlineClassId } = req.params;
+    const onlineClassRepository = getRepository(OnlineClass);
 
-module.exports = { createOnlineClass, updateOnlineClass, deleteOnlineClass };
+    const onlineClass = await onlineClassRepository
+      .createQueryBuilder("onlineClass")
+      .leftJoinAndSelect("onlineClass.course", "course")
+      .select([
+        "onlineClass.id",
+        "onlineClass.title",
+        "onlineClass.startDate",
+        "onlineClass.endDate",
+        "course.id AS courseId",
+        "course.title AS courseTitle",
+      ])
+      .where("onlineClass.id = :onlineClassId", { onlineClassId })
+      .getOne();
+
+    if (!onlineClass) {
+      return res.status(404).json({ error: "این کلاس آنلاین وجود ندارد" });
+    }
+
+    res.status(200).json({ onlineClass });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+module.exports = {
+  createOnlineClass,
+  updateOnlineClass,
+  deleteOnlineClass,
+  getOnlineClass,
+};
