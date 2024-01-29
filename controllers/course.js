@@ -167,7 +167,15 @@ async function getAllCourse(req, res) {
 //       .json({ error: "An error occurred while retrieving the course." });
 //   }
 // }
-
+async function getAllCourseForOnline(req, res) {
+  const courseRepository = getRepository(Courses);
+  const courses = await courseRepository.find();
+  const data = {
+    id: courses.id,
+    name: courses.name,
+  };
+  res.status(200).json(data);
+}
 async function getCourseById(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -344,4 +352,5 @@ module.exports = {
   getAllCourse,
   getCourseById,
   getCourseUserWithToken,
+  getAllCourseForOnline,
 };

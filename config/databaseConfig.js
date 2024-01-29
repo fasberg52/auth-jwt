@@ -15,7 +15,7 @@ const Tags = require("../model/Tags");
 const SecureLink = require("../model/secureLink");
 const Coupon = require("../model/Coupon");
 const Filter = require("../model/Filter");
-const OnlineClass = require("../model/onlineCourse")
+const OnlineClass = require("../model/onlineCourse");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -46,7 +46,7 @@ async function setupDatabase() {
         SecureLink,
         Coupon,
         Filter,
-        OnlineClass
+        OnlineClass,
       ],
       synchronize: true,
     });

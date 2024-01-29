@@ -207,7 +207,7 @@ router.put(
   updateOnlineClass
 );
 router.delete(
-  "/online-course/:onlineClassId ",
+  "/online-course/:onlineClassId",
   jwtAuthMiddleware,
   checkRole("admin"),
   deleteOnlineClass

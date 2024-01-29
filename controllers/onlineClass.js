@@ -38,17 +38,14 @@ async function updateOnlineClass(req, res) {
     const existingCourse = await courseRepository.findOne({
       where: { id: courseId },
     });
-
-    if (!existingCourse) {
-      return res.status(404).json({ error: "این دوره وجود ندارد" });
-    }
-
     const existingOnlineClass = await onlineClassRepository.findOne({
       where: { id: onlineClassId },
     });
 
-    if (!existingOnlineClass) {
-      return res.status(404).json({ error: "این کلاس آنلاین وجود ندارد" });
+    if (!existingCourse || !existingOnlineClass) {
+      return res
+        .status(404)
+        .json({ error: "این دوره یا کلاس آنلاین وجود ندارد!" });
     }
 
     existingOnlineClass.title = title;
@@ -202,7 +199,7 @@ async function getTodayOnlineClasses(req, res) {
         .status(404)
         .json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
     }
-    
+
     scheduleNotifications(todayOnlineClasses);
 
     res.status(200).json({ todayOnlineClasses });

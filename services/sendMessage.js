@@ -1,7 +1,13 @@
 // services/sendMessage.js
-
+const events = require("events");
+const eventEmitter = new events.EventEmitter();
 const moment = require("moment");
 const Kavenegar = require("kavenegar");
+
+const myEventHandler = function () {
+  console.log("hello");
+};
+
 
 const kavenegarApi = Kavenegar.KavenegarApi({
   apiKey: process.env.KAVENEGAR_API_KEY,
@@ -36,5 +42,6 @@ function scheduleNotifications(enrolledCourses) {
     }, notificationTime.diff(moment()));
   });
 }
-
+eventEmitter.on(scheduleNotifications, sendNotification);
+eventEmitter.emit(scheduleNotifications);
 module.exports = { sendNotification, scheduleNotifications };
