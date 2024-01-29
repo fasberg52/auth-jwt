@@ -169,12 +169,11 @@ async function getAllCourse(req, res) {
 // }
 async function getAllCourseForOnline(req, res) {
   const courseRepository = getRepository(Courses);
-  const courses = await courseRepository.find();
-  const data = {
-    id: courses.id,
-    name: courses.name,
-  };
-  res.status(200).json(data);
+  const courses = await courseRepository.find({
+    select: ["id", "title"],
+  });
+
+  res.status(200).json(courses);
 }
 async function getCourseById(req, res) {
   try {

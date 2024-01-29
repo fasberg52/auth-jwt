@@ -3,11 +3,6 @@ const OnlineClass = require("../model/onlineCourse");
 const Course = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 
-const {
-  sendNotification,
-  scheduleNotifications,
-} = require("../services/sendMessage");
-
 const moment = require("moment");
 async function createOnlineClass(req, res) {
   const { title, startDate, endDate, courseId } = req.body;
@@ -122,14 +117,14 @@ async function getAllOnlineClasses(req, res) {
       .createQueryBuilder("onlineClass")
       .leftJoinAndSelect("onlineClass.course", "course")
       .select([
-        "onlineClass.id",
-        "onlineClass.title",
-        "onlineClass.startDate",
-        "onlineClass.endDate",
-        "course.id",
+        "onlineClass.id as id",
+        "onlineClass.title as title",
+        "onlineClass.startDate as startDate",
+        "onlineClass.endDate as endDate",
+        "course.id as course_id",
         "course.title",
       ])
-      .getMany();
+      .getRawMany();
 
     res.status(200).json({ onlineClasses });
   } catch (error) {
@@ -199,8 +194,6 @@ async function getTodayOnlineClasses(req, res) {
         .status(404)
         .json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
     }
-
-    scheduleNotifications(todayOnlineClasses);
 
     res.status(200).json({ todayOnlineClasses });
   } catch (error) {

@@ -60,6 +60,10 @@ const Course = new EntitySchema({
       nullable: true,
       default: "rgba(196,0,136,0.711922268907563)",
     },
+    eventId: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     filters: {

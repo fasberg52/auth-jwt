@@ -9,6 +9,8 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
+router.get("/all", jwtAuthMiddleware, courseController.getAllCourseForOnline);
+
 router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersForCourses);
 
 
