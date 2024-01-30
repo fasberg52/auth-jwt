@@ -5,7 +5,7 @@ const Enrollment = require("../model/Enrollment");
 
 const moment = require("moment");
 async function createOnlineClass(req, res) {
-  const { title, startDate, endDate, courseId } = req.body;
+  const { title, start, end, courseId } = req.body;
   const onlineClassRepository = getRepository(OnlineClass);
   const courseRepository = getRepository(Course);
   const existingCourse = await courseRepository.findOne({
@@ -17,8 +17,8 @@ async function createOnlineClass(req, res) {
   }
   const newOnlineClass = onlineClassRepository.create({
     title,
-    startDate,
-    endDate,
+    start,
+    end,
     course: existingCourse,
   });
   await onlineClassRepository.save(newOnlineClass);
@@ -27,14 +27,14 @@ async function createOnlineClass(req, res) {
 }
 async function updateOnlineClass(req, res) {
   try {
-    const { onlineClassId, title, startDate, endDate, courseId } = req.body;
+    const { id, title, start, end, courseId } = req.body;
     const onlineClassRepository = getRepository(OnlineClass);
     const courseRepository = getRepository(Course);
     const existingCourse = await courseRepository.findOne({
       where: { id: courseId },
     });
     const existingOnlineClass = await onlineClassRepository.findOne({
-      where: { id: onlineClassId },
+      where: { id: id },
     });
 
     if (!existingCourse || !existingOnlineClass) {
@@ -44,8 +44,8 @@ async function updateOnlineClass(req, res) {
     }
 
     existingOnlineClass.title = title;
-    existingOnlineClass.startDate = startDate;
-    existingOnlineClass.endDate = endDate;
+    existingOnlineClass.start = start;
+    existingOnlineClass.end = end;
     existingOnlineClass.course = existingCourse;
 
     await onlineClassRepository.save(existingOnlineClass);
@@ -90,8 +90,8 @@ async function getOnlineClass(req, res) {
       .select([
         "onlineClass.id",
         "onlineClass.title",
-        "onlineClass.startDate",
-        "onlineClass.endDate",
+        "onlineClass.start",
+        "onlineClass.end",
         "course.id",
         "course.title",
       ])
@@ -119,8 +119,8 @@ async function getAllOnlineClasses(req, res) {
       .select([
         "onlineClass.id as id",
         "onlineClass.title as title",
-        "onlineClass.startDate as startDate",
-        "onlineClass.endDate as endDate",
+        "onlineClass.start as start",
+        "onlineClass.end as end",
         "course.id as course_id",
         "course.title",
       ])
@@ -175,15 +175,15 @@ async function getTodayOnlineClasses(req, res) {
       .select([
         "onlineClass.id",
         "onlineClass.title",
-        "onlineClass.startDate",
-        "onlineClass.endDate",
+        "onlineClass.start",
+        "onlineClass.end",
         "course.id",
         "course.title",
       ])
-      .where("onlineClass.startDate >= :todayStart", {
+      .where("onlineClass.start >= :todayStart", {
         todayStart: todayStart.toDate(),
       })
-      .andWhere("onlineClass.startDate <= :todayEnd", {
+      .andWhere("onlineClass.start <= :todayEnd", {
         todayEnd: todayEnd.toDate(),
       })
       .andWhere("course.id IN (:...courseIds)", { courseIds })
@@ -246,13 +246,13 @@ async function getFutureOnlineClasses(req, res) {
       .select([
         "onlineClass.id",
         "onlineClass.title",
-        "onlineClass.startDate",
-        "onlineClass.endDate",
+        "onlineClass.start",
+        "onlineClass.end",
         "course.id",
         "course.title",
         "course.imageUrl",
       ])
-      .where("onlineClass.startDate >= :tomorrowStart", {
+      .where("onlineClass.start >= :tomorrowStart", {
         tomorrowStart: tomorrowStart.toDate(),
       })
       .andWhere("course.id IN (:...courseIds)", { courseIds })

@@ -48,7 +48,7 @@ async function setupDatabase() {
         Filter,
         OnlineClass,
       ],
-      synchronize: true,
+      synchronize: false,
     });
 
     console.log("Database connection established");

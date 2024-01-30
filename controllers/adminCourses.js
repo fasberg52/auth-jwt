@@ -165,7 +165,7 @@ async function getAdminCourseById(req, res) {
       .leftJoin("course.category", "category")
       .leftJoin("course.chapters", "chapter")
       .leftJoin("chapter.parts", "part")
-      .leftJoin("course.filters","filter")
+      .leftJoin("course.filters", "filter")
       .select([
         "course.id",
         "course.title",
@@ -205,7 +205,6 @@ async function getAdminCourseById(req, res) {
       // const filterIds = existingCourse.filters.map(filter => filter.id);
 
       // delete existingCourse.filters;
-
 
       // existingCourse.filters = filterIds;
 

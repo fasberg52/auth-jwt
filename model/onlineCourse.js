@@ -8,11 +8,13 @@ const OnlineClass = new EntitySchema({
       generated: true,
       primary: true,
     },
-    startDate: {
+    start: {
       type: "timestamp",
+      nullable: true,
     },
-    endDate: {
+    end: {
       type: "timestamp",
+      nullable: true,
     },
     title: {
       type: "varchar",
