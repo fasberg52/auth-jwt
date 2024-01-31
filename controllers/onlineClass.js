@@ -179,6 +179,8 @@ async function getTodayOnlineClasses(req, res) {
         "onlineClass.end",
         "course.id",
         "course.title",
+        "course.imageUrl",
+        "course.eventId",
       ])
       .where("onlineClass.start >= :todayStart", {
         todayStart: todayStart.toDate(),
@@ -190,9 +192,8 @@ async function getTodayOnlineClasses(req, res) {
       .getMany();
 
     if (todayOnlineClasses.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "هیچ دوره‌ای برای امروز وجود ندارد" });
+      const courses = [];
+      return res.status(200).json({ message: "شما دوه ای ندارید", courses });
     }
 
     res.status(200).json({ todayOnlineClasses });
@@ -259,7 +260,8 @@ async function getFutureOnlineClasses(req, res) {
       .getMany();
 
     if (futureOnlineClasses.length === 0) {
-      return res.status(404).json({ error: "دوره ای برای نمایش نیست" });
+      const courses = [];
+      return res.status(200).json({ message: "شما دوه ای ندارید", courses });
     }
 
     res.status(200).json({ futureOnlineClasses });

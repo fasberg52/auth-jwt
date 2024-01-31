@@ -19,6 +19,7 @@ async function addCourse(req, res) {
       discountStart,
       discountExpiration,
       filters,
+      eventId,
     } = req.body;
 
     if (discountPrice && discountPrice >= price) {
@@ -51,6 +52,7 @@ async function addCourse(req, res) {
       discountPrice,
       discountStart,
       discountExpiration,
+      eventId,
     });
 
     if (filters && filters.length > 0) {
@@ -85,6 +87,7 @@ async function editCourse(req, res) {
       discountStart,
       discountExpiration,
       filters,
+      eventId,
     } = req.body;
 
     const courseRepository = getManager().getRepository(Courses);
@@ -105,6 +108,7 @@ async function editCourse(req, res) {
       existingCourse.discountPrice = discountPrice;
       existingCourse.discountStart = discountStart;
       existingCourse.discountExpiration = discountExpiration;
+      existingCourse.eventId = eventId;
 
       if (categoryId !== undefined && categoryId !== null) {
         const category = await getManager()
@@ -179,6 +183,7 @@ async function getAdminCourseById(req, res) {
         "course.videoUrl",
         "course.createdAt",
         "course.lastModified",
+        "course.eventId"
       ])
       .addSelect(["category.id", "category.name"])
       .addSelect(["filter.id"])
