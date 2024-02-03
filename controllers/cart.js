@@ -86,91 +86,6 @@ async function createCartItem(req, res) {
   }
 }
 
-// async function getUserCart(req, res) {
-//   try {
-//     const userPhone = req.user.phone;
-//     const connection = getConnection();
-//     const cartRepository = connection.getRepository(Cart);
-//     const cartItemsRepository = connection.getRepository(CartItems);
-//     const courseRepository = connection.getRepository(Courses);
-//     const appliedCoupon = req.appliedCoupon;
-//    // const couponCode = req.query.couponCode;
-//     console.log(`getAllUSer >>> ${couponCode}`);
-//     const userCart = await cartRepository.findOne({
-//       where: { user: { phone: userPhone } },
-//     });
-
-//     if (!userCart) {
-//       return res.status(200).json({
-//         cartData: [],
-//         totalCartPrice: 0,
-//         totalCartPriceCoupon: 0,
-//         status: 200,
-//       });
-//     }
-
-//     const cartItems = await cartItemsRepository
-//       .createQueryBuilder("cartItem")
-//       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-//       .getMany();
-
-//     let totalCartPrice = 0;
-
-//     const cartDataPromises = cartItems.map(async (cartItem) => {
-//       if (cartItem.courseId) {
-//         try {
-//           const course = await courseRepository.findOne({
-//             where: { id: cartItem.courseId },
-//           });
-
-//           if (course) {
-//             const discountedPrice = course.discountPrice || course.price;
-//             const itemPrice = discountedPrice * cartItem.quantity;
-
-//             totalCartPrice += itemPrice;
-
-//             return {
-//               cartItemId: cartItem.id,
-//               courseId: course.id,
-//               imageUrl: course.imageUrl,
-//               quantity: cartItem.quantity,
-//               price: course.price,
-//               discountPrice: discountedPrice,
-//               title: course.title,
-//               itemPrice,
-//             };
-//           }
-//         } catch (error) {
-//           console.error("Error processing cart item:", error);
-//         }
-//       }
-//     });
-
-//     const cartData = await Promise.all(cartDataPromises);
-
-//     let totalCartPriceCoupon = totalCartPrice;
-
-//     if (couponCode) {
-//       const coupon = await getManager()
-//         .getRepository(Coupon)
-//         .findOne({ where: { code: couponCode } });
-
-//       if (coupon) {
-//         const couponDiscount =
-//           (totalCartPrice * coupon.discountPersentage) / 100;
-//         totalCartPriceCoupon = totalCartPrice - couponDiscount;
-//       }
-//     }
-
-//     res
-//       .status(200)
-//       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
-//   } catch (error) {
-//     console.error("Error: ", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// }
-
 async function getUserCart(req, res) {
   try {
     const userPhone = req.user.phone;
@@ -179,8 +94,6 @@ async function getUserCart(req, res) {
     const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
 
-    const appliedCoupon = req.appliedCoupon; // Get applied coupon from the request object
-    console.log(`appliedCoupon ${appliedCoupon}`);
     const userCart = await cartRepository.findOne({
       where: { user: { phone: userPhone } },
     });
@@ -235,13 +148,6 @@ async function getUserCart(req, res) {
 
     let totalCartPriceCoupon = totalCartPrice;
 
-    if (appliedCoupon) {
-      // Use appliedCoupon in your logic
-      const couponDiscount =
-        (totalCartPrice * appliedCoupon.discountPersentage) / 100;
-      totalCartPriceCoupon = totalCartPrice - couponDiscount;
-    }
-
     res
       .status(200)
       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
@@ -281,37 +187,8 @@ async function removeCartItem(req, res) {
   }
 }
 
-async function applyCoupon(req, res, next) {
-  try {
-    const { coupon } = req.body;
-
-    if (!coupon) {
-      return res.status(400).json({ error: "کد تخفیف را وارد کنید" });
-    }
-
-    const couponRepository = getManager().getRepository(Coupon);
-    const appliedCoupon = await couponRepository.findOne({
-      where: { code: coupon },
-    });
-
-    if (!appliedCoupon) {
-      return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
-    }
-
-    req.appliedCoupon = appliedCoupon;
-    next();
-    res
-      .status(200)
-      .json({ message: "کد تخفیف با موفقیت اعمال شد", appliedCoupon });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-
 module.exports = {
   createCartItem,
   getUserCart,
   removeCartItem,
-  applyCoupon,
 };

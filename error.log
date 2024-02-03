@@ -695,3 +695,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-28T10:20:39.826Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
 2024-01-28T10:20:53.317Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
 2024-01-28T10:21:13.292Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-31T11:53:05.768Z error: Error in getCourseUserWithToken: TypeError: Cannot read properties of null (reading 'phone') 

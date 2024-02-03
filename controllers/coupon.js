@@ -1,6 +1,6 @@
 const Coupon = require("../model/Coupon");
 const logger = require("../services/logger");
-const { getManager, QueryFailedError, Like } = require("typeorm");
+const { getManager, Like } = require("typeorm");
 
 async function createCoupon(req, res) {
   try {
@@ -99,9 +99,6 @@ async function applyCoupon(req, res) {
   if (!appliedCoupon) {
     return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
   }
-
-  
-
 }
 
 module.exports = { applyCoupon, createCoupon, getByIdCoupon, getAllCoupons };
