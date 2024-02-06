@@ -189,6 +189,7 @@ async function getTodayOnlineClasses(req, res) {
         todayEnd: todayEnd.toDate(),
       })
       .andWhere("course.id IN (:...courseIds)", { courseIds })
+      .orderBy("onlineClass.start", "ASC")
       .getMany();
 
     if (todayOnlineClasses.length === 0) {
@@ -257,6 +258,7 @@ async function getFutureOnlineClasses(req, res) {
         tomorrowStart: tomorrowStart.toDate(),
       })
       .andWhere("course.id IN (:...courseIds)", { courseIds })
+      .orderBy("onlineClass.start", "ASC")
       .getMany();
 
     if (futureOnlineClasses.length === 0) {

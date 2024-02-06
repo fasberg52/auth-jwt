@@ -13,11 +13,13 @@ const {
   getFutureOnlineClasses,
 } = require("../../controllers/onlineClass");
 const { upload } = require("../../utils/multerUtils");
-
+const subsController = require("../../controllers/subscribe");
+const { sendNotification } = require("web-push");
+//const { sendNotif } = require("../../utils/push");
 const router = express.Router();
 
 router.get("/profile", jwtAuthMiddleware, getUserDataWithToken);
-router.post("/orders", jwtAuthMiddleware, getAllOrderUser);
+router.get("/orders", jwtAuthMiddleware, getAllOrderUser);
 router.put("/profile", jwtAuthMiddleware, editDataUser);
 router.post("/logout", jwtAuthMiddleware, logoutPanel);
 router.post(
@@ -29,5 +31,9 @@ router.post(
 
 router.get("/today/class", jwtAuthMiddleware, getTodayOnlineClasses);
 router.get("/feture/class", jwtAuthMiddleware, getFutureOnlineClasses);
+
+router.post("/subscribe", subsController.subscribeUser);
+
+router.get("/send-notification", subsController.sendNotif);
 
 module.exports = router;

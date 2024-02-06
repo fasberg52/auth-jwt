@@ -51,19 +51,7 @@ async function getAllOrderUser(req, res) {
   try {
     const userRepository = getManager().getRepository(User);
 
-    const token = req.body.token;
-
-    if (!token) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
+    const phone = req.user.phone;
 
     const user = await userRepository
       .createQueryBuilder("user")

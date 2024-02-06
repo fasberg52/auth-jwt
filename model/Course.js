@@ -61,7 +61,7 @@ const Course = new EntitySchema({
       default: "rgba(196,0,136,0.711922268907563)",
     },
     eventId: {
-      type: "int",
+      type: "varchar",
       nullable: true,
     },
   },

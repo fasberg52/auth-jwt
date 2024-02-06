@@ -14,10 +14,9 @@ router.get("/all", jwtAuthMiddleware, courseController.getAllCourseForOnline);
 router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersForCourses);
 
 
-router.post(
+router.get(
   "/my-courses",
   jwtAuthMiddleware,
-  validToken,
   courseController.getCourseUserWithToken
 );
 

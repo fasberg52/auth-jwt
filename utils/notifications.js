@@ -3,11 +3,11 @@ const { getRepository } = require("typeorm");
 const onlineClass = require("../model/onlineCourse");
 const webpush = require("web-push");
 
-// Configure web-push with your VAPID keys
+
 const vapidKeys = {
   publicKey:
-    "BGAOyAddltajvTJv80p9N3r7rRR1IDZZkVq-F5RORBkHhCr6LGR0hBTyeXSbOhJjVF4qOxFm_Gq6DwXol0sKZ1s",
-  privateKey: "Oh1ceRS4oVJt4fHs-ksdW3PYhsnLRGxDRC4uYInAU_I",
+    "BE6Gh88dZcOUyOf7OObn6dA62nFJ1wZNAMEw4OQOjFhLG-g9OJR-DLKKh5w6Irxzs1IhPq3U0n68V4o-3soJP4g",
+  privateKey: "uFO0-a8RJYYEMzWN4iMbXpK8Rd7nv4ca9O--1szFfOI",
 };
 
 webpush.setVapidDetails(
@@ -19,8 +19,8 @@ webpush.setVapidDetails(
 async function sendNotifications() {
   const classRepository = getRepository(onlineClass);
   const notificationPayload = JSON.stringify({
-    title: "Class Reminder",
-    body: "Your class is starting soon.",
+    title: "باکلاس آنلاین",
+    body: "کلاس شما شروع شده است",
   });
 
   const now = new Date();

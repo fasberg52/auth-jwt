@@ -1,54 +1,49 @@
-// services/sendMessage.js
-const moment = require("moment");
-const Kavenegar = require("kavenegar");
+const EventEmitter = require('events');
+const { createConnection } = require('typeorm');
+const OnlineClass = require('path/to/OnlineClass');
+const Kavenegar = require('kavenegar');
+const cron = require('node-cron');
 
-const kavenegarApi = Kavenegar.KavenegarApi({
-  apiKey: process.env.KAVENEGAR_API_KEY,
-});
+const apiKey = 'YOUR_KAVENEGAR_API_KEY'; 
+class ClassEventEmitter extends EventEmitter {}
 
-function sendNotification(userPhone, className, classStartTime) {
+const classEventEmitter = new ClassEventEmitter();
+
+const sendSMS = (phoneNumber, message) => {
+  const api = Kavenegar.KavenegarApi({ apiKey });
+  api.Send({
+    message,
+    receptor: phoneNumber,
+    sender: 'YOUR_SENDER_NUMBER', 
+  }, (response, status) => {
+    console.log(response);
+    console.log(status);
+  });
+};
+
+const main = async () => {
   try {
-    const currentTime = moment();
-    const classTime = moment(classStartTime);
+    const connection = await createConnection(require('./typeorm-config'));
+    const onlineClassesRepository = connection.getRepository(OnlineClass);
 
-    // Check if the class is still upcoming
-    if (classTime.isAfter(currentTime)) {
-      const timeDifference = classTime.diff(currentTime);
+    const classes = await onlineClassesRepository.find();
 
-      // Check if the class is within the next 15 minutes
-      if (timeDifference <= 15 * 60 * 1000) {
-        const message = `Class "${className}" starts at ${classTime.format(
-          "YYYY-MM-DD HH:mm"
-        )}`;
-        kavenegarApi.Send({
-          message,
-          receptor: userPhone,
-        });
-        console.log(
-          `Notification sent to ${userPhone} for the class "${className}" starting at ${classTime.format(
-            "YYYY-MM-DD HH:mm"
-          )}`
-        );
-      }
-    }
+    classes.forEach((onlineClass) => {
+      const { start, title, phoneNumber } = onlineClass;
+
+      cron.schedule(start, () => {
+        const message = `Reminder: Your class "${title}" is starting now.`;
+        sendSMS(phoneNumber, message);
+
+        
+        classEventEmitter.emit('classStart', onlineClass);
+      });
+    });
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error('Error:', error);
   }
-}
+};
 
-// function scheduleNotifications(enrolledCourses) {
-//   enrolledCourses.forEach((enrollment) => {
-//     const { userPhone, title, startDate } = enrollment;
-//     const notificationTime = moment(startDate).subtract(15, "minutes");
+main();
 
-//     // Check if the class time is not over
-//     if (moment(startDate).isAfter(moment())) {
-//       setTimeout(() => {
-//         sendNotification(userPhone, title, startDate);
-//       }, notificationTime.diff(moment()));
-//     }
-//   });
-// }
-
-
-module.exports = { sendNotification };
+module.exports = classEventEmitter;

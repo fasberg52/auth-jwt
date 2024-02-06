@@ -248,18 +248,9 @@ async function getCourseById(req, res) {
 
 async function getCourseUserWithToken(req, res) {
   try {
-    const { token } = req.body;
-    if (!token) {
-      res.status(400).json("توکن وارد شده صحیح نیست");
-    }
+  
 
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      res.status(400).json("توکن وارد شده پیدا نشد");
-    }
-
-    const userPhone = decodedToken.phone;
+    const userPhone = req.user.phone;
 
     const enrollmentRepository = getManager().getRepository(Enrollment);
 
