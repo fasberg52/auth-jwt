@@ -50,7 +50,7 @@ async function setupDatabase() {
         OnlineClass,
         Subscribe,
       ],
-      synchronize: false,
+      synchronize: true,
     });
 
     console.log("Database connection established");

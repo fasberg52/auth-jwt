@@ -9,8 +9,14 @@ const Subscribe = new EntitySchema({
       primary: true,
       generated: true,
     },
-    subscribe: {
-      type: "jsonb",
+    endpoint: {
+      type: "varchar",
+    },
+    auth: {
+      type: "varchar",
+    },
+    p256dh: {
+      type: "varchar",
     },
   },
 });

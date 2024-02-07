@@ -29,7 +29,6 @@
         .createQueryBuilder("cartItem")
         .where("cartItem.cartId = :cartId", { cartId: userCart.id })
         .getMany();
-      console.log(`cartItems >> ${JSON.stringify(cartItems)}`);
 
       let totalPrice = 0;
 
@@ -165,12 +164,12 @@
         }
       }
     }
-    console.log(`Total Price: ${totalPrice}`);
+    ;
 
     savedOrder.totalPrice = totalPrice;
     const orderRepository = getRepository(Order);
     await orderRepository.save(savedOrder);
-    console.log(totalPrice);
+   
     return totalPrice;
   }
 
@@ -242,11 +241,10 @@
             console.log(error.response);
           });
 
-        console.log(`response verify : ${JSON.stringify(response.data)}`);
 
         const code = response.data.data.code;
 
-        console.log(`code  >> ${code}`);
+        
 
         if (code == 100) {
           const refID = response.data.data.ref_id;
@@ -272,8 +270,7 @@
           existingOrder.refId = refID;
           const updateOrder = await orderRepository.save(existingOrder);
 
-          console.log(`existingOrder >> ${existingOrder}`);
-          console.log(`Order updated successfully. Order ID: ${updateOrder.id}`);
+        
 
           return res.render("payment", {
             orderStatus: "success",
@@ -284,7 +281,7 @@
           //   .json({ message: "Payment verification succeeded", updateOrder });
         }
       } else if (Status === "NOK") {
-        console.log("hereeeee");
+     
         const orderRepository = getManager().getRepository(Order);
         const phone = req.query.Phone || "UNKNOWN";
         const amountInTomans = Amount / 10;

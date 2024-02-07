@@ -9,8 +9,7 @@ const moment = require("jalali-moment");
 
 async function createUpload(req, res) {
   try {
-    console.log("Received file upload request");
-    console.log("req.file : " + JSON.stringify(req.file));
+  
 
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
@@ -23,7 +22,7 @@ async function createUpload(req, res) {
       subdirectory,
       originalFilename
     );
-    console.log(`filePath >>> ${filePath}`);
+   
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
@@ -32,7 +31,6 @@ async function createUpload(req, res) {
 
     const saveNewUpload = await uploadRepository.save(newUpload);
 
-    console.log("File successfully saved to database:", saveNewUpload);
 
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
@@ -189,11 +187,9 @@ async function deleteUpload(req, res) {
     const uploadId = req.params.id;
 
     const subdirectory = createSubdirectory();
-    console.log(`>>> ${subdirectory}`);
     const uploadRepository = getManager().getRepository(Upload);
 
     const upload = await uploadRepository.findOne({ where: { id: uploadId } });
-    console.log(`>>>>> upload${JSON.stringify(upload)}`);
     if (!upload) {
       return res.status(404).json({
         message: "فایلی پیدا نشد",
@@ -207,7 +203,6 @@ async function deleteUpload(req, res) {
 
       upload.path
     );
-    console.log(` > >>> filePath : ${filePath}`);
     await fs.unlink(filePath);
     await uploadRepository.remove(upload);
 
@@ -247,7 +242,6 @@ async function getUploadPath(req, res) {
       __dirname,
       `../uploads/${subdirectory}/${upload.path}`
     );
-    console.log(`filePath >>>> ${filePath}`);
 
     res.status(200).json({
       // message: "File path retrieved successfully",

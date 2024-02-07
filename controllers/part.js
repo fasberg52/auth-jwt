@@ -56,7 +56,6 @@ async function createPart(req, res) {
 
     const orderIndex = partCount + 1;
     
-    console.log(`>> orderIndex ${orderIndex}`);
 
     const newPart = partRepository.create({
       courseId,

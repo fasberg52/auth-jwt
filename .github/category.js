@@ -3,7 +3,7 @@
 const { getManager, getRepository } = require("typeorm");
 const Category = require("../model/Category");
 const fs = require("fs");
-
+const logger = require("../services/logger");
 
 async function getAllCategories(req, res) {
   try {
@@ -19,11 +19,11 @@ async function getAllCategories(req, res) {
 
     res.status(200).json({ categories, status: 200 });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in getAllCategories ${error}`);
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 
 // async function createCategory(req, res) {
 //   try {
@@ -117,7 +117,8 @@ async function updateCategory(req, res) {
       status: 200,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in updateCategory ${error}`);
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -144,7 +145,8 @@ async function deleteCategory(req, res) {
     await categoryRepository.remove(existingCategory);
     res.json({ message: "دسته پاک شد", status: 200 });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in deleteCategory ${error}`);
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

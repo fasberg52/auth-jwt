@@ -135,7 +135,6 @@ async function getAllOnlineClasses(req, res) {
 async function getTodayOnlineClasses(req, res) {
   try {
     const userPhone = req.user.phone;
-    console.log(userPhone);
 
     const enrollmentRepository = getRepository(Enrollment);
     const onlineClassRepository = getRepository(OnlineClass);
@@ -159,7 +158,6 @@ async function getTodayOnlineClasses(req, res) {
 
     const totalCount = await enrolledCoursesQuery.getCount();
     const enrolledCourses = await enrolledCoursesQuery.getRawMany();
-    console.log("Enrolled Courses for getTodayOnlineClasses:", enrolledCourses);
 
     if (enrolledCourses.length === 0) {
       return res.status(404).json({ error: "شما دسترسی ندارید" });
@@ -207,7 +205,6 @@ async function getTodayOnlineClasses(req, res) {
 async function getFutureOnlineClasses(req, res) {
   try {
     const userPhone = req.user.phone;
-    console.log(userPhone);
     const onlineClassRepository = getRepository(OnlineClass);
     const enrollmentRepository = getRepository(Enrollment);
 
@@ -229,10 +226,7 @@ async function getFutureOnlineClasses(req, res) {
       .addSelect(["o.orderDate as orderDate"]);
     const totalCount = await enrolledCoursesQuery.getCount();
     const enrolledCourses = await enrolledCoursesQuery.getRawMany();
-    console.log(
-      "Enrolled Courses for getFutureOnlineClasses:",
-      enrolledCourses
-    );
+   
 
     if (enrolledCourses.length === 0) {
       return res.status(404).json({ error: "شما دسترسی ندارید" });

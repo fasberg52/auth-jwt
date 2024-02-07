@@ -241,7 +241,7 @@ async function getCourseById(req, res) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
     });
-    console.log(`>>>>${error}`);
+    
     res.status(500).json({ error });
   }
 }
@@ -260,25 +260,7 @@ async function getCourseUserWithToken(req, res) {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
 
-    const [sql, parameters] = enrollmentRepository
-      .createQueryBuilder("enrollment")
-      .leftJoin("enrollment.course", "course")
-      .leftJoin("course.category", "category")
-      .leftJoin("enrollment.order", "o")
-      .leftJoin("o.user", "user")
-      .where("user.phone = :phone", { phone: userPhone })
-      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
-      .select([
-        "course.id as id",
-        "course.title as title",
-        "course.price as price",
-        "course.discountPrice as discountPrice",
-        "course.imageUrl as imageUrl",
-      ])
-      .addSelect(["o.orderDate as orderDate"])
-      .getQueryAndParameters();
-    console.log("Generated SQL getCourseUserWithToken:", sql);
-    console.log("Parameters getCourseUserWithToken:", parameters);
+    
 
     const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
@@ -303,10 +285,7 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany();
-    console.log(
-      "Enrolled Courses for getCourseUserWithToken:",
-      enrolledCourses
-    );
+    
 
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
@@ -315,7 +294,6 @@ async function getCourseUserWithToken(req, res) {
       return;
     }
 
-    console.log(enrolledCourses);
 
     const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
       ...course,
@@ -332,7 +310,7 @@ async function getCourseUserWithToken(req, res) {
       status: 200,
     });
   } catch (error) {
-    console.log(error);
+    
     logger.error(`Error in getCourseUserWithToken: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }

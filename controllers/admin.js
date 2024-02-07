@@ -1,7 +1,7 @@
 const Users = require("../model/users");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
-const Cart = require("../model/Cart")
+const Cart = require("../model/Cart");
 const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
@@ -39,8 +39,7 @@ async function createUser(req, res) {
       .status(201)
       .json({ message: "کاربر جدید ایجاد شد", savedUser, status: 201 });
   } catch (error) {
-    logger.error;
-    console.log(error);
+    logger.error(`Error in createUser ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -120,7 +119,8 @@ async function getUsers(req, res) {
       usersCount: usersCount.count,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in getUser ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while getting the users." });
@@ -224,7 +224,7 @@ async function deleteUsers(req, res) {
       return res.json({ message: "کاربر با موفقیت پاک شد" });
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in deleteUsers ${error}`);
     res
       .status(500)
       .json({ error: "An error occurred while deleting the user." });

@@ -62,7 +62,7 @@ async function addCourse(req, res) {
     }
 
     const result = await courseRepository.save(newCourse);
-    console.log(`result >>> ${result}`);
+    
 
     return res
       .status(201)
@@ -136,7 +136,7 @@ async function editCourse(req, res) {
       res.status(404).json({ error: "دوره ای پیدا نشد" });
     }
   } catch (error) {
-    console.log(`Error editCourse: ${error}`);
+    logger.error(`Error editCourse: ${error}`)
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -221,7 +221,7 @@ async function getAdminCourseById(req, res) {
   } catch (error) {
     logger.error(`Error in getAdminCourseById  ${error}`);
 
-    console.log(`>>>>${error}`);
+    
     res
       .status(500)
       .json({ error: "An error occurred while retrieving the course." });
