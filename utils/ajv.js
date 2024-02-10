@@ -1,6 +1,44 @@
 const Ajv = require("ajv").default;
 const ajv = new Ajv({ allErrors: true });
 require("ajv-errors")(ajv);
+
+const subscribeSchema = {
+  type: "object",
+  properties: {
+    subscription: {
+      type: "object",
+      properties: {
+        endpoint: { type: "string" },
+        expirationTime: { type: ["null", "string"] },
+        keys: {
+          type: "object",
+          properties: {
+            p256dh: { type: "string" },
+            auth: { type: "string" },
+          },
+          required: ["p256dh", "auth"],
+        },
+      },
+      required: ["endpoint", "keys"],
+    },
+  },
+  required: ["subscription"],
+  additionalProperties: false,
+  errorMessage: {
+    properties: {
+      subscription: "Subscription object is required",
+    },
+    required: {
+      subscription: "Subscription object is required",
+      "subscription.endpoint": "Endpoint is required",
+      "subscription.keys": "Keys object is required",
+      "subscription.keys.p256dh": "p256dh is required",
+      "subscription.keys.auth": "auth is required",
+    },
+    additionalProperties: "اطلاعات اضافی مجاز نیست",
+  },
+};
+
 const phoneSchema = {
   type: "object",
   properties: {
@@ -140,6 +178,7 @@ const checkToken = {
     },
   },
 };
+const subscribeValidator = ajv.compile(subscribeSchema);
 const tokenValidator = ajv.compile(checkToken);
 const phoneValidator = ajv.compile(phoneSchema);
 const loginWithOTPValidator = ajv.compile(loginWithOTPSchema);
@@ -155,4 +194,5 @@ module.exports = {
   courseValidator,
   updateUserValidator,
   tokenValidator,
+  subscribeValidator,
 };

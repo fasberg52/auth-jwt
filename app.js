@@ -10,7 +10,6 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
-const cron = require("node-cron");
 const { sendNotifications } = require("./utils/notifications");
 const app = express();
 
@@ -44,7 +43,7 @@ async function main() {
           "http://192.168.1.113:3630",
           "http://localhost:3630",
           "http://localhost:4173",
-          "https://event.alocom.co",    
+          "https://event.alocom.co",
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
@@ -53,14 +52,6 @@ async function main() {
 
     app.use(compression());
     routerConfig(app);
-
-    cron.schedule("* * * * *", async () => {
-      try {
-        await sendNotifications();
-      } catch (error) {
-        console.error("Error sending notifications:", error);
-      }
-    });
 
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);

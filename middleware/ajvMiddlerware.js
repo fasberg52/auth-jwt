@@ -8,7 +8,19 @@ const {
   courseValidator,
   updateUserValidator,
   tokenValidator,
+  subscribeValidator,
 } = require("../utils/ajv");
+
+function validSubscribe(req, res, next) {
+  const valid = subscribeValidator(req.body);
+  if (valid) {
+    next();
+  } else {
+    res.status(400).json({
+      errors: subscribeValidator.errors[0].message,
+    });
+  }
+}
 
 function validToken(req, res, next) {
   const valid = tokenValidator(req.body);
@@ -96,5 +108,6 @@ module.exports = {
   validCourse,
   validUpdateUser,
   validToken,
+  validSubscribe,
   // Other validation functions
 };
