@@ -2,6 +2,7 @@ const { getRepository, MoreThanOrEqual } = require("typeorm");
 const webPush = require("web-push");
 const Subscribe = require("../model/Subscribe");
 const OnlineClass = require("../model/onlineCourse");
+const User = require("../model/users");
 const cron = require("node-cron");
 webPush.setVapidDetails(
   process.env.EMAIL_NOTIFICATION,
@@ -12,7 +13,14 @@ webPush.setVapidDetails(
 async function subscribeUser(req, res) {
   try {
     const { subscription } = req.body;
-    console.log(`>>>>>>>>>> req :  ${JSON.stringify(req.body)}`);
+    const userPhone = req.user.phone;
+    const userRepository = getRepository(User);
+    const exitingUser = await userRepository.findOne({
+      where: { phone: userPhone },
+    });
+    if (!exitingUser) {
+      res.status(400).json({ error: "کاربر وجود ندارد", status: 400 });
+    }
 
     const subscribeRepository = getRepository(Subscribe);
     console.log(`>>>>>>>>>> ${JSON.stringify(subscription)}`);
@@ -32,6 +40,7 @@ async function subscribeUser(req, res) {
       endpoint: subscription.endpoint,
       auth: subscription.keys.auth,
       p256dh: subscription.keys.p256dh,
+      userPhone: userPhone,
     });
 
     await subscribeRepository.save(newSubscription);
@@ -110,5 +119,5 @@ setInterval(() => {
   console.log("time req");
 }, 60000);
 
-console.log("time req")
+console.log("time req");
 module.exports = { subscribeUser, sendNotif };

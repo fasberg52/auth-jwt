@@ -63,6 +63,14 @@ const User = new EntitySchema({
       target: "Order",
       inverseSide: "user",
     },
+    subscribe: {
+      type: "one-to-one",
+      target: "Subscribe",
+      joinColumn: {
+        name: "phone",
+        referencedColumnName: "userPhone",
+      },
+    },
   },
 });
 

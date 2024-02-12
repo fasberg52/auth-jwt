@@ -34,7 +34,12 @@ router.post(
 router.get("/today/class", jwtAuthMiddleware, getTodayOnlineClasses);
 router.get("/feture/class", jwtAuthMiddleware, getFutureOnlineClasses);
 
-router.post("/subscribe", validSubscribe, subsController.subscribeUser);
+router.post(
+  "/subscribe",
+  jwtAuthMiddleware,
+  validSubscribe,
+  subsController.subscribeUser
+);
 
 router.get("/send-notification", subsController.sendNotif);
 
