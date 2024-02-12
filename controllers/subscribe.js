@@ -15,90 +15,116 @@ async function subscribeUser(req, res) {
     const { subscription } = req.body;
     const userPhone = req.user.phone;
     const userRepository = getRepository(User);
-    const exitingUser = await userRepository.findOne({
+    const subscribeRepository = getRepository(Subscribe);
+
+    const existingUser = await userRepository.findOne({
       where: { phone: userPhone },
     });
-    if (!exitingUser) {
+
+    if (!existingUser) {
       res.status(400).json({ error: "کاربر وجود ندارد", status: 400 });
+      return;
     }
 
-    const subscribeRepository = getRepository(Subscribe);
-    console.log(`>>>>>>>>>> ${JSON.stringify(subscription)}`);
     const existingSubscription = await subscribeRepository.findOne({
       where: { endpoint: subscription.endpoint },
     });
-    console.log(
-      `existingSubscription >>> ${JSON.stringify(existingSubscription)}`
-    );
+
     if (existingSubscription) {
-      return res
-        .status(400)
-        .json({ message: "سابسکرایب شما از قبل وجود دارد" });
+      return res.status(400).json({
+        message: "سابسکرایب شما از قبل وجود دارد",
+        status: 400,
+      });
     }
 
     const newSubscription = subscribeRepository.create({
       endpoint: subscription.endpoint,
       auth: subscription.keys.auth,
       p256dh: subscription.keys.p256dh,
-      userPhone: userPhone,
+      userPhone: existingUser.phone,
+      isActive: true,
     });
 
     await subscribeRepository.save(newSubscription);
 
     console.log(newSubscription);
-    res.status(201).json({ message: "با موفقیت انجام شد" });
+    res.status(201).json({ message: "با موفقیت انجام شد", status: 201 });
   } catch (error) {
     console.error("Error subscribing user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
-async function sendNotif(req, res) {
+
+async function unsubscribeUser(req, res) {
   try {
-    const currentTimestamp = new Date();
-    console.log(`currentTimestamp : ${currentTimestamp}`);
-    const upcomingClasses = await getRepository(OnlineClass).find({
-      where: {
-        start: MoreThanOrEqual(currentTimestamp),
-      },
+    const userPhone = req.params.phone;
+
+    const userRepository = getRepository(User);
+    const existingUser = await userRepository.findOne({
+      where: { phone: userPhone },
     });
+
+    if (!existingUser) {
+      return res.status(400).json({ error: "کاربر وجود ندارد", status: 400 });
+    }
 
     const subscribeRepository = getRepository(Subscribe);
 
-    const subscriptions = await subscribeRepository.find();
-    console.log("Subscriptions:", subscriptions);
+    const existingSubscription = await subscribeRepository.findOne({
+      where: { userPhone: userPhone },
+    });
 
+    if (!existingSubscription) {
+      return res.status(400).json({ message: "سابسکرایب یافت نشد" });
+    }
+
+    await subscribeRepository.remove(existingSubscription);
+
+    res.status(200).json({ message: "با موفقیت لغو شد" });
+  } catch (error) {
+    console.error("Error unsubscribing user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+async function sendNotif(req, res) {
+  try {
+    const subscribeRepository = getRepository(Subscribe);
+    const subscriptions = await subscribeRepository.find();
     if (!subscriptions || subscriptions.length === 0) {
-      console.log("No subscriptions found");
       return res.status(400).json({ error: "No subscriptions found" });
     }
 
-    for (const onlineClass of upcomingClasses) {
+    console.log(">>>> " + JSON.stringify(subscriptions));
+
+    const payload = {
+      title: "باکلاس آنلاین",
+      body: `کلاس  شروع شده است`,
+      icon: "https://baclassdevelop.liara.run/app/uploads/2024/02/192.png",
+    };
+
+    const notificationPromises = subscriptions.map(async (subscription) => {
       try {
-        const payload = {
-          title: "باکلاس آنلاین",
-          body: `کلاس ${onlineClass.title} شروع شده است`,
-          icon: "https://baclassdevelop.liara.run/app/uploads/2024/02/192.png",
-        };
-
-        // Sequentially send notifications for each class to all subscribers
-        for (const sub of subscriptions) {
-          await webPush.sendNotification(
-            {
-              endpoint: sub.endpoint,
-              keys: {
-                auth: sub.auth,
-                p256dh: sub.p256dh,
-              },
+        await webPush.sendNotification(
+          {
+            endpoint: subscription.endpoint,
+            keys: {
+              auth: subscription.auth,
+              p256dh: subscription.p256dh,
             },
-            JSON.stringify(payload)
-          );
-        }
-
-        console.log(`Push notifications sent for class ${onlineClass.title}`);
+          },
+          JSON.stringify(payload)
+        );
+        console.log(`Notification sent to ${subscription.endpoint}`);
       } catch (error) {
-        console.error("Error sending push notification:", error);
+        console.error(
+          `Error sending push notification to ${subscription.endpoint}:`,
+          error
+        );
       }
-    }
+    });
+
+    await Promise.all(notificationPromises);
 
     res.status(200).json({ message: "Push notifications sent successfully" });
   } catch (error) {
@@ -107,17 +133,67 @@ async function sendNotif(req, res) {
   }
 }
 
-setInterval(() => {
-  const req = {};
-  const res = {
-    status: (code) => ({
-      json: (data) => console.log(data),
-    }),
-  };
+// async function sendNotif(req, res) {
+//   try {
+//     // const currentTimestamp = new Date();
+//     // console.log(`currentTimestamp : ${currentTimestamp}`);
+//     // const upcomingClasses = await getRepository(OnlineClass).find({
+//     //   where: {
+//     //     start: MoreThanOrEqual(currentTimestamp),
+//     //   },
+//     // });
 
-  sendNotif(req, res);
-  console.log("time req");
-}, 60000);
+//     const subscribeRepository = getRepository(Subscribe);
 
-console.log("time req");
-module.exports = { subscribeUser, sendNotif };
+//     const subscriptions = await subscribeRepository.find();
+
+//     if (!subscriptions || subscriptions.length === 0) {
+//       return res.status(400).json({ error: "No subscriptions found" });
+//     }
+
+//     // for (const onlineClass of upcomingClasses) {
+//     try {
+//       const payload = {
+//         title: "باکلاس آنلاین",
+//         body: `کلاس  شروع شده است`,
+//         icon: "https://baclassdevelop.liara.run/app/uploads/2024/02/192.png",
+//       };
+
+//       // for (const sub of subscriptions) {
+//       await webPush.sendNotification(
+//         {
+//           endpoint: subscriptions.endpoint,
+//           keys: {
+//             auth: subscriptions.auth,
+//             p256dh: subscriptions.p256dh,
+//           },
+//         },
+//         JSON.stringify(payload)
+//       );
+//       // }
+//     } catch (error) {
+//       console.error("Error sending push notification:", error);
+//     }
+//     // }
+
+//     res.status(200).json({ message: "Push notifications sent successfully" });
+//   } catch (error) {
+//     console.error("Error sending push notification:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// }
+
+// setInterval(() => {
+//   const req = {};
+//   const res = {
+//     status: (code) => ({
+//       json: (data) => console.log(data),
+//     }),
+//   };
+
+//   sendNotif(req, res);
+//   console.log("time req");
+// }, 60000);
+
+// console.log("time req");
+module.exports = { subscribeUser, sendNotif, unsubscribeUser };

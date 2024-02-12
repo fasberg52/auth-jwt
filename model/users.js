@@ -64,12 +64,9 @@ const User = new EntitySchema({
       inverseSide: "user",
     },
     subscribe: {
-      type: "one-to-one",
+      type: "many-to-many",
       target: "Subscribe",
-      joinColumn: {
-        name: "phone",
-        referencedColumnName: "userPhone",
-      },
+      inverseSide: "user",
     },
   },
 });

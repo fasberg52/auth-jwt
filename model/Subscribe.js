@@ -18,13 +18,18 @@ const Subscribe = new EntitySchema({
     p256dh: {
       type: "varchar",
     },
+    isActive: {
+      type: "boolean",
+      default: false,
+    },
     userPhone: {
       type: "text",
+      nullable: true,
     },
   },
   relations: {
     user: {
-      type: "one-to-one",
+      type: "many-to-many",
       target: "User",
       joinColumn: {
         name: "userPhone",

@@ -1,6 +1,6 @@
 const User = require("../model/users");
 const Upload = require("../model/Upload");
-
+const Subscribe = require("../model/Subscribe");
 const OTP = require("../model/OTP");
 const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
@@ -9,13 +9,14 @@ const { getManager } = require("typeorm");
 const logger = require("../services/logger");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
+const { subscribe } = require("diagnostics_channel");
 
 async function getUserDataWithToken(req, res) {
   try {
     const phone = req.user.phone;
 
     const userRepository = getManager().getRepository(User);
-
+    const subscribeRepository = getManager().getRepository(Subscribe);
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
@@ -37,6 +38,15 @@ async function getUserDataWithToken(req, res) {
           ? new Date(existingUser.lastLogin).getTime()
           : null,
       };
+
+      const existingSubscription = await subscribeRepository.findOne({
+        where: { userPhone: phone },
+      });
+
+      if (existingSubscription) {
+        user.isActive = existingSubscription.isActive;
+      }
+
       res.status(200).json(user);
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
@@ -123,8 +133,6 @@ async function editDataUser(req, res) {
 
 async function logoutPanel(req, res) {
   try {
-    
-
     const phone = req.user.phone;
 
     const otpRepository = getManager().getRepository(OTP);
