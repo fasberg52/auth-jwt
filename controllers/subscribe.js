@@ -3,7 +3,7 @@ const webPush = require("web-push");
 const Subscribe = require("../model/Subscribe");
 const OnlineClass = require("../model/onlineCourse");
 const User = require("../model/users");
-const cron = require("node-cron");
+const cron = require("cron");
 webPush.setVapidDetails(
   process.env.EMAIL_NOTIFICATION,
   process.env.PUBLIC_KEY_NOTIFICATION,
@@ -87,23 +87,57 @@ async function unsubscribeUser(req, res) {
   }
 }
 
-async function sendNotif(req, res) {
+async function sendNotif() {
   try {
     const subscribeRepository = getRepository(Subscribe);
-    const subscriptions = await subscribeRepository.find();
-    if (!subscriptions || subscriptions.length === 0) {
-      return res.status(400).json({ error: "No subscriptions found" });
+    const onlineClassRepository = getRepository(OnlineClass);
+
+    const currentTimestamp = new Date();
+
+    const windowStart = new Date(currentTimestamp);
+    windowStart.setSeconds(currentTimestamp.getSeconds() - 30);
+
+    const windowEnd = new Date(currentTimestamp);
+    windowEnd.setSeconds(currentTimestamp.getSeconds() + 30);
+
+    console.log(`Current Timestamp: ${currentTimestamp}`);
+    console.log(`Window Start: ${windowStart}`);
+    console.log(`Window End: ${windowEnd}`);
+
+    console.log(`Current Timestamp: ${currentTimestamp}`);
+
+    const currentClass = await getRepository(OnlineClass)
+      .createQueryBuilder("onlineClass")
+      .leftJoinAndSelect("onlineClass.course", "course")
+      .addSelect(["course.title", "course.imageUrl"])
+      .where("onlineClass.start >= :windowStart", { windowStart })
+      .andWhere("onlineClass.start <= :windowEnd", { windowEnd })
+      .getOne();
+
+    if (!currentClass) {
+      console.log("No class found at the current timestamp");
+      return;
     }
 
-    console.log(">>>> " + JSON.stringify(subscriptions));
+    const subscriptions = await subscribeRepository.find();
+
+    if (!subscriptions || subscriptions.length === 0) {
+      console.log("No subscriptions found");
+      return;
+    }
+
+    console.log(
+      `Sending notifications for class: ${JSON.stringify(currentClass)}`
+    );
 
     const payload = {
-      title: "باکلاس آنلاین",
-      body: `کلاس  شروع شده است`,
-      icon: "https://baclassdevelop.liara.run/app/uploads/2024/02/192.png",
+      title: currentClass.title,
+      body: `${currentClass.course.title} در حال برگزاری است`,
+      icon: currentClass.course.imageUrl,
+      badge: `https://baclassdevelop.liara.run/app/uploads/2024/02/192.png`,
     };
 
-    const notificationPromises = subscriptions.map(async (subscription) => {
+    for (const subscription of subscriptions) {
       try {
         await webPush.sendNotification(
           {
@@ -115,85 +149,21 @@ async function sendNotif(req, res) {
           },
           JSON.stringify(payload)
         );
-        console.log(`Notification sent to ${subscription.endpoint}`);
       } catch (error) {
-        console.error(
-          `Error sending push notification to ${subscription.endpoint}:`,
-          error
-        );
+        console.error(`Error sending push notification:`, error.message);
       }
-    });
+    }
 
-    await Promise.all(notificationPromises);
-
-    res.status(200).json({ message: "Push notifications sent successfully" });
+    console.log("Notification sent successfully");
   } catch (error) {
-    console.error("Error sending push notification:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error sending push notification:", error.message);
   }
 }
 
-// async function sendNotif(req, res) {
-//   try {
-//     // const currentTimestamp = new Date();
-//     // console.log(`currentTimestamp : ${currentTimestamp}`);
-//     // const upcomingClasses = await getRepository(OnlineClass).find({
-//     //   where: {
-//     //     start: MoreThanOrEqual(currentTimestamp),
-//     //   },
-//     // });
-
-//     const subscribeRepository = getRepository(Subscribe);
-
-//     const subscriptions = await subscribeRepository.find();
-
-//     if (!subscriptions || subscriptions.length === 0) {
-//       return res.status(400).json({ error: "No subscriptions found" });
-//     }
-
-//     // for (const onlineClass of upcomingClasses) {
-//     try {
-//       const payload = {
-//         title: "باکلاس آنلاین",
-//         body: `کلاس  شروع شده است`,
-//         icon: "https://baclassdevelop.liara.run/app/uploads/2024/02/192.png",
-//       };
-
-//       // for (const sub of subscriptions) {
-//       await webPush.sendNotification(
-//         {
-//           endpoint: subscriptions.endpoint,
-//           keys: {
-//             auth: subscriptions.auth,
-//             p256dh: subscriptions.p256dh,
-//           },
-//         },
-//         JSON.stringify(payload)
-//       );
-//       // }
-//     } catch (error) {
-//       console.error("Error sending push notification:", error);
-//     }
-//     // }
-
-//     res.status(200).json({ message: "Push notifications sent successfully" });
-//   } catch (error) {
-//     console.error("Error sending push notification:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// }
-
-// setInterval(() => {
-//   const req = {};
-//   const res = {
-//     status: (code) => ({
-//       json: (data) => console.log(data),
-//     }),
-//   };
-
-//   sendNotif(req, res);
-//   console.log("time req");
-// }, 60000);
-
-// console.log("time req");
+// Schedule the job to run every minute
+const job = new cron.CronJob("* * * * *", async () => {
+  await sendNotif();
+  console.log("Notification job ran.");
+});
+job.start();
 module.exports = { subscribeUser, sendNotif, unsubscribeUser };
