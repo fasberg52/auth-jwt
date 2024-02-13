@@ -100,11 +100,11 @@ async function sendNotif() {
     const windowEnd = new Date(currentTimestamp);
     windowEnd.setSeconds(currentTimestamp.getSeconds() + 30);
 
-    console.log(`Current Timestamp: ${currentTimestamp}`);
-    console.log(`Window Start: ${windowStart}`);
-    console.log(`Window End: ${windowEnd}`);
+    // console.log(`Current Timestamp: ${currentTimestamp}`);
+    // console.log(`Window Start: ${windowStart}`);
+    // console.log(`Window End: ${windowEnd}`);
 
-    console.log(`Current Timestamp: ${currentTimestamp}`);
+    // console.log(`Current Timestamp: ${currentTimestamp}`);
 
     const currentClass = await getRepository(OnlineClass)
       .createQueryBuilder("onlineClass")
@@ -126,9 +126,7 @@ async function sendNotif() {
       return;
     }
 
-    console.log(
-      `Sending notifications for class: ${JSON.stringify(currentClass)}`
-    );
+
 
     const payload = {
       title: currentClass.title,

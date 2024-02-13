@@ -39,7 +39,6 @@
           });
 
           if (course) {
-            // Calculate discounted price if applicable
             const discountedPrice = course.discountPrice || course.price;
             totalPrice += discountedPrice * cartItem.quantity;
           }
