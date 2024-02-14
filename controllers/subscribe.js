@@ -107,7 +107,7 @@ async function sendNotif() {
     // console.log(`Current Timestamp: ${currentTimestamp}`);
 
     const currentClass = await getRepository(OnlineClass)
-      .createQueryBuilder("onlineClass")
+      .createQueryBuilder("onlineClass")  
       .leftJoinAndSelect("onlineClass.course", "course")
       .addSelect(["course.title", "course.imageUrl"])
       .where("onlineClass.start >= :windowStart", { windowStart })

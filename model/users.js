@@ -49,6 +49,10 @@ const User = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
+    skuTest: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     uploads: {
