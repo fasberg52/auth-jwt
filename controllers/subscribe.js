@@ -158,7 +158,7 @@ async function sendNotif() {
   }
 }
 
-// Schedule the job to run every minute
+
 const job = new cron.CronJob("* * * * *", async () => {
   await sendNotif();
   console.log("Notification job ran.");
