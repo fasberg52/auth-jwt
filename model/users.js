@@ -75,4 +75,4 @@ const User = new EntitySchema({
   },
 });
 
-module.exports = User;
+module.exports =  User ;

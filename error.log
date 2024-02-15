@@ -696,3 +696,89 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-28T10:20:53.317Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
 2024-01-28T10:21:13.292Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
 2024-01-31T11:53:05.768Z error: Error in getCourseUserWithToken: TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T08:44:22.487Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:44:51.276Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:48:39.073Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "[object Object]" was found. 
+2024-02-14T08:49:09.679Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "[object Object]" was found. 
+2024-02-14T08:49:54.819Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:51:31.971Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:52:31.563Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:52:45.604Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:14:37.749Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:15:59.547Z error: Error in deleteUsers ReferenceError: User is not defined 
+2024-02-14T09:16:18.570Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:19:40.740Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:22:42.041Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:27:32.280Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:28:47.976Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:31:26.868Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "EntitySchema" was found. 
+2024-02-14T09:31:48.756Z error: Error in deleteUsers CannotDetermineEntityError: Cannot remove, given value must be instance of entity class, instead object literal is given. Or you must specify an entity target to method call. 
+2024-02-14T09:33:30.715Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:36:51.310Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:37:39.830Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:43:19.127Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:43:48.747Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:45:34.870Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:45:54.678Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:46:11.206Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:47:38.747Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "undefined" was found. 
+2024-02-14T09:49:37.417Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:49:53.525Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:50:49.169Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:52:18.902Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:53:56.524Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:54:44.603Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:55:17.849Z error: Error in deleteUsers TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'EntityMetadata'
+    |     property 'ownColumns' -> object with constructor 'Array'
+    |     index 0 -> object with constructor 'ColumnMetadata'
+    --- property 'entityMetadata' closes the circle 
+2024-02-14T10:29:36.953Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:05:48.479Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:05:54.361Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:06:00.148Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:06:06.380Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:06:19.374Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:18:17.311Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:20:11.080Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:20:32.737Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:28:39.214Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:39:30.210Z error: error in delUser async function delUser(req, res) {
+  try {
+    const phone = req.body.phone;
+
+    const userRepository = getManager().getRepository(User);
+    const del = await userRepository.findOne({ where: { phone: phone } });
+
+    if (del) {
+      await userRepository.remove(del);
+      res.status(200).json({ message: "کاربر پاک شد" });
+    } else {
+      res.status(404).json({ error: "کاربر ای پیدا نشد" });
+    }
+  } catch {
+    logger.error(`error in delUser ${delUser}`);
+    res.status(500).json("EROOOOOOOOOOR");
+  }
+} 
+2024-02-14T11:40:15.256Z error: error in delUser async function delUser(req, res) {
+  try {
+    const phone = req.body.phone;
+
+    const userRepository = getManager().getRepository(User);
+    const del = await userRepository.findOne({ where: { phone: phone } });
+
+    if (del) {
+      await userRepository.remove(del);
+      res.status(200).json({ message: "کاربر پاک شد" });
+    } else {
+      res.status(404).json({ error: "کاربر ای پیدا نشد" });
+    }
+  } catch {
+    logger.error(`error in delUser ${delUser}`);
+    res.status(500).json({ error: "EROOOOOOOOOOR" });
+  }
+} 
+2024-02-14T11:40:49.888Z error: error in delUser TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:42:19.952Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:42:38.217Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 

@@ -22,8 +22,8 @@ const {
 } = require("../../controllers/subscribe");
 const { sendNotification } = require("web-push");
 //const { sendNotif } = require("../../utils/push");
-const router = express.Router();
 
+const router = express.Router();
 router.get("/profile", jwtAuthMiddleware, getUserDataWithToken);
 router.get("/orders", jwtAuthMiddleware, getAllOrderUser);
 router.put("/profile", jwtAuthMiddleware, editDataUser);
