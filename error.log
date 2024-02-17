@@ -797,3 +797,8 @@ QueryFailedError: column course.bannerurl does not exist
     --> starting at object with constructor 'ClientRequest'
     |     property 'socket' -> object with constructor 'TLSSocket'
     --- property '_httpMessage' closes the circle 
+2024-02-17T08:05:23.393Z error: Error in examResult quiz24 AxiosError: timeout of 1000ms exceeded 
+2024-02-17T08:06:17.674Z error: Error in examResult quiz24 AxiosError: timeout of 1000ms exceeded 
+2024-02-17T08:43:13.178Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T08:44:03.392Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T08:44:30.278Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
