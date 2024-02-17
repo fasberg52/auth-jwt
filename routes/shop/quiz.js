@@ -8,6 +8,7 @@ const {
   examResult,
   answersheets,
   exams,
+  exam,
 } = require("../../controllers/quiz");
 const router = express.Router();
 
@@ -20,4 +21,5 @@ router.post("/examResult", examResult);
 
 router.post("/answersheets", answersheets);
 router.post("/exams", exams);
+router.post("/exams", exam);
 module.exports = router;
