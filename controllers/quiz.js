@@ -1,17 +1,13 @@
-const axios = require("axios");
-
-async function testRoute(req, res) {
+const logger = require("../services/logger");
+async function registerUser(req, res) {
   try {
-    const response = await axios.post(
-      "https://www.quiz24.ir/api/v1/registerUser",
-      req.body
-    );
+    const response = quiz24.post("/registerUser", req.body);
 
     return res.status(response.status).json(response.data);
   } catch (error) {
-    console.error(error.message);
+    logger.error(`Error in registerUser quiz24 ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
-module.exports = { testRoute };
+module.exports = { registerUser };
