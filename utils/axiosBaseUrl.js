@@ -1,4 +1,5 @@
-export const quiz24 = axios.create({
+const axios = require("axios");
+const quiz24Url = axios.create({
   baseURL: "https://www.quiz24.ir/api/v1",
   timeout: 1000,
   headers: {
@@ -6,5 +7,4 @@ export const quiz24 = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-
+module.exports = { quiz24Url };

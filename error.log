@@ -782,3 +782,18 @@ QueryFailedError: column course.bannerurl does not exist
 2024-02-14T11:40:49.888Z error: error in delUser TypeError: Cannot read properties of undefined (reading 'tableName') 
 2024-02-14T11:42:19.952Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
 2024-02-14T11:42:38.217Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-17T06:14:01.371Z error: Error in registerUser quiz24 ReferenceError: quiz24 is not defined 
+2024-02-17T06:17:11.201Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:50.919Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:53.470Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:56.883Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:20:27.779Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:21:28.958Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:21:57.693Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:22:34.946Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:23:14.364Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:24:22.320Z error: Error in registerUser quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T06:24:30.844Z error: Error in registerUser quiz24 TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'ClientRequest'
+    |     property 'socket' -> object with constructor 'TLSSocket'
+    --- property '_httpMessage' closes the circle 
