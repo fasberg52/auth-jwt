@@ -22,7 +22,7 @@ async function createCartItem(req, res) {
 
     // Access the cart from the session
     const userCart = req.session.cart;
-    console.log(`session cart ${userCart}`);
+    console.log(`session cart >>>>>>>>>>>>>>>>>>>> ${JSON.stringify(userCart)}`);
     // Check if the course is already in the cart
     const existingCartItem = userCart.items.find(
       (item) => item.courseId === courseId
