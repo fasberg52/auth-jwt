@@ -3,7 +3,7 @@ const User = require("../model/users");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
 const Cart = require("../model/Cart");
-
+const { quiz24Url } = require("../utils/axiosBaseUrl");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
 const { convertToJalaliDate } = require("../services/jalaliService");
@@ -215,7 +215,9 @@ async function delUser(req, res) {
 async function deleteUsers(req, res) {
   try {
     const phone = req.params.phone;
-
+    const userId = process.env.ADMIN_QUEZ24;
+    const userName = phone;
+    const requestBody = { userName, userId };
     const userRepository = getManager().getRepository(User);
 
     console.log(`phone >> ${phone}`);
@@ -225,6 +227,8 @@ async function deleteUsers(req, res) {
     });
 
     if (deleteUser) {
+      await quiz24Url.post("/deleteStudent", requestBody);
+
       await getManager()
         .createQueryBuilder()
         .update(Cart)
