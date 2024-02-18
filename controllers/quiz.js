@@ -102,7 +102,12 @@ async function exam(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async function examCode (req,res) {
+  
+}
+
 module.exports = {
+  examCode,
   registerUser,
   users,
   registerStudent,
