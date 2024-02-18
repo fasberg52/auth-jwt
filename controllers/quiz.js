@@ -1,5 +1,8 @@
 const logger = require("../services/logger");
+const Quiz = require("../model/quiz");
+const { getRepository } = require("typeorm");
 const { quiz24Url } = require("../utils/axiosBaseUrl");
+const { getRounds } = require("bcryptjs");
 async function registerUser(req, res) {
   try {
     const userId = process.env.ADMIN_QUEZ24;
@@ -102,7 +105,112 @@ async function exam(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async function createExamCode(req, res) {
+  try {
+    const { examCode } = req.body;
+    const quizRepository = getRepository(Quiz);
+    const exitingCode = await quizRepository.findOne({
+      where: { examCode: examCode },
+    });
+    if (exitingCode) {
+      res.status(400).json({ error: "این کد از قبل وجود دارد", status: 400 });
+    }
+    const newExamCode = quizRepository.create({
+      examCode: examCode,
+    });
+    await quizRepository.save(newExamCode);
+    res.status(201).json({ message: "با موفقیت ساخته شد", status: 201 });
+  } catch (error) {
+    logger.error(`Error in ExamCode ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function getAllExamCodes(req, res) {
+  try {
+    const examCodeRepository = getRepository(Quiz);
+    const examCodes = await examCodeRepository.find();
+
+    res.status(200).json({ examCodes: examCodes, status: 200 });
+  } catch (error) {
+    logger.error(`Error in getAllExamCodes ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function getExamCodeById(req, res) {
+  try {
+    const examCodeId = req.params.examCodeId;
+    const examCodeRepository = getRepository(Quiz);
+    const examCode = await examCodeRepository.findOne({
+      where: { id: examCodeId },
+    });
+
+    if (!examCode) {
+      return res.status(404).json({ error: "کد آزمون پیدا نشد!", status: 404 });
+    }
+
+    res.status(200).json({ examCode: examCode, status: 200 });
+  } catch (error) {
+    logger.error(`Error in getExamCodeById ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function updateExamCode(req, res) {
+  try {
+    const examCodeId = req.params.examCodeId;
+    const { examCode } = req.body;
+    const examCodeRepository = getRepository(Quiz);
+
+    const existingExamCode = await examCodeRepository.findOne({
+      where: { id: examCodeId },
+    });
+
+    if (!existingExamCode) {
+      return res.status(404).json({ error: "کد ازمون پیدا نشد", status: 404 });
+    }
+
+    existingExamCode.examCode = examCode;
+
+    await examCodeRepository.save(existingExamCode);
+
+    res
+      .status(200)
+      .json({ message: "کد آزمون با موفقیت آپدیت شد", status: 200 });
+  } catch (error) {
+    logger.error(`Error in updateExamCode ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function deleteExamCode(req, res) {
+  try {
+    const examCodeId = req.params.examCodeId;
+    const examCodeRepository = getRepository(Quiz);
+
+    const existingExam = await examCodeRepository.findOne({
+      where: { id: examCodeId },
+    });
+
+    if (!existingExam) {
+      return res.status(404).json({ error: "کد آزمون پیدا نشد!", status: 404 });
+    }
+
+    await examCodeRepository.delete(examCodeId);
+
+    res.status(200).json({ message: "کد آزمون با موفقیت پاک شد", status: 200 });
+  } catch (error) {
+    logger.error(`Error in deleteExamCode ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
+  getAllExamCodes,
+  updateExamCode,
+  getExamCodeById,
+  createExamCode,
+  deleteExamCode,
   registerUser,
   users,
   registerStudent,

@@ -9,7 +9,7 @@
 
   async function checkOutCart(req, res) {
     try {
-      const userPhone = req.user.phone;
+      const userPhone = req.user.phone;  
       const connection = getConnection();
       const cartRepository = connection.getRepository(Cart);
       const cartItemsRepository = connection.getRepository(CartItems);
