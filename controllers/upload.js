@@ -229,7 +229,6 @@ async function getUploadPath(req, res) {
       });
     }
 
-    // Construct the file path
     const subdirectory = createSubdirectory();
     const filePath = path.resolve(
       __dirname,
