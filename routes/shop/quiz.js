@@ -14,6 +14,10 @@ const {
   exams,
   exam,
   examCode,
+  getExamCodeById,
+  deleteExamCode,
+  updateExamCode,
+  getAllExamCodes,
 } = require("../../controllers/quiz");
 const router = express.Router();
 
@@ -29,4 +33,29 @@ router.post("/exams", jwtAuthMiddleware, exams);
 router.post("/exam", jwtAuthMiddleware, exam);
 
 router.post("/examCode", jwtAuthMiddleware, checkRole("admin"), examCode);
+router.get(
+  "/examCodes",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  getAllExamCodes
+);
+router.get(
+  "/examCode/:examCodeId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  getExamCodeById
+);
+router.put(
+  "/examCode/:examCodeId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  updateExamCode
+);
+router.delete(
+  "/examCode/:examCodeId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  deleteExamCode
+);
+
 module.exports = router;
