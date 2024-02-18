@@ -9,6 +9,7 @@ const Quiz = new EntitySchema({
     id: {
       type: "int",
       generated: true,
+      primary: true,
     },
     examCode: {
       type: "int",

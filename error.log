@@ -802,3 +802,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-02-17T08:43:13.178Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
 2024-02-17T08:44:03.392Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
 2024-02-17T08:44:30.278Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-18T11:06:47.317Z error: Error in ExamCode EntityMetadataNotFoundError: No metadata for "Quiz" was found. 
