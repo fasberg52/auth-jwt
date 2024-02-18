@@ -1,5 +1,8 @@
 const logger = require("../services/logger");
+const Quiz = require("../model/quiz");
+const { getRepository } = require("typeorm");
 const { quiz24Url } = require("../utils/axiosBaseUrl");
+const { getRounds } = require("bcryptjs");
 async function registerUser(req, res) {
   try {
     const userId = process.env.ADMIN_QUEZ24;
@@ -102,8 +105,25 @@ async function exam(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-async function examCode (req,res) {
-  
+async function examCode(req, res) {
+  try {
+    const { examCode } = req.body;
+    const quizRepository = getRepository(Quiz);
+    const exitingCode = await quizRepository.findOne({
+      where: { examCode: examCode },
+    });
+    if (exitingCode) {
+      res.status(400).json({ error: "این کد از قبل وجود دارد", status: 400 });
+    }
+    const newExamCode = quizRepository.create({
+      examCode: examCode,
+    });
+    await quizRepository.save(newExamCode);
+    res.status(201).json({ message: "با موفقیت ساخته شد", status: 201 });
+  } catch (error) {
+    logger.error(`Error in ExamCode ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 
 module.exports = {
