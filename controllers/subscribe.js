@@ -100,14 +100,10 @@ async function sendNotif() {
     const windowEnd = new Date(currentTimestamp);
     windowEnd.setSeconds(currentTimestamp.getSeconds() + 30);
 
-    // console.log(`Current Timestamp: ${currentTimestamp}`);
-    // console.log(`Window Start: ${windowStart}`);
-    // console.log(`Window End: ${windowEnd}`);
-
-    // console.log(`Current Timestamp: ${currentTimestamp}`);
+   
 
     const currentClass = await getRepository(OnlineClass)
-      .createQueryBuilder("onlineClass")  
+      .createQueryBuilder("onlineClass")
       .leftJoinAndSelect("onlineClass.course", "course")
       .addSelect(["course.title", "course.imageUrl"])
       .where("onlineClass.start >= :windowStart", { windowStart })
@@ -125,8 +121,6 @@ async function sendNotif() {
       console.log("No subscriptions found");
       return;
     }
-
-
 
     const payload = {
       title: currentClass.title,
@@ -157,7 +151,6 @@ async function sendNotif() {
     console.error("Error sending push notification:", error.message);
   }
 }
-
 
 const job = new cron.CronJob("* * * * *", async () => {
   await sendNotif();

@@ -9,8 +9,6 @@ const moment = require("jalali-moment");
 
 async function createUpload(req, res) {
   try {
-  
-
     const sizeFile = req.file.size;
     const originalFilename = req.file.originalname;
 
@@ -22,7 +20,7 @@ async function createUpload(req, res) {
       subdirectory,
       originalFilename
     );
-   
+
     const uploadRepository = getManager().getRepository(Upload);
 
     const newUpload = uploadRepository.create({
@@ -30,7 +28,6 @@ async function createUpload(req, res) {
     });
 
     const saveNewUpload = await uploadRepository.save(newUpload);
-
 
     res.status(200).json({
       message: "فایل با موفقیت آپلود شد",
@@ -106,7 +103,6 @@ async function removeUploadByPath(req, res) {
 
     const uploadRepository = getManager().getRepository(Upload);
 
-   
     const upload = await uploadRepository.findOne({
       where: { path: uploadPath },
     });
@@ -128,8 +124,6 @@ async function removeUploadByPath(req, res) {
     await fs.promises.unlink(filePath);
 
     await uploadRepository.remove(upload);
-
-    
 
     res.status(200).json({
       message: "فایل با موفقیت پاک شد",
@@ -179,8 +173,7 @@ async function getUploadById(req, res) {
   }
 }
 
-async function updateUpload(req, res) {
-}
+async function updateUpload(req, res) {}
 
 async function deleteUpload(req, res) {
   try {

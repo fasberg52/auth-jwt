@@ -40,7 +40,9 @@ async function createTag(req, res) {
     });
 
     if (!existingCategory) {
-      return res.status(404).json({ error: "This category does not exist", status: 404 });
+      return res
+        .status(404)
+        .json({ error: "This category does not exist", status: 404 });
     }
 
     const tagRepository = getRepository(Tags);
