@@ -7,104 +7,59 @@ const Courses = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
 
-// async function createCartItem(req, res) {
-//   try {
-//     const { courseId } = req.body;
-//     const userPhone = req.user.phone;
-//     const defaultQuantity = 1;
-
-//     const connection = getConnection();
-//     const enrollmentRepository = connection.getRepository(Enrollment);
-//     const cartRepository = connection.getRepository(Cart);
-//     const cartItemsRepository = connection.getRepository(CartItems);
-//     const courseRepository = connection.getRepository(Courses);
-
-//     const isEnrolled = await enrollmentRepository
-//       .createQueryBuilder("enrollment")
-//       .innerJoin("enrollment.course", "course")
-//       .innerJoin("enrollment.order", "order")
-//       .innerJoin("order.user", "user")
-//       .where("course.id = :courseId", { courseId })
-//       .andWhere("user.phone = :phone", { phone: userPhone })
-//       .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
-//       .getCount();
-
-//     if (isEnrolled) {
-//       return res.status(400).json({
-//         error: "شما قبلا ثبت نام کرده اید",
-//         status: 400,
-//       });
-//     }
-
-//     let userCart = await cartRepository.findOne({
-//       where: { user: { phone: userPhone } },
-//     });
-
-//     if (!userCart) {
-//       userCart = cartRepository.create({
-//         user: userPhone,
-//       });
-//       await cartRepository.save(userCart);
-//     }
-
-//     const course = await courseRepository.findOne({
-//       where: { id: courseId },
-//     });
-
-//     if (!course) {
-//       return res.status(400).json({ error: "دوره پیدا نشد" });
-//     }
-
-//     const existingCartItem = await cartItemsRepository
-//       .createQueryBuilder("cartItem")
-//       .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-//       .andWhere("cartItem.courseId = :courseId", { courseId: courseId })
-//       .getOne();
-
-//     if (existingCartItem) {
-//       return res.status(400).json({
-//         error: "این دوره قبلاً به سبد خرید اضافه شده است",
-//         status: 400,
-//       });
-//     } else {
-//       const newCartItem = cartItemsRepository.create({
-//         cart: userCart,
-//         courseId: courseId,
-//         quantity: defaultQuantity,
-//       });
-//       await cartItemsRepository.save(newCartItem);
-
-//       return res.status(201).json({
-//         message: "آیتم با موفقیت اضافه شد",
-//         newCartItem,
-//         status: 201,
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// }
-
 async function createCartItem(req, res) {
   try {
     const { courseId } = req.body;
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    // Check if a session exists, and create one if not
-    if (!req.session.cart) {
-      req.session.cart = { items: [] };
-      req.session.save();
+    const connection = getConnection();
+    const enrollmentRepository = connection.getRepository(Enrollment);
+    const cartRepository = connection.getRepository(Cart);
+    const cartItemsRepository = connection.getRepository(CartItems);
+    const courseRepository = connection.getRepository(Courses);
+
+    const isEnrolled = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoin("enrollment.course", "course")
+      .innerJoin("enrollment.order", "order")
+      .innerJoin("order.user", "user")
+      .where("course.id = :courseId", { courseId })
+      .andWhere("user.phone = :phone", { phone: userPhone })
+      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
+      .getCount();
+
+    if (isEnrolled) {
+      return res.status(400).json({
+        error: "شما قبلا ثبت نام کرده اید",
+        status: 400,
+      });
     }
 
-    // Access the cart from the session
-    const userCart = req.session.cart;
-    console.log(`session cart ${userCart}`);
-    // Check if the course is already in the cart
-    const existingCartItem = userCart.items.find(
-      (item) => item.courseId === courseId
-    );
+    let userCart = await cartRepository.findOne({
+      where: { user: { phone: userPhone } },
+    });
+
+    if (!userCart) {
+      userCart = cartRepository.create({
+        user: userPhone,
+      });
+      await cartRepository.save(userCart);
+    }
+
+    const course = await courseRepository.findOne({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      return res.status(400).json({ error: "دوره پیدا نشد" });
+    }
+
+    const existingCartItem = await cartItemsRepository
+      .createQueryBuilder("cartItem")
+      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
+      .andWhere("cartItem.courseId = :courseId", { courseId: courseId })
+      .getOne();
 
     if (existingCartItem) {
       return res.status(400).json({
@@ -112,14 +67,12 @@ async function createCartItem(req, res) {
         status: 400,
       });
     } else {
-      const newCartItem = {
+      const newCartItem = cartItemsRepository.create({
+        cart: userCart,
         courseId: courseId,
         quantity: defaultQuantity,
-      };
-
-      // Add the new item to the cart
-      userCart.items.push(newCartItem);
-      req.session.save();
+      });
+      await cartItemsRepository.save(newCartItem);
 
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
@@ -132,6 +85,7 @@ async function createCartItem(req, res) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 async function getUserCart(req, res) {
   try {
