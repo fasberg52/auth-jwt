@@ -105,7 +105,7 @@ async function exam(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-async function examCode(req, res) {
+async function createExamCode(req, res) {
   try {
     const { examCode } = req.body;
     const quizRepository = getRepository(Quiz);
@@ -209,7 +209,7 @@ module.exports = {
   getAllExamCodes,
   updateExamCode,
   getExamCodeById,
-  examCode,
+  createExamCode,
   deleteExamCode,
   registerUser,
   users,

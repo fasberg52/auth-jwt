@@ -13,7 +13,7 @@ const {
   answersheets,
   exams,
   exam,
-  examCode,
+  createExamCode,
   getExamCodeById,
   deleteExamCode,
   updateExamCode,
@@ -32,17 +32,17 @@ router.post("/answersheets", jwtAuthMiddleware, answersheets);
 router.post("/exams", jwtAuthMiddleware, exams);
 router.post("/exam", jwtAuthMiddleware, exam);
 
-router.post("/examCode", jwtAuthMiddleware, checkRole("admin"), examCode);
+router.post("/examCode", jwtAuthMiddleware, checkRole("admin"), createExamCode);
 router.get(
   "/examCodes",
   jwtAuthMiddleware,
-  checkRole("admin"),
+ 
   getAllExamCodes
 );
 router.get(
   "/examCode/:examCodeId",
   jwtAuthMiddleware,
-  checkRole("admin"),
+  
   getExamCodeById
 );
 router.put(
