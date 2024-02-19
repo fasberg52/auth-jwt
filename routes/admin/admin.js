@@ -185,9 +185,9 @@ router.get(
 );
 
 router.get(
-  "/coupon",
+  "/coupons",
   jwtAuthMiddleware,
-  //checkRole("admin"),
+  checkRole("admin"),
   couponController.getAllCoupons
 );
 

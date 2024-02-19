@@ -228,7 +228,6 @@ async function getCourseById(req, res) {
       }
 
       if (!isEnrolled) {
-        logger.info(`getCourseById successful for courseId ${courseId}`);
         res.json({ access: false, ...existingCourse });
       } else {
         res.json({ access: true, ...existingCourse });

@@ -15,7 +15,7 @@ async function createCartItem(req, res) {
 
     if (!req.session.cart) {
       req.session.cart = { items: [] };
-      req.session.save();
+      await req.session.save();
     }
 
     const userCart = req.session.cart;
@@ -54,8 +54,8 @@ async function getUserCart(req, res) {
     const connection = getConnection();
     const courseRepository = connection.getRepository(Courses);
 
-    const userCart = req.session.cart;
-    const appliedCoupon = req.session.appliedCoupon;
+    const userCart = await req.session.cart;
+    const appliedCoupon = await req.session.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
@@ -103,9 +103,8 @@ async function getUserCart(req, res) {
     const cartData = await Promise.all(cartDataPromises);
 
     let totalCartPriceCoupon = totalCartPrice;
-
-    res.status(200);
-    res
+    console.log(`user cartData >>>> ${cartData}`);
+    return res
       .status(200)
       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
   } catch (error) {

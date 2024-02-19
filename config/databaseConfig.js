@@ -62,12 +62,12 @@ async function setupDatabase() {
     throw error;
   }
 }
+
 async function configureSession(app) {
   app.use(
     session({
       store: new PgSession({
         conObject: {
-          // Use your PostgreSQL connection settings here
           user: process.env.USERNAME_PG_DB,
           host: process.env.DATABASE_URL,
           database: process.env.DATABASE_PG_DB,
@@ -78,21 +78,25 @@ async function configureSession(app) {
       }),
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: {
         secure: false,
         maxAge: 72 * 60 * 60 * 1000,
       },
     })
   );
-  // app.use(
-  //   session({
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   })
-  // );
 }
+//   app.set("trust proxy", 1);
+//   app.use(
+//     session({
+//       secret: process.env.SESSION_SECRET,
+//       resave: false,
+//       saveUninitialized: false,
+//       cookie: { secure: false },
+//     })
+//   );
+// }
+
 module.exports = {
   setupDatabase,
   configureSession,

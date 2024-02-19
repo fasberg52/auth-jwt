@@ -51,14 +51,60 @@ async function createPayment(req, res) {
       }
       const cartItems = userCart.items;
 
-      const savedOrder = await createOrder(userPhone);
-      const updatedTotalPrice = await createEnrollmentAndCalculateTotalPrice(
-        cartItems,
-        savedOrder,
-        transactionalEntityManager
-      );
+      // Apply coupon to the total cart price
+      const appliedCoupon = req.session.appliedCoupon;
+      let totalCartPrice = 0;
 
-      const updatedTotalPriceInRials = updatedTotalPrice * 10;
+      const cartItemsPromises = cartItems.map(async (cartItem) => {
+        if (cartItem.courseId) {
+          try {
+            const courseId = cartItem.courseId; // Assuming courseId is the correct property
+            const course = await transactionalEntityManager.findOne(Courses, {
+              where: { id: courseId },
+            });
+
+            if (course) {
+              const discountedPrice = appliedCoupon
+                ? applyDiscount(course.price, appliedCoupon.discountPersentage)
+                : course.price;
+
+              const itemPrice = discountedPrice * cartItem.quantity;
+
+              totalCartPrice += itemPrice;
+
+              // Ensure the enrollment creation takes the coupon into account
+              await createEnrollment(
+                course,
+                cartItem.quantity,
+                userPhone,
+                transactionalEntityManager
+              );
+
+              return {
+                cartItemId: cartItem.id,
+                courseId: course.id,
+                imageUrl: course.imageUrl,
+                quantity: cartItem.quantity,
+                price: course.price,
+                discountPrice: discountedPrice,
+                title: course.title,
+                itemPrice,
+              };
+            }
+          } catch (error) {
+            console.error("Error processing cart item:", error);
+          }
+        }
+      });
+
+      const cartData = await Promise.all(cartItemsPromises);
+
+      
+      const savedOrder = await createOrder(userPhone);
+
+    
+      const updatedTotalPriceInRials = totalCartPrice * 10;
+
       const callbackUrl = buildCallbackUrl(
         updatedTotalPriceInRials,
         userPhone,
@@ -70,6 +116,8 @@ async function createPayment(req, res) {
         callbackUrl,
         userPhone
       );
+
+      // Send payment request to ZarinPal
       const response = await sendPaymentRequest(
         process.env.ZARINPAL_LINK_REQUEST,
         requestData
@@ -78,10 +126,16 @@ async function createPayment(req, res) {
       const code = response.data.data.code;
 
       if (code === 100) {
+        // If payment request is successful, build payment URL and respond
         const paymentUrl = buildPaymentUrl(response.data.data.authority);
         const cartId = cartItems[0].courseId;
 
-        return res.json({ paymentUrl, updatedTotalPrice, cartId, savedOrder });
+        return res.json({
+          paymentUrl,
+          updatedTotalPrice: totalCartPrice,
+          cartId,
+          savedOrder,
+        });
       } else {
         return res
           .status(400)
@@ -93,7 +147,11 @@ async function createPayment(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
+function applyDiscount(originalPrice, discountPercentage) {
+  const discountAmount = (discountPercentage / 100) * originalPrice;
+  const discountedPrice = originalPrice - discountAmount;
+  return discountedPrice;
+}
 async function getCartItems(cartItemsRepository, cartId) {
   return await cartItemsRepository
     .createQueryBuilder("cartItem")

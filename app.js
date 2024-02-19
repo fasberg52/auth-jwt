@@ -35,17 +35,17 @@ async function main() {
     app.use(loggerMiddleware);
     app.use(
       cors({
-        // origin: "*",
-        origin: [
-          "https://baclass.iran.liara.run",
-          "https://beta.balcass.online",
-          "http://192.168.1.113",
-          "http://192.168.1.113:3630",
-          "http://localhost:3630",
-          "http://localhost:4173",
-          "http://192.168.1.195:4173",
-          "https://event.alocom.co",
-        ],
+        origin: true,
+        // origin: [
+        //   "https://baclass.iran.liara.run",
+        //   "https://beta.balcass.online",
+        //   "http://192.168.1.113",
+        //   "http://192.168.1.113:3630",
+        //   "http://localhost:3630",
+        //   "http://localhost:4173",
+        //   "http://192.168.1.195:4173",
+        //   "https://event.alocom.co",
+        // ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
