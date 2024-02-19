@@ -67,7 +67,6 @@ async function configureSession(app) {
     session({
       store: new PgSession({
         conObject: {
-          // Use your PostgreSQL connection settings here
           user: process.env.USERNAME_PG_DB,
           host: process.env.DATABASE_URL,
           database: process.env.DATABASE_PG_DB,
@@ -85,14 +84,10 @@ async function configureSession(app) {
       },
     })
   );
-  // app.use(
-  //   session({
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   })
-  // );
+
+ 
 }
+
 module.exports = {
   setupDatabase,
   configureSession,
