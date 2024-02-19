@@ -8,7 +8,7 @@ const express = require("express");
 const router = express.Router();
 router.post("/cart", jwtAuthMiddleware, cartController.createCartItem);
 router.delete(
-  "/cart/:cartItemId",
+  "/cart/:courseId",
   jwtAuthMiddleware,
   cartController.removeCartItem
 );

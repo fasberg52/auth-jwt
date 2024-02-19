@@ -7,23 +7,18 @@ const Courses = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
 
-
 async function createCartItem(req, res) {
   try {
     const { courseId } = req.body;
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    // Check if a session exists, and create one if not
     if (!req.session.cart) {
       req.session.cart = { items: [] };
       req.session.save();
     }
 
-    // Access the cart from the session
     const userCart = req.session.cart;
-    console.log(`session cart >>>>>>>>>>>>>>>>>>>> ${JSON.stringify(userCart)}`);
-    // Check if the course is already in the cart
     const existingCartItem = userCart.items.find(
       (item) => item.courseId === courseId
     );
@@ -39,7 +34,6 @@ async function createCartItem(req, res) {
         quantity: defaultQuantity,
       };
 
-      // Add the new item to the cart
       userCart.items.push(newCartItem);
       req.session.save();
 
@@ -55,18 +49,12 @@ async function createCartItem(req, res) {
   }
 }
 
-
 async function getUserCart(req, res) {
   try {
-    const userPhone = req.user.phone;
     const connection = getConnection();
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
 
-    const userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
-    });
+    const userCart = req.session.cart;
 
     if (!userCart) {
       return res.status(200).json({
@@ -77,14 +65,9 @@ async function getUserCart(req, res) {
       });
     }
 
-    const cartItems = await cartItemsRepository
-      .createQueryBuilder("cartItem")
-      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-      .getMany();
-
     let totalCartPrice = 0;
 
-    const cartDataPromises = cartItems.map(async (cartItem) => {
+    const cartDataPromises = userCart.items.map(async (cartItem) => {
       if (cartItem.courseId) {
         try {
           const course = await courseRepository.findOne({
@@ -129,30 +112,28 @@ async function getUserCart(req, res) {
 
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params;
+    const { courseId } = req.params;
 
-    const connection = getConnection();
-    const cartItemsRepository = connection.getRepository(CartItems);
-
-    const cartItemToRemove = await cartItemsRepository
-      .createQueryBuilder("cartItem")
-      .leftJoinAndSelect("cartItem.course", "course") // Assuming a relation named "course" exists in CartItems entity
-      .where("cartItem.id = :cartItemId", { cartItemId })
-      .getOne();
-
-    if (!cartItemToRemove) {
-      return res.status(404).json({ error: "آیتم های سبدخرید پیدا نشد" });
+    if (!req.session.cart) {
+      return res.status(404).json({ error: "سبد خرید یافت نشد" });
     }
 
-    const courseName = cartItemToRemove.course
-      ? cartItemToRemove.course.title
-      : "آیتم";
+    const courseToRemove = req.session.cart.items.find(
+      (item) => item.courseId === parseInt(courseId, 10)
+    );
+    if (!courseToRemove) {
+      return res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
+    }
 
-    await cartItemsRepository.remove(cartItemToRemove);
+    const indexToRemove = req.session.cart.items.indexOf(courseToRemove);
+    req.session.cart.items.splice(indexToRemove, 1);
+    req.session.save();
 
-    res.status(200).json({ message: `${courseName} از سبد خرید شما حذف شد` });
+    res
+      .status(200)
+      .json({ message: `آیتم با courseId ${courseId} از سبد خرید شما حذف شد` });
   } catch (error) {
-    // console.error(error);
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
