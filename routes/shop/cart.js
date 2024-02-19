@@ -1,8 +1,6 @@
 const cartController = require("../../controllers/cart");
 const couponController = require("../../controllers/coupon");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
-const { checkRole } = require("../../middleware/checkAccess");
-const { applyCouponMiddleware } = require("../../middleware/couponMiddlerware");
 const express = require("express");
 
 const router = express.Router();
@@ -15,11 +13,10 @@ router.delete(
 router.get(
   "/cart",
   jwtAuthMiddleware,
-  applyCouponMiddleware,
   cartController.getUserCart
 );
 router.post(
-  "/cart/:cartId/apply-coupon",
+  "/cart/apply-coupon",
   jwtAuthMiddleware,
   couponController.applyCoupon
 );

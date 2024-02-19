@@ -85,19 +85,31 @@ async function editCoupon(req, res) {}
 async function deleteCoupon(req, res) {}
 
 async function applyCoupon(req, res) {
-  const { coupon } = req.body;
+  try {
+    const { coupon } = req.body;
 
-  if (!coupon) {
-    res.status(400).json({ error: "کد تخفیف را وارد کنید" });
-  }
+    if (!coupon) {
+      return res.status(400).json({ error: "کد تخفیف را وارد کنید" });
+    }
 
-  const couponRepository = getManager().getRepository(Coupon);
-  const appliedCoupon = await couponRepository.findOne({
-    where: { code: coupon },
-  });
+    const couponRepository = getManager().getRepository(Coupon);
+    const appliedCoupon = await couponRepository.findOne({
+      where: { code: coupon },
+    });
 
-  if (!appliedCoupon) {
-    return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
+    if (!appliedCoupon) {
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
+    }
+
+    req.session.appliedCoupon = appliedCoupon;
+    console.log(appliedCoupon);
+
+    return res
+      .status(200)
+      .json({ message: "کد تخفیف با موفقیت اعمال شد", appliedCoupon });
+  } catch (error) {
+    logger.error(`Error in applyCoupon ${appliedCoupon}`);
+    res.status(500).json("Internal Server Error");
   }
 }
 

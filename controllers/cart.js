@@ -55,6 +55,7 @@ async function getUserCart(req, res) {
     const courseRepository = connection.getRepository(Courses);
 
     const userCart = req.session.cart;
+    const appliedCoupon = req.session.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
@@ -75,7 +76,9 @@ async function getUserCart(req, res) {
           });
 
           if (course) {
-            const discountedPrice = course.discountPrice || course.price;
+            const discountedPrice = appliedCoupon
+              ? applyDiscount(course.price, appliedCoupon.discountPersentage)
+              : course.price;
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;
@@ -101,6 +104,7 @@ async function getUserCart(req, res) {
 
     let totalCartPriceCoupon = totalCartPrice;
 
+    res.status(200);
     res
       .status(200)
       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
@@ -108,6 +112,11 @@ async function getUserCart(req, res) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
+}
+function applyDiscount(originalPrice, discountPercentage) {
+  const discountAmount = (discountPercentage / 100) * originalPrice;
+  const discountedPrice = originalPrice - discountAmount;
+  return discountedPrice;
 }
 
 async function removeCartItem(req, res) {
