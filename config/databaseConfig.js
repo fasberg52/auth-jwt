@@ -65,6 +65,7 @@ async function setupDatabase() {
 }
 
 async function configureSession(app) {
+  app.set("trust proxy", 1);
   app.use(
     session({
       store: new PgSession({
@@ -86,8 +87,6 @@ async function configureSession(app) {
       },
     })
   );
-
-
 
   app.use((req, res, next) => {
     console.log(`Session created. Session ID: ${req.sessionID}`);

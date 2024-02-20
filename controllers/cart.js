@@ -35,8 +35,8 @@ async function createCartItem(req, res) {
       };
 
       userCart.items.push(newCartItem);
-      req.session.save();
-
+     await req.session.save();
+     console.log("Session saved successfully");
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,

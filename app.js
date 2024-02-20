@@ -29,7 +29,7 @@ async function main() {
     // Enable CORS before other middleware
     app.use(
       cors({
-        origin: true,
+        origin: `*`,
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
@@ -44,9 +44,7 @@ async function main() {
     app.use("/public", express.static("public"));
     app.use(loggerMiddleware);
 
- 
     app.use(compression());
-
 
     routerConfig(app);
 
