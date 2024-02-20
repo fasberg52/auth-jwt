@@ -29,6 +29,9 @@ dependencies:
   connect-pg-simple:
     specifier: ^9.0.0
     version: 9.0.0
+  cookie:
+    specifier: ^0.6.0
+    version: 0.6.0
   cookie-parser:
     specifier: ^1.4.6
     version: 1.4.6
@@ -57,7 +60,7 @@ dependencies:
     specifier: ^7.1.4
     version: 7.1.4(express@4.18.2)
   express-session:
-    specifier: ^1.17.3
+    specifier: 1.17.3
     version: 1.17.3
   fs-extra:
     specifier: ^11.1.1
@@ -911,6 +914,11 @@ packages:
 
   /cookie@0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
+  /cookie@0.6.0:
+    resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
     dev: false
 

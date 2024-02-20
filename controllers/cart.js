@@ -6,7 +6,7 @@ const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
-const { serialize, parse } = require("cookie");
+const { serialize } = require("cookie");
 
 async function createCartItem(req, res) {
   try {
@@ -17,7 +17,7 @@ async function createCartItem(req, res) {
     // Deserialize cart data from the cookie
     const existingCartCookie = req.cookies.cart;
     console.log(`cooooookie ${req.cookies.cart}`);
-    const userCart = existingCartCookie
+    let userCart = existingCartCookie
       ? JSON.parse(existingCartCookie)
       : { items: [] };
 
@@ -41,10 +41,14 @@ async function createCartItem(req, res) {
       // Serialize and set the updated cart data in the cookie
       const updatedCartCookie = serialize("cart", JSON.stringify(userCart), {
         httpOnly: true,
+        sameSite: "None",
+        secure: true, // Set to true if your application is served over HTTPS
       });
       res.setHeader("Set-Cookie", updatedCartCookie);
 
+      console.log("Response Headers:", res.getHeaders());
       console.log("Cookie saved successfully");
+
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,
@@ -62,8 +66,13 @@ async function getUserCart(req, res) {
     const connection = getConnection();
     const courseRepository = connection.getRepository(Courses);
 
-    const userCart = await req.session.cart;
-    const appliedCoupon = await req.session.appliedCoupon;
+    // Deserialize cart data from the cookie
+    const existingCartCookie = req.cookies.cart;
+    const userCart = existingCartCookie
+      ? JSON.parse(existingCartCookie)
+      : { items: [] };
+
+    const appliedCoupon = await req.cookies.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
