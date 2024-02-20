@@ -35,11 +35,11 @@ async function main() {
       })
     );
 
-    configureSession(app);
+   // configureSession(app);
 
     app.use(cookieParser());
-    app.use(passport.initialize());
-    app.use(passport.session());
+    // app.use(passport.initialize());
+    // app.use(passport.session());
     app.use("/app/uploads", express.static("uploads"));
     app.use("/public", express.static("public"));
     app.use(loggerMiddleware);

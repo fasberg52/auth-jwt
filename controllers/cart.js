@@ -6,6 +6,7 @@ const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
+const { serialize, parse } = require("cookie");
 
 async function createCartItem(req, res) {
   try {
@@ -13,12 +14,13 @@ async function createCartItem(req, res) {
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    if (!req.session.cart) {
-      req.session.cart = { items: [] };
-      await req.session.save();
-    }
+    // Deserialize cart data from the cookie
+    const existingCartCookie = req.cookies.cart;
+    console.log(`cooooookie ${req.cookies.cart}`);
+    const userCart = existingCartCookie
+      ? JSON.parse(existingCartCookie)
+      : { items: [] };
 
-    const userCart = req.session.cart;
     const existingCartItem = userCart.items.find(
       (item) => item.courseId === courseId
     );
@@ -35,8 +37,14 @@ async function createCartItem(req, res) {
       };
 
       userCart.items.push(newCartItem);
-     await req.session.save();
-     console.log("Session saved successfully");
+
+      // Serialize and set the updated cart data in the cookie
+      const updatedCartCookie = serialize("cart", JSON.stringify(userCart), {
+        httpOnly: true,
+      });
+      res.setHeader("Set-Cookie", updatedCartCookie);
+
+      console.log("Cookie saved successfully");
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
         newCartItem,
