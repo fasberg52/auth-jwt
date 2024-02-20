@@ -16,7 +16,7 @@ dependencies:
     version: 3.0.0(ajv@8.12.0)
   axios:
     specifier: ^1.5.1
-    version: 1.5.1
+    version: 1.5.1(debug@4.3.4)
   bcryptjs:
     specifier: ^2.4.3
     version: 2.4.3
@@ -38,6 +38,9 @@ dependencies:
   cron:
     specifier: ^3.1.6
     version: 3.1.6
+  debug:
+    specifier: ^4.3.4
+    version: 4.3.4
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -508,10 +511,10 @@ packages:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
     dev: false
 
-  /axios@1.5.1:
+  /axios@1.5.1(debug@4.3.4):
     resolution: {integrity: sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A==}
     dependencies:
-      follow-redirects: 1.15.3
+      follow-redirects: 1.15.3(debug@4.3.4)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -1367,7 +1370,7 @@ packages:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
     dev: false
 
-  /follow-redirects@1.15.3:
+  /follow-redirects@1.15.3(debug@4.3.4):
     resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -1375,6 +1378,8 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dependencies:
+      debug: 4.3.4
     dev: false
 
   /foreground-child@3.1.1:

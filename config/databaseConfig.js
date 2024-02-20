@@ -32,6 +32,7 @@ async function setupDatabase() {
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
+      logging: false,
       entities: [
         Users,
         OTP,
@@ -78,14 +79,22 @@ async function configureSession(app) {
       }),
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
       cookie: {
         secure: false,
-        maxAge: 72 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       },
     })
   );
+
+
+
+  app.use((req, res, next) => {
+    console.log(`Session created. Session ID: ${req.sessionID}`);
+    next();
+  });
 }
+
 //   app.set("trust proxy", 1);
 //   app.use(
 //     session({

@@ -18,40 +18,36 @@ app.disable("x-powered-by");
 async function main() {
   try {
     await setupDatabase();
-    configureSession(app);
-    app.set("trust proxy", 1);
 
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(cookieParser());
 
+    // Use bodyParser before the session configuration
     app.use(bodyParser.urlencoded({ extended: false }));
-    //app.use(bodyParser.json());
     app.use(express.json());
-    app.use("/app/uploads", express.static("uploads"));
-    app.use("/public", express.static("public"));
-    app.use(loggerMiddleware);
+
+    // Enable CORS before other middleware
     app.use(
       cors({
         origin: true,
-        // origin: [
-        //   "https://baclass.iran.liara.run",
-        //   "https://beta.balcass.online",
-        //   "http://192.168.1.113",
-        //   "http://192.168.1.113:3630",
-        //   "http://localhost:3630",
-        //   "http://localhost:4173",
-        //   "http://192.168.1.195:4173",
-        //   "https://event.alocom.co",
-        // ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
     );
 
+    configureSession(app);
+
+    app.use(cookieParser());
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use("/app/uploads", express.static("uploads"));
+    app.use("/public", express.static("public"));
+    app.use(loggerMiddleware);
+
+ 
     app.use(compression());
+
+
     routerConfig(app);
 
     app.listen(process.env.PORT, () => {

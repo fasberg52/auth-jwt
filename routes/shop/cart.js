@@ -4,7 +4,12 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const express = require("express");
 
 const router = express.Router();
-router.post("/cart", jwtAuthMiddleware, cartController.createCartItem);
+router.post(
+  "/cart",
+  jwtAuthMiddleware,
+
+  cartController.createCartItem
+);
 router.delete(
   "/cart/:courseId",
   jwtAuthMiddleware,
@@ -13,6 +18,7 @@ router.delete(
 router.get(
   "/cart",
   jwtAuthMiddleware,
+
   cartController.getUserCart
 );
 router.post(
