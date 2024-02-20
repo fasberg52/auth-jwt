@@ -80,9 +80,61 @@ async function getAllCoupons(req, res) {
   }
 }
 
-async function editCoupon(req, res) {}
+async function editCoupon(req, res) {
+  try {
+    const { couponId } = req.params;
+    const { code, discountPersentage, expireTime } = req.body;
 
-async function deleteCoupon(req, res) {}
+    const couponRepository = getManager().getRepository(Coupon);
+    const existingCoupon = await couponRepository.findOne({
+      where: { id: couponId },
+    });
+
+    if (!existingCoupon) {
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+    }
+
+    existingCoupon.code = code || existingCoupon.code;
+    existingCoupon.discountPersentage =
+      discountPersentage || existingCoupon.discountPersentage;
+    existingCoupon.expireTime = expireTime || existingCoupon.expireTime;
+
+    await couponRepository.save(existingCoupon);
+
+    res
+      .status(200)
+      .json({
+        message: "کد تخفیف ویرایش شد",
+        updatedCoupon: existingCoupon,
+        status: 200,
+      });
+  } catch (error) {
+    logger.error(`Error in editCoupon ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function deleteCoupon(req, res) {
+  try {
+    const { couponId } = req.params;
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const existingCoupon = await couponRepository.findOne({
+      where: { id: couponId },
+    });
+
+    if (!existingCoupon) {
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+    }
+
+    await couponRepository.remove(existingCoupon);
+
+    res.status(200).json({ message: "کد تخفیف حذف شد", status: 200 });
+  } catch (error) {
+    logger.error(`Error in deleteCoupon ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 async function applyCoupon(req, res) {
   const { coupon } = req.body;
@@ -101,4 +153,11 @@ async function applyCoupon(req, res) {
   }
 }
 
-module.exports = { applyCoupon, createCoupon, getByIdCoupon, getAllCoupons };
+module.exports = {
+  applyCoupon,
+  createCoupon,
+  getByIdCoupon,
+  getAllCoupons,
+  editCoupon,
+  deleteCoupon,
+};

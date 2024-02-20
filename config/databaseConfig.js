@@ -84,8 +84,6 @@ async function configureSession(app) {
       },
     })
   );
-
- 
 }
 
 module.exports = {
