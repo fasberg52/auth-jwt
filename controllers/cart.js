@@ -38,7 +38,7 @@ async function createCartItem(req, res) {
       userCart.items.push(newCartItem);
 
       res.cookie("cart", JSON.stringify(userCart), {
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 900000,
        
       });
