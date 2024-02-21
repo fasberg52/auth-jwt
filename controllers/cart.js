@@ -14,7 +14,6 @@ async function createCartItem(req, res) {
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    // Deserialize cart data from the cookie
     const existingCartCookie = req.cookies.cart;
     console.log(`cooooookie ${req.cookies.cart}`);
     let userCart = existingCartCookie
@@ -38,16 +37,13 @@ async function createCartItem(req, res) {
 
       userCart.items.push(newCartItem);
 
-      
-      const updatedCartCookie = serialize("cart", JSON.stringify(userCart), {
+      res.cookie("cart", JSON.stringify(userCart), {
         httpOnly: true,
-        sameSite: "None",
-        secure: true, 
+        maxAge: 900000,
+       
       });
-      res.setHeader("Set-Cookie", updatedCartCookie);
 
-      console.log("Response Headers:", res.getHeaders());
-      console.log("Cookie saved successfully");
+    
 
       return res.status(201).json({
         message: "آیتم با موفقیت اضافه شد",
