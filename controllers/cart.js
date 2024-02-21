@@ -38,11 +38,11 @@ async function createCartItem(req, res) {
 
       userCart.items.push(newCartItem);
 
-      // Serialize and set the updated cart data in the cookie
+      
       const updatedCartCookie = serialize("cart", JSON.stringify(userCart), {
         httpOnly: true,
         sameSite: "None",
-        secure: true, // Set to true if your application is served over HTTPS
+        secure: true, 
       });
       res.setHeader("Set-Cookie", updatedCartCookie);
 
