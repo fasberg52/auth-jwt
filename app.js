@@ -9,8 +9,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
-const http = require("http");
-const https = require("https");
+
 const fs = require("fs");
 const app = express();
 
@@ -23,14 +22,11 @@ async function main() {
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
 
-    // Use bodyParser before the session configuration
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(express.json());
 
-    // Enable CORS before other middleware
     app.use(
       cors({
-        // origin: true,
         origin: [
           "https://baclass.iran.liara.run",
           "https://beta.balcass.online",
@@ -62,12 +58,7 @@ async function main() {
 
     routerConfig(app);
 
-    // const options = {
-    //   key: fs.readFileSync(path.join(__dirname, "key.pem")),
-    //   cert: fs.readFileSync(path.join(__dirname, "cert.pem")),
-    //   ca: fs.readFileSync(path.join(__dirname, "ca.pem")),
-    // };
-    // const server = https.createServer(options, app);
+  
 
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
