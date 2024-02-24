@@ -177,6 +177,18 @@ router.post(
   checkRole("admin"),
   couponController.createCoupon
 );
+router.put(
+  "/coupon/:couponId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  couponController.editCoupon
+);
+router.delete(
+  "/coupon/:couponId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  couponController.deleteCoupon
+);
 router.get(
   "/coupon/:couponId",
   jwtAuthMiddleware,
