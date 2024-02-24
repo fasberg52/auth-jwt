@@ -14,8 +14,8 @@ async function createCartItem(req, res) {
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    const existingCartCookie = req.cookies.cart;
-    console.log(`cooooookie ${req.cookies.cart}`);
+    const existingCartCookie = req.session.cart;
+    console.log(`cooooookie ${req.session.cart}`);
     let userCart = existingCartCookie
       ? JSON.parse(existingCartCookie)
       : { items: [] };
@@ -37,11 +37,11 @@ async function createCartItem(req, res) {
 
       userCart.items.push(newCartItem);
 
-      res.cookie("cart", JSON.stringify(userCart), {
-        httpOnly: false,
-        maxAge: 900000,
+      // res.cookie("cart", JSON.stringify(userCart), {
+      //   httpOnly: false,
+      //   maxAge: 900000,
        
-      });
+      // });
 
     
 
@@ -63,12 +63,12 @@ async function getUserCart(req, res) {
     const courseRepository = connection.getRepository(Courses);
 
     // Deserialize cart data from the cookie
-    const existingCartCookie = req.cookies.cart;
+    const existingCartCookie = req.session.cart;
     const userCart = existingCartCookie
       ? JSON.parse(existingCartCookie)
       : { items: [] };
 
-    const appliedCoupon = await req.cookies.appliedCoupon;
+    const appliedCoupon = await req.session.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
@@ -95,6 +95,7 @@ async function getUserCart(req, res) {
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;
+            console.log(`getCookie ${req.session.cart}`);
 
             return {
               cartItemId: cartItem.id,

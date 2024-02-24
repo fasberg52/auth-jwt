@@ -39,17 +39,18 @@ async function main() {
           "http://192.168.1.195:4173",
           "https://event.alocom.co",
           "http://127.0.0.1:5500/index.html",
+          "https://baclassonline.liara.run",
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
     );
 
-    // configureSession(app);
+    configureSession(app);
 
     app.use(cookieParser());
-    // app.use(passport.initialize());
-    // app.use(passport.session());
+    app.use(passport.initialize());
+    app.use(passport.session());
     app.use("/app/uploads", express.static("uploads"));
     app.use("/public", express.static("public"));
     app.use(loggerMiddleware);
@@ -57,8 +58,6 @@ async function main() {
     app.use(compression());
 
     routerConfig(app);
-
-  
 
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
