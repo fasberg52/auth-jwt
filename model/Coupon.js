@@ -11,8 +11,9 @@ const Coupon = new EntitySchema({
       generated: true,
     },
     code: {
-      type: "text",
+      type: "varchar",
       unique: true,
+      nullable:true
     },
     discountPersentage: {
       type: "int",

@@ -44,6 +44,10 @@ const Order = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    discountCode: {
+      type: "varchar",
+      nullable: true,
+    },
   },
   relations: {
     user: {

@@ -14,11 +14,7 @@ async function createCartItem(req, res) {
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    const existingCartCookie = req.session.cart;
-    console.log(`cooooookie ${req.session.cart}`);
-    let userCart = existingCartCookie
-      ? JSON.parse(existingCartCookie)
-      : { items: [] };
+    let userCart = req.session.cart || { items: [] };
 
     const existingCartItem = userCart.items.find(
       (item) => item.courseId === courseId
@@ -36,19 +32,20 @@ async function createCartItem(req, res) {
       };
 
       userCart.items.push(newCartItem);
+      req.session.cart = userCart;
 
-      // res.cookie("cart", JSON.stringify(userCart), {
-      //   httpOnly: false,
-      //   maxAge: 900000,
-       
-      // });
+      // Save the session manually
+      req.session.save((err) => {
+        if (err) {
+          console.error("Error saving session:", err);
+          return res.status(500).json({ error: "Internal server error" });
+        }
 
-    
-
-      return res.status(201).json({
-        message: "آیتم با موفقیت اضافه شد",
-        newCartItem,
-        status: 201,
+        return res.status(201).json({
+          message: "آیتم با موفقیت اضافه شد",
+          newCartItem,
+          status: 201,
+        });
       });
     }
   } catch (error) {
@@ -62,13 +59,10 @@ async function getUserCart(req, res) {
     const connection = getConnection();
     const courseRepository = connection.getRepository(Courses);
 
-    // Deserialize cart data from the cookie
-    const existingCartCookie = req.session.cart;
-    const userCart = existingCartCookie
-      ? JSON.parse(existingCartCookie)
-      : { items: [] };
+    // Deserialize cart data from the session
+    const userCart = req.session.cart || { items: [] };
 
-    const appliedCoupon = await req.session.appliedCoupon;
+    const appliedCoupon = req.session.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
@@ -95,7 +89,6 @@ async function getUserCart(req, res) {
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;
-            console.log(`getCookie ${req.session.cart}`);
 
             return {
               cartItemId: cartItem.id,
@@ -117,7 +110,7 @@ async function getUserCart(req, res) {
     const cartData = await Promise.all(cartDataPromises);
 
     let totalCartPriceCoupon = totalCartPrice;
-    console.log(`user cartData >>>> ${cartData}`);
+
     return res
       .status(200)
       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
