@@ -54,7 +54,7 @@ async function setupDatabase() {
         Subscribe,
         Quiz,
       ],
-      synchronize: false,
+      synchronize: true,
     });
 
     console.log("Database connection established");
@@ -79,7 +79,7 @@ async function configureSession(app) {
       }),
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: {
         secure: false,
         maxAge: 24 * 60 * 60 * 1000,

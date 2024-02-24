@@ -128,14 +128,18 @@ function applyDiscount(originalPrice, discountPercentage) {
 async function removeCartItem(req, res) {
   try {
     const { courseId } = req.params;
-
+    console.log(courseId);
     if (!req.session.cart) {
       return res.status(404).json({ error: "سبد خرید یافت نشد" });
     }
 
-    const courseToRemove = req.session.cart.items.find(
-      (item) => item.courseId === parseInt(courseId, 10)
-    );
+    const courseToRemove = req.session.cart.items.find((item) => {
+      console.log(item);
+      return parseInt(item.courseId) === parseInt(courseId, 10);
+    });
+    console.log(` req.session.cart >> ${JSON.stringify(req.session.cart)}`);
+
+    console.log(`courseToRemove >> ${JSON.stringify(courseToRemove)}`);
     if (!courseToRemove) {
       return res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
     }
@@ -144,9 +148,7 @@ async function removeCartItem(req, res) {
     req.session.cart.items.splice(indexToRemove, 1);
     req.session.save();
 
-    res
-      .status(200)
-      .json({ message: `آیتم با courseId ${courseId} از سبد خرید شما حذف شد` });
+    res.status(200).json({ message: `دوره از سبد شما حذف شد` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
