@@ -18,12 +18,18 @@ const Order = new EntitySchema({
     },
     orderStatus: {
       type: "enum",
-      enum: ["pending", "cancelled", "success"],
+      enum: ["pending", "cancelled", "success", "preInvoice"],
       nullable: true,
     },
-    totalPrice: {
+    originalTotalPrice: {
       type: "int",
+      nullable: true,
     },
+    discountTotalPrice: {
+      type: "int",
+      nullable: true,
+    },
+
     paymentType: {
       type: "enum",
       enum: ["online", "cbc", "manual"], //zarinpal, cart by cart, manual

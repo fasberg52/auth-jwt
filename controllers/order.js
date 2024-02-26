@@ -16,7 +16,7 @@ async function checkOutCart(req, res) {
       return res.status(404).json({ error: "Cart is empty" });
     }
 
-    let totalPrice = 0;
+    let originalTotalPrice = 0;
 
     for (const cartItem of userCart.items) {
       if (cartItem.courseId) {
@@ -24,41 +24,67 @@ async function checkOutCart(req, res) {
 
         if (course) {
           const discountedPrice = course.discountPrice || course.price;
-          totalPrice += discountedPrice * cartItem.quantity;
+          originalTotalPrice += discountedPrice * cartItem.quantity;
         }
       }
     }
-
+    const savedOrder = await createOrder(userPhone, originalTotalPrice);
     res.status(200).json({
       message: "Checkout successful",
-      totalPrice,
+      originalTotalPrice,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error on checkOutCart" });
   }
 }
+async function createOrder(userPhone, originalTotalPrice) {
+  const orderRepository = getRepository(Order);
+  const newOrder = orderRepository.create({
+    userPhone: userPhone,
+    originalTotalPrice: originalTotalPrice,
+    orderStatus: "preInvoice",
+  });
+
+  return await orderRepository.save(newOrder);
+}
 
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
+  let savedOrder; 
+
   console.log("response received");
   try {
     await getManager().transaction(async (transactionalEntityManager) => {
       const userCart = req.session.cart;
-
       if (!userCart) {
         return res.status(404).json({ error: "Cart not found for the user" });
       }
-      const cartItems = userCart.items;
+      const orderRepository = getRepository(Order);
+      const existingOrder = await orderRepository.findOne({
+        where: { userPhone: userPhone, orderStatus: "preInvoice" },
+      });
 
-      // Apply coupon to the total cart price
+      if (!existingOrder) {
+        return res
+          .status(404)
+          .json({ error: "Order not found with 'preInvoice' status" });
+      }
+
+      existingOrder.orderStatus = "pending";
+      savedOrder = await orderRepository.save(existingOrder);
+
+      const originalTotalPrice = existingOrder.originalTotalPrice;
+
+      const cartItems = userCart.items;
+      console.log(`cartItems >>>>> ${JSON.stringify(cartItems)}`);
       const appliedCoupon = req.session.appliedCoupon;
       let totalCartPrice = 0;
 
       const cartItemsPromises = cartItems.map(async (cartItem) => {
         if (cartItem.courseId) {
           try {
-            const courseId = cartItem.courseId; // Assuming courseId is the correct property
+            const courseId = cartItem.courseId;
             const course = await transactionalEntityManager.findOne(Courses, {
               where: { id: courseId },
             });
@@ -72,7 +98,6 @@ async function createPayment(req, res) {
 
               totalCartPrice += itemPrice;
 
-              // Ensure the enrollment creation takes the coupon into account
               await createEnrollment(
                 course,
                 cartItem.quantity,
@@ -99,11 +124,7 @@ async function createPayment(req, res) {
 
       const cartData = await Promise.all(cartItemsPromises);
 
-      
-      const savedOrder = await createOrder(userPhone);
-
-    
-      const updatedTotalPriceInRials = totalCartPrice * 10;
+      const updatedTotalPriceInRials = originalTotalPrice * 10; 
 
       const callbackUrl = buildCallbackUrl(
         updatedTotalPriceInRials,
@@ -117,7 +138,6 @@ async function createPayment(req, res) {
         userPhone
       );
 
-      // Send payment request to ZarinPal
       const response = await sendPaymentRequest(
         process.env.ZARINPAL_LINK_REQUEST,
         requestData
@@ -132,8 +152,8 @@ async function createPayment(req, res) {
 
         return res.json({
           paymentUrl,
-          updatedTotalPrice: totalCartPrice,
-          cartId,
+          updatedTotalPrice: originalTotalPrice, // Use originalTotalPrice
+          sessionId: req.sessionID, 
           savedOrder,
         });
       } else {
@@ -147,6 +167,7 @@ async function createPayment(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 function applyDiscount(originalPrice, discountPercentage) {
   const discountAmount = (discountPercentage / 100) * originalPrice;
   const discountedPrice = originalPrice - discountAmount;
@@ -157,17 +178,6 @@ async function getCartItems(cartItemsRepository, cartId) {
     .createQueryBuilder("cartItem")
     .where("cartItem.cartId = :cartId", { cartId: cartId })
     .getMany();
-}
-
-async function createOrder(userPhone) {
-  const orderRepository = getRepository(Order);
-  const newOrder = orderRepository.create({
-    userPhone: userPhone,
-    totalPrice: 0,
-    orderStatus: "pending",
-  });
-
-  return await orderRepository.save(newOrder);
 }
 
 async function createEnrollmentAndCalculateTotalPrice(cartItems, savedOrder) {
