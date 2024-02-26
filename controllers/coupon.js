@@ -1,7 +1,7 @@
 const Coupon = require("../model/Coupon");
 const logger = require("../services/logger");
-const { getManager, Like } = require("typeorm");
-
+const { getManager, Like, getRepository } = require("typeorm");
+const Order = require("../model/Orders");
 async function createCoupon(req, res) {
   try {
     const { code, discountPersentage, expireTime } = req.body;
@@ -101,13 +101,11 @@ async function editCoupon(req, res) {
 
     await couponRepository.save(existingCoupon);
 
-    res
-      .status(200)
-      .json({
-        message: "کد تخفیف ویرایش شد",
-        updatedCoupon: existingCoupon,
-        status: 200,
-      });
+    res.status(200).json({
+      message: "کد تخفیف ویرایش شد",
+      updatedCoupon: existingCoupon,
+      status: 200,
+    });
   } catch (error) {
     logger.error(`Error in editCoupon ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
@@ -138,10 +136,12 @@ async function deleteCoupon(req, res) {
 
 async function applyCoupon(req, res) {
   try {
-    const { coupon } = req.body;
+    const { coupon, orderId } = req.body;
 
-    if (!coupon) {
-      return res.status(400).json({ error: "کد تخفیف را وارد کنید" });
+    if (!coupon || !orderId) {
+      return res
+        .status(400)
+        .json({ error: "کد تخفیف و شناسه سفارش را وارد کنید" });
     }
 
     const couponRepository = getManager().getRepository(Coupon);
@@ -153,19 +153,53 @@ async function applyCoupon(req, res) {
       return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
     }
 
-    req.session.appliedCoupon = appliedCoupon;
-    console.log(appliedCoupon);
+    // Save the applied coupon and orderId in the session
+    req.session.appliedCoupon = {
+      coupon: appliedCoupon,
+      orderId: orderId,
+    };
+
+    console.log(req.session.appliedCoupon);
 
     return res
       .status(200)
       .json({ message: "کد تخفیف با موفقیت اعمال شد", appliedCoupon });
   } catch (error) {
-    logger.error(`Error in applyCoupon ${appliedCoupon}`);
+    console.error(`Error in applyCoupon: ${error}`);
+    res.status(500).json("Internal Server Error");
+  }
+}
+async function deleteAppliedCoupon(req, res) {
+  try {
+    const userPhone = req.user.phone;
+    const orderId = req.params.orderId;
+    const orderRepository = getRepository(Order);
+    const existingOrder = await orderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!existingOrder) {
+      return res.status(404).json({ error: "این سفارش وجود ندارد" });
+    }
+
+    existingOrder.discountCode = null;
+    existingOrder.discountTotalPrice = null;
+
+    await orderRepository.save(existingOrder);
+
+    delete req.session.appliedCoupon;
+
+    return res
+      .status(200)
+      .json({ message: "کد تخفیف با موفقیت حذف شد", user: userPhone, orderId });
+  } catch (error) {
+    console.error(`Error in deleteAppliedCoupon: ${error}`);
     res.status(500).json("Internal Server Error");
   }
 }
 
 module.exports = {
+  deleteAppliedCoupon,
   applyCoupon,
   createCoupon,
   getByIdCoupon,

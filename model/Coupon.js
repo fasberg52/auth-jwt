@@ -15,7 +15,7 @@ const Coupon = new EntitySchema({
       unique: true,
       nullable:true
     },
-    discountPersentage: {
+    discountPercentage: {
       type: "int",
       nullable: true,
     },

@@ -59,7 +59,6 @@ async function getUserCart(req, res) {
     const connection = getConnection();
     const courseRepository = connection.getRepository(Courses);
 
-    // Deserialize cart data from the session
     const userCart = req.session.cart || { items: [] };
 
     const appliedCoupon = req.session.appliedCoupon;
@@ -83,9 +82,8 @@ async function getUserCart(req, res) {
           });
 
           if (course) {
-            const discountedPrice = appliedCoupon
-              ? applyDiscount(course.price, appliedCoupon.discountPersentage)
-              : course.price;
+            const discountedPrice = course.discountPrice;
+
             const itemPrice = discountedPrice * cartItem.quantity;
 
             totalCartPrice += itemPrice;

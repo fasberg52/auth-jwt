@@ -27,6 +27,12 @@ router.post(
   couponController.applyCoupon
 );
 
+router.delete(
+  "/cart/delete-apply-coupon/:orderId",
+  jwtAuthMiddleware,
+  couponController.deleteAppliedCoupon
+);
+
 // router.post(
 //   "/orders",
 

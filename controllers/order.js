@@ -31,6 +31,7 @@ async function checkOutCart(req, res) {
     const savedOrder = await createOrder(userPhone, originalTotalPrice);
     res.status(200).json({
       message: "Checkout successful",
+      orderId: savedOrder.id,
       originalTotalPrice,
     });
   } catch (error) {
@@ -51,7 +52,7 @@ async function createOrder(userPhone, originalTotalPrice) {
 
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
-  let savedOrder; 
+  let savedOrder;
 
   console.log("response received");
   try {
@@ -72,16 +73,44 @@ async function createPayment(req, res) {
       }
 
       existingOrder.orderStatus = "pending";
+
+      const appliedCoupon = req.session.appliedCoupon;
+      console.log("appliedCoupon:", appliedCoupon);
+
+      if (
+        appliedCoupon &&
+        appliedCoupon.coupon.discountPercentage !== undefined
+      ) {
+        const discountPercentage = parseFloat(
+          appliedCoupon.coupon.discountPercentage
+        );
+        console.log("discountPercentage:", discountPercentage);
+
+        if (!isNaN(discountPercentage)) {
+          const discountAmount =
+            (discountPercentage / 100) * existingOrder.originalTotalPrice;
+          existingOrder.discountCode = appliedCoupon.coupon.code;
+          existingOrder.discountTotalPrice =
+            existingOrder.originalTotalPrice - discountAmount;
+        } else {
+          console.error(
+            `Invalid discount percentage: ${appliedCoupon.coupon.discountPercentage}`
+          );
+        }
+      } else {
+        console.error("Invalid appliedCoupon:", appliedCoupon);
+      }
+
       savedOrder = await orderRepository.save(existingOrder);
 
       const originalTotalPrice = existingOrder.originalTotalPrice;
 
       const cartItems = userCart.items;
       console.log(`cartItems >>>>> ${JSON.stringify(cartItems)}`);
-      const appliedCoupon = req.session.appliedCoupon;
-      let totalCartPrice = 0;
 
-      const cartItemsPromises = cartItems.map(async (cartItem) => {
+      const enrollments = [];
+
+      for (const cartItem of cartItems) {
         if (cartItem.courseId) {
           try {
             const courseId = cartItem.courseId;
@@ -90,41 +119,31 @@ async function createPayment(req, res) {
             });
 
             if (course) {
-              const discountedPrice = appliedCoupon
-                ? applyDiscount(course.price, appliedCoupon.discountPersentage)
-                : course.price;
-
-              const itemPrice = discountedPrice * cartItem.quantity;
-
-              totalCartPrice += itemPrice;
-
               await createEnrollment(
                 course,
                 cartItem.quantity,
                 userPhone,
+                savedOrder.id,
                 transactionalEntityManager
               );
 
-              return {
-                cartItemId: cartItem.id,
+              enrollments.push({
                 courseId: course.id,
-                imageUrl: course.imageUrl,
                 quantity: cartItem.quantity,
                 price: course.price,
-                discountPrice: discountedPrice,
-                title: course.title,
-                itemPrice,
-              };
+                discountPrice: course.discountPrice,
+              });
             }
           } catch (error) {
             console.error("Error processing cart item:", error);
           }
         }
-      });
+      }
 
-      const cartData = await Promise.all(cartItemsPromises);
-
-      const updatedTotalPriceInRials = originalTotalPrice * 10; 
+      const updatedTotalPriceInRials =
+        (existingOrder.discountTotalPrice
+          ? existingOrder.discountTotalPrice
+          : originalTotalPrice) * 10;
 
       const callbackUrl = buildCallbackUrl(
         updatedTotalPriceInRials,
@@ -146,15 +165,14 @@ async function createPayment(req, res) {
       const code = response.data.data.code;
 
       if (code === 100) {
-        // If payment request is successful, build payment URL and respond
         const paymentUrl = buildPaymentUrl(response.data.data.authority);
-        const cartId = cartItems[0].courseId;
 
         return res.json({
           paymentUrl,
-          updatedTotalPrice: originalTotalPrice, // Use originalTotalPrice
-          sessionId: req.sessionID, 
+          updatedTotalPrice: updatedTotalPriceInRials,
+          sessionId: req.sessionID,
           savedOrder,
+          enrollments,
         });
       } else {
         return res
@@ -168,48 +186,34 @@ async function createPayment(req, res) {
   }
 }
 
-function applyDiscount(originalPrice, discountPercentage) {
-  const discountAmount = (discountPercentage / 100) * originalPrice;
-  const discountedPrice = originalPrice - discountAmount;
-  return discountedPrice;
+async function createEnrollment(
+  course,
+  quantity,
+  userPhone,
+  orderId,
+  entityManager
+) {
+  const enrollmentRepository = entityManager.getRepository(Enrollment);
+
+  const newEnrollment = enrollmentRepository.create({
+    courseId: course.id,
+    quantity: quantity,
+    userPhone: userPhone,
+    orderId: orderId,
+  });
+  return enrollmentRepository.save(newEnrollment);
+}
+
+function applyDiscount(originalTotalPrice, discountPercentage) {
+  const discountAmount = (discountPercentage / 100) * originalTotalPrice;
+  const discountTotalPrice = originalTotalPrice - discountAmount;
+  return discountTotalPrice;
 }
 async function getCartItems(cartItemsRepository, cartId) {
   return await cartItemsRepository
     .createQueryBuilder("cartItem")
     .where("cartItem.cartId = :cartId", { cartId: cartId })
     .getMany();
-}
-
-async function createEnrollmentAndCalculateTotalPrice(cartItems, savedOrder) {
-  const enrollmentRepository = getRepository(Enrollment);
-  const courseRepository = getRepository(Courses);
-  let totalPrice = 0;
-  for (const cartItem of cartItems) {
-    if (cartItem.courseId) {
-      const course = await courseRepository.findOne({
-        where: { id: cartItem.courseId },
-      });
-
-      if (course) {
-        const discountedPrice = course.discountPrice || course.price;
-        console.log(
-          `Course: ${course.title}, Discounted Price: ${discountedPrice}, Quantity: ${cartItem.quantity}`
-        );
-        totalPrice += discountedPrice * cartItem.quantity;
-        const newEnrollment = enrollmentRepository.create({
-          order: savedOrder,
-          courseId: cartItem.courseId,
-          quantity: cartItem.quantity,
-        });
-        await enrollmentRepository.save(newEnrollment);
-      }
-    }
-  }
-  savedOrder.totalPrice = totalPrice;
-  const orderRepository = getRepository(Order);
-  await orderRepository.save(savedOrder);
-
-  return totalPrice;
 }
 
 async function getCourseById(courseId) {
