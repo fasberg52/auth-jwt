@@ -401,7 +401,8 @@ async function getAllOrders(req, res) {
         "order.id",
         "order.orderStatus",
         "order.orderDate",
-        "order.totalPrice",
+        "order.originalTotalPrice",
+        "order.discountTotalPrice"
       ])
       .addSelect(["user.id", "user.firstName", "user.lastName"])
       .orderBy(`order.${sortBy}`, sortOrder)
@@ -455,13 +456,10 @@ async function getAllOrders(req, res) {
     const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
 
-    const jalaliOrders = orders.map((order) => ({
-      ...order,
-      orderDate: convertToJalaliDate(order.orderDate),
-    }));
+   
 
     res.status(200).json({
-      orders: jalaliOrders,
+      orders: orders,
       totalCount,
       pendingCount: pendingCount.count,
       successCount: successCount.count,
