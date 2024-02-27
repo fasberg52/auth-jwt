@@ -301,7 +301,7 @@ async function verifyPayment(req, res) {
             .json({ error: "Invalid order or order is not pending" });
         }
 
-        await clearUserCart(req.query.Phone);
+        await clearUserCart(req);
 
         existingOrder.userPhone = phone;
         existingOrder.totalPrice = amountInTomans;
@@ -356,25 +356,13 @@ async function verifyPayment(req, res) {
   }
 }
 
-async function clearUserCart(userPhone) {
-  const connection = getConnection();
-  const cartRepository = connection.getRepository(Cart);
-  const cartItemsRepository = connection.getRepository(CartItems);
-
-  const userCart = await cartRepository.findOne({
-    where: { user: { phone: userPhone } },
-  });
-
-  if (userCart) {
-    const cartItems = await cartItemsRepository.find({
-      where: { cart: userCart.id },
-    });
-
-    if (cartItems.length > 0) {
-      await cartItemsRepository.remove(cartItems);
+async function clearUserCart(req) {
+  try {
+    if (req.session && req.session.cart) {
+      req.session.cart = [];
     }
-
-    await cartRepository.remove(userCart);
+  } catch (error) {
+    logger.error(`clearUserCart error: ${error}`);
   }
 }
 
@@ -402,7 +390,7 @@ async function getAllOrders(req, res) {
         "order.orderStatus",
         "order.orderDate",
         "order.originalTotalPrice",
-        "order.discountTotalPrice"
+        "order.discountTotalPrice",
       ])
       .addSelect(["user.id", "user.firstName", "user.lastName"])
       .orderBy(`order.${sortBy}`, sortOrder)
@@ -455,8 +443,6 @@ async function getAllOrders(req, res) {
 
     const orders = await queryBuilder.getMany();
     const totalCount = await orderRepository.count();
-
-   
 
     res.status(200).json({
       orders: orders,
