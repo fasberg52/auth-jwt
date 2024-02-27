@@ -50,8 +50,8 @@ const Order = new EntitySchema({
       type: "int",
       nullable: true,
     },
-    discountCode: {
-      type: "varchar",
+    couponId: {
+      type: "int",
       nullable: true,
     },
   },
@@ -66,6 +66,11 @@ const Order = new EntitySchema({
       type: "one-to-many",
       target: "Enrollment",
       inverseSide: "order",
+    },
+    coupons: {
+      type: "many-to-one",
+      target: "Coupon",
+      joinColumn: { name: "couponId", referencedColumnName: "id" },
     },
   },
 });

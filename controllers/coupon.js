@@ -141,7 +141,7 @@ async function applyCoupon(req, res) {
     if (!coupon || !orderId) {
       return res
         .status(400)
-        .json({ error: "کد تخفیف و شناسه سفارش را وارد کنید" });
+        .json({ error: "کد تخفیف و شناسه سفارش را وارد کنید", status: 400 });
     }
 
     const couponRepository = getManager().getRepository(Coupon);
@@ -150,10 +150,28 @@ async function applyCoupon(req, res) {
     });
 
     if (!appliedCoupon) {
-      return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
+      return res
+        .status(404)
+        .json({ error: "کد تخفیف وجود ندارد", status: 404 });
     }
 
-    // Save the applied coupon and orderId in the session
+    const orderRepository = getRepository(Order);
+    const existingOrder = await orderRepository.findOneBy({ id: orderId });
+
+    if (!existingOrder) {
+      return res
+        .status(404)
+        .json({ error: "سفارش با شناسه داده شده یافت نشد", status: 404 });
+    }
+
+    existingOrder.couponId = appliedCoupon.id;
+    existingOrder.discountTotalPrice = calculateDiscountedTotalPrice(
+      existingOrder.originalTotalPrice,
+      appliedCoupon.discountPercentage
+    );
+
+    const updatedOrder = await orderRepository.save(existingOrder);
+
     req.session.appliedCoupon = {
       coupon: appliedCoupon,
       orderId: orderId,
@@ -163,12 +181,23 @@ async function applyCoupon(req, res) {
 
     return res
       .status(200)
-      .json({ message: "کد تخفیف با موفقیت اعمال شد", appliedCoupon });
+      .json({ message: "کد تخفیف با موفقیت اعمال شد", status: 200 });
   } catch (error) {
     console.error(`Error in applyCoupon: ${error}`);
     res.status(500).json("Internal Server Error");
   }
 }
+
+function calculateDiscountedTotalPrice(originalTotalPrice, discountPercentage) {
+  if (!isNaN(discountPercentage)) {
+    const discountAmount = (discountPercentage / 100) * originalTotalPrice;
+    return originalTotalPrice - discountAmount;
+  } else {
+    console.error(`Invalid discount percentage: ${discountPercentage}`);
+    return originalTotalPrice;
+  }
+}
+
 async function deleteAppliedCoupon(req, res) {
   try {
     const userPhone = req.user.phone;

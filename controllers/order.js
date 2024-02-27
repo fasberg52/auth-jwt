@@ -9,8 +9,10 @@ const { convertToJalaliDate } = require("../services/jalaliService");
 
 async function checkOutCart(req, res) {
   try {
+    const { orderId } = req.body;
     const userPhone = req.user.phone;
     const userCart = req.session.cart;
+    const orderRepository = getRepository(Order);
 
     if (!userCart || !userCart.items || userCart.items.length === 0) {
       return res.status(404).json({ error: "Cart is empty" });
@@ -28,12 +30,38 @@ async function checkOutCart(req, res) {
         }
       }
     }
-    const savedOrder = await createOrder(userPhone, originalTotalPrice);
-    res.status(200).json({
-      message: "Checkout successful",
-      orderId: savedOrder.id,
-      originalTotalPrice,
-    });
+    if (!orderId) {
+      const savedOrder = await createOrder(userPhone, originalTotalPrice);
+      const sumPrice = originalTotalPrice;
+      res.status(200).json({
+        message: "Checkout successful",
+        orderId: savedOrder.id,
+        originalTotalPrice,
+        discountTotalPrice: savedOrder.discountTotalPrice,
+
+        sumPrice,
+
+        status: 200,
+      });
+    } else {
+      const existingOrder = await orderRepository.findOneBy({
+        id: orderId,
+      });
+      if (existingOrder === null) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      const sumPrice =
+        existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
+
+      res.status(200).json({
+        id: existingOrder.id,
+        originalTotalPrice,
+        discountTotalPrice: existingOrder.discountTotalPrice,
+        sumPrice,
+        status: 200,
+      });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error on checkOutCart" });
