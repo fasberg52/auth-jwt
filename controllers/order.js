@@ -102,33 +102,8 @@ async function createPayment(req, res) {
 
       existingOrder.orderStatus = "pending";
 
-      const appliedCoupon = req.session.appliedCoupon;
-      console.log("appliedCoupon:", appliedCoupon);
-
-      if (
-        appliedCoupon &&
-        appliedCoupon.coupon.discountPercentage !== undefined
-      ) {
-        const discountPercentage = parseFloat(
-          appliedCoupon.coupon.discountPercentage
-        );
-        console.log("discountPercentage:", discountPercentage);
-
-        if (!isNaN(discountPercentage)) {
-          const discountAmount =
-            (discountPercentage / 100) * existingOrder.originalTotalPrice;
-          existingOrder.discountCode = appliedCoupon.coupon.code;
-          existingOrder.discountTotalPrice =
-            existingOrder.originalTotalPrice - discountAmount;
-        } else {
-          console.error(
-            `Invalid discount percentage: ${appliedCoupon.coupon.discountPercentage}`
-          );
-        }
-      } else {
-        console.error("Invalid appliedCoupon:", appliedCoupon);
-      }
-
+      
+      
       savedOrder = await orderRepository.save(existingOrder);
 
       const originalTotalPrice = existingOrder.originalTotalPrice;
