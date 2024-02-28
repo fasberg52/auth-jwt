@@ -9,11 +9,11 @@ const { convertToJalaliDate } = require("../services/jalaliService");
 
 async function checkOutCart(req, res) {
   try {
-    const { orderId } = req.body;
+    const { orderId } = req.params;
     const userPhone = req.user.phone;
     const userCart = req.session.cart;
     const orderRepository = getRepository(Order);
-
+    console.log(`session in checkout ${JSON.stringify(req.session.cart)}`);
     if (!userCart || !userCart.items || userCart.items.length === 0) {
       return res.status(404).json({ error: "Cart is empty" });
     }
@@ -30,6 +30,7 @@ async function checkOutCart(req, res) {
         }
       }
     }
+
     if (!orderId) {
       const savedOrder = await createOrder(userPhone, originalTotalPrice);
       const sumPrice = originalTotalPrice;
@@ -38,16 +39,15 @@ async function checkOutCart(req, res) {
         orderId: savedOrder.id,
         originalTotalPrice,
         discountTotalPrice: savedOrder.discountTotalPrice,
-
         sumPrice,
-
         status: 200,
       });
     } else {
       const existingOrder = await orderRepository.findOneBy({
         id: orderId,
       });
-      if (existingOrder === null) {
+
+      if (!existingOrder) {
         return res.status(404).json({ error: "Order not found" });
       }
 
@@ -67,6 +67,7 @@ async function checkOutCart(req, res) {
     res.status(500).json({ error: "Internal server error on checkOutCart" });
   }
 }
+
 async function createOrder(userPhone, originalTotalPrice) {
   const orderRepository = getRepository(Order);
   const newOrder = orderRepository.create({
@@ -92,6 +93,9 @@ async function createPayment(req, res) {
       const orderRepository = getRepository(Order);
       const existingOrder = await orderRepository.findOne({
         where: { userPhone: userPhone, orderStatus: "preInvoice" },
+        order: {
+          orderDate: "DESC",
+        },
       });
 
       if (!existingOrder) {
@@ -102,8 +106,6 @@ async function createPayment(req, res) {
 
       existingOrder.orderStatus = "pending";
 
-      
-      
       savedOrder = await orderRepository.save(existingOrder);
 
       const originalTotalPrice = existingOrder.originalTotalPrice;
@@ -175,6 +177,7 @@ async function createPayment(req, res) {
           updatedTotalPrice: updatedTotalPriceInRials,
           sessionId: req.sessionID,
           savedOrder,
+          orderId: savedOrder.id,
           enrollments,
         });
       } else {

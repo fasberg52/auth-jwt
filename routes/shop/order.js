@@ -6,7 +6,9 @@ const express = require("express");
 
 const router = express.Router();
 
+router.get("/checkout/:orderId", jwtAuthMiddleware, orderController.checkOutCart);
 router.get("/checkout", jwtAuthMiddleware, orderController.checkOutCart);
+
 router.post(
   "/payment-request",
   jwtAuthMiddleware,
