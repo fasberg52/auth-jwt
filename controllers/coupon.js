@@ -4,7 +4,7 @@ const { getManager, Like, getRepository } = require("typeorm");
 const Order = require("../model/Orders");
 async function createCoupon(req, res) {
   try {
-    const { code, discountPersentage, expireTime } = req.body;
+    const { code, discountPercentage, expireTime } = req.body;
     const couponRepository = getManager().getRepository(Coupon);
     const exitingCode = await couponRepository.findOne({
       where: { code: code },
@@ -29,7 +29,7 @@ async function createCoupon(req, res) {
 
     const newCoupon = couponRepository.create({
       code,
-      discountPersentage,
+      discountPercentage,
       createdAt,
       expireTime,
     });
@@ -83,7 +83,7 @@ async function getAllCoupons(req, res) {
 async function editCoupon(req, res) {
   try {
     const { couponId } = req.params;
-    const { code, discountPersentage, expireTime } = req.body;
+    const { code, discountPercentage, expireTime } = req.body;
 
     const couponRepository = getManager().getRepository(Coupon);
     const existingCoupon = await couponRepository.findOne({
@@ -95,8 +95,8 @@ async function editCoupon(req, res) {
     }
 
     existingCoupon.code = code || existingCoupon.code;
-    existingCoupon.discountPersentage =
-      discountPersentage || existingCoupon.discountPersentage;
+    existingCoupon.discountPercentage =
+      discountPercentage || existingCoupon.discountPercentage;
     existingCoupon.expireTime = expireTime || existingCoupon.expireTime;
 
     await couponRepository.save(existingCoupon);
@@ -122,7 +122,9 @@ async function deleteCoupon(req, res) {
     });
 
     if (!existingCoupon) {
-      return res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+      return res
+        .status(404)
+        .json({ error: "کد تخفیف وجود ندارد!", status: 404 });
     }
 
     await couponRepository.remove(existingCoupon);
@@ -191,7 +193,7 @@ async function applyCoupon(req, res) {
 function calculateDiscountedTotalPrice(originalTotalPrice, discountPercentage) {
   if (!isNaN(discountPercentage)) {
     const discountAmount = (discountPercentage / 100) * originalTotalPrice;
-    return originalTotalPrice - discountAmount;
+    return discountAmount;
   } else {
     console.error(`Invalid discount percentage: ${discountPercentage}`);
     return originalTotalPrice;
@@ -211,16 +213,19 @@ async function deleteAppliedCoupon(req, res) {
       return res.status(404).json({ error: "این سفارش وجود ندارد" });
     }
 
-    existingOrder.discountCode = null;
+    existingOrder.couponId = null;
     existingOrder.discountTotalPrice = null;
 
     await orderRepository.save(existingOrder);
 
     delete req.session.appliedCoupon;
 
-    return res
-      .status(200)
-      .json({ message: "کد تخفیف با موفقیت حذف شد", user: userPhone, orderId });
+    return res.status(200).json({
+      message: "کد تخفیف با موفقیت حذف شد",
+      user: userPhone,
+      orderId,
+      status: 200,
+    });
   } catch (error) {
     console.error(`Error in deleteAppliedCoupon: ${error}`);
     res.status(500).json("Internal Server Error");

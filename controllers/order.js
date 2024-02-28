@@ -14,6 +14,8 @@ async function checkOutCart(req, res) {
     const userCart = req.session.cart;
     const orderRepository = getRepository(Order);
     console.log(`session in checkout ${JSON.stringify(req.session.cart)}`);
+    console.log(`session in checkout ${JSON.stringify(req.session)}`);
+
     if (!userCart || !userCart.items || userCart.items.length === 0) {
       return res.status(404).json({ error: "Cart is empty" });
     }
@@ -55,7 +57,7 @@ async function checkOutCart(req, res) {
         existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
 
       res.status(200).json({
-        id: existingOrder.id,
+        orderId: existingOrder.id,
         originalTotalPrice,
         discountTotalPrice: existingOrder.discountTotalPrice,
         sumPrice,
@@ -144,11 +146,9 @@ async function createPayment(req, res) {
           }
         }
       }
-
-      const updatedTotalPriceInRials =
-        (existingOrder.discountTotalPrice
-          ? existingOrder.discountTotalPrice
-          : originalTotalPrice) * 10;
+      const sumPrice =
+        existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
+      const updatedTotalPriceInRials = sumPrice * 10;
 
       const callbackUrl = buildCallbackUrl(
         updatedTotalPriceInRials,
@@ -250,6 +250,7 @@ async function sendPaymentRequest(url, requestData) {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      withCredentials: true,
     })
     .catch((error) => {
       console.log(error.response);
@@ -285,6 +286,7 @@ async function verifyPayment(req, res) {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         })
         .catch((error) => {
           console.log(error.response);

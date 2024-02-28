@@ -84,7 +84,10 @@ async function getUserCart(req, res) {
           if (course) {
             const discountedPrice = course.discountPrice;
 
-            const itemPrice = discountedPrice * cartItem.quantity;
+            const itemPrice =
+              discountedPrice !== null
+                ? discountedPrice * cartItem.quantity
+                : course.price * cartItem.quantity;
 
             totalCartPrice += itemPrice;
 
@@ -126,6 +129,8 @@ function applyDiscount(originalPrice, discountPercentage) {
 async function removeCartItem(req, res) {
   try {
     const { courseId } = req.params;
+    console.log(` req.session.cart >> ${JSON.stringify(req.session.cart)}`);
+
     console.log(courseId);
     if (!req.session.cart) {
       return res.status(404).json({ error: "سبد خرید یافت نشد" });
