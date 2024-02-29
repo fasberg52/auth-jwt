@@ -1,4 +1,5 @@
 const express = require("express");
+require("reflect-metadata")
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");

@@ -68,7 +68,7 @@ const User = new EntitySchema({
       inverseSide: "user",
     },
     subscribe: {
-      type: "many-to-many",
+      type: "one-to-many",
       target: "Subscribe",
       inverseSide: "user",
     },

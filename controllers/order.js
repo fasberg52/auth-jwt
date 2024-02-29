@@ -490,7 +490,6 @@ async function getOrderById(req, res) {
     if (!order) {
       return res.status(404).json({ error: "سفارش پیدا نشد" });
     }
-    order.orderDate = convertToJalaliDate(order.orderDate);
 
     res.status(200).json({ order });
   } catch (error) {

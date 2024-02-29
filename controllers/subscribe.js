@@ -26,7 +26,7 @@ async function subscribeUser(req, res) {
       return;
     }
 
-    const existingSubscription = await subscribeRepository.findOne({
+    const existingSubscription = await subscribeRepository.find({
       where: { endpoint: subscription.endpoint },
     });
 
@@ -70,15 +70,15 @@ async function unsubscribeUser(req, res) {
 
     const subscribeRepository = getRepository(Subscribe);
 
-    const existingSubscription = await subscribeRepository.findOne({
+    const userSubscriptions = await subscribeRepository.find({
       where: { userPhone: userPhone },
     });
 
-    if (!existingSubscription) {
+    if (userSubscriptions.length === 0) {
       return res.status(400).json({ message: "سابسکرایب یافت نشد" });
     }
 
-    await subscribeRepository.remove(existingSubscription);
+    await subscribeRepository.remove(userSubscriptions);
 
     res.status(200).json({ message: "با موفقیت لغو شد" });
   } catch (error) {
@@ -99,8 +99,6 @@ async function sendNotif() {
 
     const windowEnd = new Date(currentTimestamp);
     windowEnd.setSeconds(currentTimestamp.getSeconds() + 30);
-
-   
 
     const currentClass = await getRepository(OnlineClass)
       .createQueryBuilder("onlineClass")
