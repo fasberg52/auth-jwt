@@ -4,13 +4,14 @@ const { getManager, getConnection } = require("typeorm");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
+const Quiz = require("../model/quiz");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
 const { serialize } = require("cookie");
 
 async function createCartItem(req, res) {
   try {
-    const { courseId, itemType } = req.body;
+    const { courseId, quizId, itemType } = req.body;
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
@@ -25,7 +26,7 @@ async function createCartItem(req, res) {
 
     if (existingCartItem) {
       return res.status(400).json({
-        error: "این دوره قبلاً به سبد خرید اضافه شده است",
+        error: "این آیتم قبلاً به سبد خرید اضافه شده است",
         status: 400,
       });
     } else {
@@ -63,6 +64,7 @@ async function getUserCart(req, res) {
   try {
     const connection = getConnection();
     const courseRepository = connection.getRepository(Courses);
+    const quizRepository = connection.getRepository(Quiz); // Add this line
 
     const userCart = req.session.cart || { items: [] };
 
@@ -108,7 +110,32 @@ async function getUserCart(req, res) {
             };
           }
         } catch (error) {
-          console.error("Error processing cart item:", error);
+          console.error("Error processing course item:", error);
+        }
+      } else if (cartItem.quizId) {
+        try {
+          const quiz = await quizRepository.findOne({
+            where: { id: cartItem.quizId },
+          });
+
+          if (quiz) {
+            const itemPrice = quiz.examPrice * cartItem.quantity;
+
+            totalCartPrice += itemPrice;
+
+            return {
+              cartItemId: cartItem.id,
+              quizId: quiz.id,
+              imageUrl: null,
+              quantity: cartItem.quantity,
+              price: quiz.examPrice,
+              discountPrice: null,
+              title: quiz.examTitle,
+              itemPrice,
+            };
+          }
+        } catch (error) {
+          console.error("Error processing quiz item:", error);
         }
       }
     });
@@ -125,6 +152,7 @@ async function getUserCart(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 function applyDiscount(originalPrice, discountPercentage) {
   const discountAmount = (discountPercentage / 100) * originalPrice;
   const discountedPrice = originalPrice - discountAmount;

@@ -4,6 +4,7 @@ const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
+const Quiz = require("../model/quiz");
 const axios = require("axios");
 const { convertToJalaliDate } = require("../services/jalaliService");
 
@@ -13,6 +14,9 @@ async function checkOutCart(req, res) {
     const userPhone = req.user.phone;
     const userCart = req.session.cart;
     const orderRepository = getRepository(Order);
+    const courseRepository = getConnection().getRepository(Courses);
+    const quizRepository = getConnection().getRepository(Quiz);
+
     console.log(`session in checkout ${JSON.stringify(req.session.cart)}`);
     console.log(`session in checkout ${JSON.stringify(req.session)}`);
 
@@ -24,11 +28,21 @@ async function checkOutCart(req, res) {
 
     for (const cartItem of userCart.items) {
       if (cartItem.courseId) {
-        const course = await getCourseById(cartItem.courseId);
+        const course = await courseRepository.findOne({
+          where: { id: cartItem.courseId },
+        });
 
         if (course) {
           const discountedPrice = course.discountPrice || course.price;
           originalTotalPrice += discountedPrice * cartItem.quantity;
+        }
+      } else if (cartItem.quizId) {
+        const quiz = await quizRepository.findOne({
+          where: { id: cartItem.quizId },
+        });
+
+        if (quiz) {
+          originalTotalPrice += quiz.examPrice * cartItem.quantity;
         }
       }
     }
@@ -193,7 +207,7 @@ async function createPayment(req, res) {
 }
 
 async function createEnrollment(
-  course,
+  item,
   quantity,
   userPhone,
   orderId,
@@ -201,13 +215,41 @@ async function createEnrollment(
 ) {
   const enrollmentRepository = entityManager.getRepository(Enrollment);
 
-  const newEnrollment = enrollmentRepository.create({
-    courseId: course.id,
-    quantity: quantity,
-    userPhone: userPhone,
-    orderId: orderId,
-  });
-  return enrollmentRepository.save(newEnrollment);
+  const newItemType = item.itemType; // Assuming the item structure has an 'itemType' property
+
+  if (newItemType === 'course') {
+    const course = await entityManager.findOne(Courses, {
+      where: { id: item.courseId },
+    });
+
+    if (course) {
+      const newEnrollment = enrollmentRepository.create({
+        courseId: course.id,
+        quantity: quantity,
+        userPhone: userPhone,
+        orderId: orderId,
+      });
+
+      return enrollmentRepository.save(newEnrollment);
+    }
+  } else if (newItemType === 'azmoon') {
+    const quiz = await entityManager.findOne(Quiz, {
+      where: { id: item.quizId },
+    });
+
+    if (quiz) {
+      const newEnrollment = enrollmentRepository.create({
+        quizId: quiz.id,
+        quantity: quantity,
+        userPhone: userPhone,
+        orderId: orderId,
+      });
+
+      return enrollmentRepository.save(newEnrollment);
+    }
+  }
+
+  return null;
 }
 
 function applyDiscount(originalTotalPrice, discountPercentage) {
