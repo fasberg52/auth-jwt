@@ -807,3 +807,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-02-18T11:29:20.349Z error: Error in deleteExamCode Error: You must provide selection conditions in order to find a single row. 
 2024-03-03T07:30:51.770Z error: Error in ExamCode QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN" 
 2024-03-03T07:31:10.615Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
+2024-03-03T07:31:23.897Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
