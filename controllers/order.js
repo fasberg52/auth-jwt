@@ -95,6 +95,117 @@ async function createOrder(userPhone, originalTotalPrice) {
   return await orderRepository.save(newOrder);
 }
 
+// async function createPayment(req, res) {
+//   const userPhone = req.user.phone;
+//   let savedOrder;
+
+//   console.log("response received");
+//   try {
+//     await getManager().transaction(async (transactionalEntityManager) => {
+//       const userCart = req.session.cart;
+//       if (!userCart) {
+//         return res.status(404).json({ error: "Cart not found for the user" });
+//       }
+//       const orderRepository = getRepository(Order);
+//       const existingOrder = await orderRepository.findOne({
+//         where: { userPhone: userPhone, orderStatus: "preInvoice" },
+//         order: {
+//           orderDate: "DESC",
+//         },
+//       });
+
+//       if (!existingOrder) {
+//         return res
+//           .status(404)
+//           .json({ error: "Order not found with 'preInvoice' status" });
+//       }
+
+//       existingOrder.orderStatus = "pending";
+
+//       savedOrder = await orderRepository.save(existingOrder);
+
+//       const originalTotalPrice = existingOrder.originalTotalPrice;
+
+//       const cartItems = userCart.items;
+//       console.log(`cartItems >>>>> ${JSON.stringify(cartItems)}`);
+
+//       const enrollments = [];
+
+//       for (const cartItem of cartItems) {
+//         if (cartItem.courseId) {
+//           try {
+//             const courseId = cartItem.courseId;
+//             const course = await transactionalEntityManager.findOne(Courses, {
+//               where: { id: courseId },
+//             });
+
+//             if (course) {
+//               await createEnrollment(
+//                 course,
+//                 cartItem.quantity,
+//                 userPhone,
+//                 savedOrder.id,
+//                 transactionalEntityManager
+//               );
+
+//               enrollments.push({
+//                 courseId: course.id,
+//                 quantity: cartItem.quantity,
+//                 price: course.price,
+//                 discountPrice: course.discountPrice,
+//               });
+//             }
+//           } catch (error) {
+//             console.error("Error processing cart item:", error);
+//           }
+//         }
+//       }
+//       const sumPrice =
+//         existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
+//       const updatedTotalPriceInRials = sumPrice * 10;
+
+//       const callbackUrl = buildCallbackUrl(
+//         updatedTotalPriceInRials,
+//         userPhone,
+//         savedOrder.id
+//       );
+//       const requestData = buildRequestData(
+//         process.env.MERCHANT_ID,
+//         updatedTotalPriceInRials,
+//         callbackUrl,
+//         userPhone
+//       );
+
+//       const response = await sendPaymentRequest(
+//         process.env.ZARINPAL_LINK_REQUEST,
+//         requestData
+//       );
+
+//       const code = response.data.data.code;
+
+//       if (code === 100) {
+//         const paymentUrl = buildPaymentUrl(response.data.data.authority);
+
+//         return res.json({
+//           paymentUrl,
+//           updatedTotalPrice: updatedTotalPriceInRials,
+//           sessionId: req.sessionID,
+//           savedOrder,
+//           orderId: savedOrder.id,
+//           enrollments,
+//         });
+//       } else {
+//         return res
+//           .status(400)
+//           .json({ error: "درخواست پرداخت با خطا مواجه شد" });
+//       }
+//     });
+//   } catch (error) {
+//     console.error(`createPayment error: ${error}`);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
   let savedOrder;
@@ -103,9 +214,11 @@ async function createPayment(req, res) {
   try {
     await getManager().transaction(async (transactionalEntityManager) => {
       const userCart = req.session.cart;
+
       if (!userCart) {
         return res.status(404).json({ error: "Cart not found for the user" });
       }
+
       const orderRepository = getRepository(Order);
       const existingOrder = await orderRepository.findOne({
         where: { userPhone: userPhone, orderStatus: "preInvoice" },
@@ -121,45 +234,28 @@ async function createPayment(req, res) {
       }
 
       existingOrder.orderStatus = "pending";
-
       savedOrder = await orderRepository.save(existingOrder);
 
       const originalTotalPrice = existingOrder.originalTotalPrice;
-
       const cartItems = userCart.items;
       console.log(`cartItems >>>>> ${JSON.stringify(cartItems)}`);
 
       const enrollments = [];
 
       for (const cartItem of cartItems) {
-        if (cartItem.courseId) {
-          try {
-            const courseId = cartItem.courseId;
-            const course = await transactionalEntityManager.findOne(Courses, {
-              where: { id: courseId },
-            });
+        const enrollment = await createEnrollment(
+          cartItem,
+          cartItem.quantity,
+          userPhone,
+          savedOrder.id,
+          transactionalEntityManager
+        );
 
-            if (course) {
-              await createEnrollment(
-                course,
-                cartItem.quantity,
-                userPhone,
-                savedOrder.id,
-                transactionalEntityManager
-              );
-
-              enrollments.push({
-                courseId: course.id,
-                quantity: cartItem.quantity,
-                price: course.price,
-                discountPrice: course.discountPrice,
-              });
-            }
-          } catch (error) {
-            console.error("Error processing cart item:", error);
-          }
+        if (enrollment) {
+          enrollments.push(enrollment);
         }
       }
+
       const sumPrice =
         existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
       const updatedTotalPriceInRials = sumPrice * 10;
@@ -207,7 +303,7 @@ async function createPayment(req, res) {
 }
 
 async function createEnrollment(
-  item,
+  cartItem,
   quantity,
   userPhone,
   orderId,
@@ -215,11 +311,9 @@ async function createEnrollment(
 ) {
   const enrollmentRepository = entityManager.getRepository(Enrollment);
 
-  const newItemType = item.itemType; // Assuming the item structure has an 'itemType' property
-
-  if (newItemType === 'course') {
+  if (cartItem.itemType === "course" && cartItem.courseId) {
     const course = await entityManager.findOne(Courses, {
-      where: { id: item.courseId },
+      where: { id: cartItem.courseId },
     });
 
     if (course) {
@@ -232,9 +326,9 @@ async function createEnrollment(
 
       return enrollmentRepository.save(newEnrollment);
     }
-  } else if (newItemType === 'azmoon') {
+  } else if (cartItem.itemType === "azmoon" && cartItem.quizId) {
     const quiz = await entityManager.findOne(Quiz, {
-      where: { id: item.quizId },
+      where: { id: cartItem.quizId },
     });
 
     if (quiz) {
