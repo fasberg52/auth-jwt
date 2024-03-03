@@ -174,7 +174,6 @@ async function removeCartItem(req, res) {
         (item) => item.itemType === itemType
       );
 
-      // If both courseId and quizId are provided, prioritize based on itemType
       if (courseId && quizId) {
         itemToRemove =
           req.session.cart.items.find(

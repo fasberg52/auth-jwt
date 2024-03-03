@@ -10,11 +10,7 @@ router.post(
 
   cartController.createCartItem
 );
-router.delete(
-  "/cart/:courseId",
-  jwtAuthMiddleware,
-  cartController.removeCartItem
-);
+router.delete("/cart", jwtAuthMiddleware, cartController.removeCartItem);
 router.get(
   "/cart",
   jwtAuthMiddleware,

@@ -611,6 +611,7 @@ async function getOrderById(req, res) {
       .leftJoin("order.user", "user")
       .leftJoin("order.enrollments", "enrollments")
       .leftJoinAndSelect("enrollments.course", "course")
+      .leftJoin("enrollments.quiz", "quiz")
       .select(["order"])
       .addSelect(["user.firstName", "user.lastName"])
       .addSelect([
@@ -619,6 +620,12 @@ async function getOrderById(req, res) {
         "course.price",
         "course.imageUrl",
         "course.discountPrice",
+      ])
+      .addSelect([
+        "enrollments.quizId",
+        "quiz.examTitle",
+        "quiz.examPrice",
+        "quiz.itemType",
       ])
       .where("order.id = :orderId", { orderId })
       .getOne();
