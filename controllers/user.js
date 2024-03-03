@@ -30,6 +30,7 @@ async function getUserDataWithToken(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
+        skuTest:existingUser.skuTest,
         createdAt: new Date(existingUser.createdAt).getTime(),
         updatedAt: existingUser.updatedAt
           ? new Date(existingUser.updatedAt).getTime()

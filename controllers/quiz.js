@@ -107,7 +107,7 @@ async function exam(req, res) {
 }
 async function createExamCode(req, res) {
   try {
-    const { examCode } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime } = req.body;
     const quizRepository = getRepository(Quiz);
     const exitingCode = await quizRepository.findOne({
       where: { examCode: examCode },
@@ -117,6 +117,11 @@ async function createExamCode(req, res) {
     }
     const newExamCode = quizRepository.create({
       examCode: examCode,
+      examTitle: examTitle,
+      examPrice: examPrice,
+      start: start,
+      end: end,
+      expireTime: expireTime,
     });
     await quizRepository.save(newExamCode);
     res.status(201).json({ message: "با موفقیت ساخته شد", status: 201 });
@@ -160,7 +165,7 @@ async function getExamCodeById(req, res) {
 async function updateExamCode(req, res) {
   try {
     const examCodeId = req.params.examCodeId;
-    const { examCode } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime } = req.body;
     const examCodeRepository = getRepository(Quiz);
 
     const existingExamCode = await examCodeRepository.findOne({
@@ -172,7 +177,11 @@ async function updateExamCode(req, res) {
     }
 
     existingExamCode.examCode = examCode;
-
+    existingExamCode.examTitle = examTitle;
+    existingExamCode.examPrice = examPrice;
+    existingExamCode.start = start;
+    existingExamCode.end = end;
+    existingExamCode.expireTime = expireTime;
     await examCodeRepository.save(existingExamCode);
 
     res

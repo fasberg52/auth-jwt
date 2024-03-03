@@ -54,7 +54,7 @@ async function setupDatabase() {
         Subscribe,
         Quiz,
       ],
-      synchronize: false,
+      synchronize: true,
     });
 
     console.log("Database connection established");

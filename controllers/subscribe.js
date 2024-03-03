@@ -26,7 +26,7 @@ async function subscribeUser(req, res) {
       return;
     }
 
-    const existingSubscription = await subscribeRepository.find({
+    const existingSubscription = await subscribeRepository.findOne({
       where: { endpoint: subscription.endpoint },
     });
 
@@ -48,7 +48,7 @@ async function subscribeUser(req, res) {
     await subscribeRepository.save(newSubscription);
 
     console.log(newSubscription);
-    res.status(201).json({ message: "با موفقیت انجام شد", status: 201 });
+    res.status(201).json({ message: "اعلان فعال شد", status: 201 });
   } catch (error) {
     console.error("Error subscribing user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -70,7 +70,7 @@ async function unsubscribeUser(req, res) {
 
     const subscribeRepository = getRepository(Subscribe);
 
-    const userSubscriptions = await subscribeRepository.find({
+    const userSubscriptions = await subscribeRepository.findOne({
       where: { userPhone: userPhone },
     });
 
@@ -80,7 +80,7 @@ async function unsubscribeUser(req, res) {
 
     await subscribeRepository.remove(userSubscriptions);
 
-    res.status(200).json({ message: "با موفقیت لغو شد" });
+    res.status(200).json({ message: "اعلان غیر فعال شد", status: 200 });
   } catch (error) {
     console.error("Error unsubscribing user:", error);
     res.status(500).json({ error: "Internal server error" });

@@ -10,14 +10,17 @@ const { serialize } = require("cookie");
 
 async function createCartItem(req, res) {
   try {
-    const { courseId } = req.body;
+    const { courseId, itemType } = req.body;
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
     let userCart = req.session.cart || { items: [] };
 
     const existingCartItem = userCart.items.find(
-      (item) => item.courseId === courseId
+      (item) =>
+        (courseId === undefined || item.courseId === courseId) &&
+        (quizId === undefined || item.quizId === quizId) &&
+        item.itemType === itemType
     );
 
     if (existingCartItem) {
@@ -27,7 +30,9 @@ async function createCartItem(req, res) {
       });
     } else {
       const newCartItem = {
-        courseId: courseId,
+        courseId: courseId || null,
+        quizId: quizId || null,
+        itemType: itemType,
         quantity: defaultQuantity,
       };
 

@@ -1,5 +1,8 @@
 // Course Entity
 const { EntitySchema, Timestamp } = require("typeorm");
+const CourseType = {
+  COURSE: "course",
+};
 
 const Course = new EntitySchema({
   name: "Course",
@@ -63,6 +66,11 @@ const Course = new EntitySchema({
     eventId: {
       type: "varchar",
       nullable: true,
+    },
+    itemType: {
+      type: "enum",
+      enum: Object.values(CourseType),
+      default: CourseType.COURSE,
     },
   },
   relations: {

@@ -10,7 +10,7 @@ const rateLimit = require("express-rate-limit");
       "به دلیل درخواست های مکرر بلاک  شدید لطفا بعد از 3 دقیقه دوباره تلاش کنید",
   });
 
- 
+   
 
 
 module.exports = { otpRateLimiter };
