@@ -161,30 +161,40 @@ function applyDiscount(originalPrice, discountPercentage) {
 
 async function removeCartItem(req, res) {
   try {
-    const { courseId } = req.params;
-    console.log(` req.session.cart >> ${JSON.stringify(req.session.cart)}`);
+    const { courseId, quizId, itemType } = req.body;
 
-    console.log(courseId);
     if (!req.session.cart) {
       return res.status(404).json({ error: "سبد خرید یافت نشد" });
     }
 
-    const courseToRemove = req.session.cart.items.find((item) => {
-      console.log(item);
-      return parseInt(item.courseId) === parseInt(courseId, 10);
-    });
-    console.log(` req.session.cart >> ${JSON.stringify(req.session.cart)}`);
+    let itemToRemove;
 
-    console.log(`courseToRemove >> ${JSON.stringify(courseToRemove)}`);
-    if (!courseToRemove) {
+    if (itemType) {
+      itemToRemove = req.session.cart.items.find(
+        (item) => item.itemType === itemType
+      );
+
+      // If both courseId and quizId are provided, prioritize based on itemType
+      if (courseId && quizId) {
+        itemToRemove =
+          req.session.cart.items.find(
+            (item) =>
+              item.itemType === itemType &&
+              (parseInt(item.courseId) === parseInt(courseId, 10) ||
+                parseInt(item.quizId) === parseInt(quizId, 10))
+          ) || itemToRemove;
+      }
+    }
+
+    if (!itemToRemove) {
       return res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
     }
 
-    const indexToRemove = req.session.cart.items.indexOf(courseToRemove);
+    const indexToRemove = req.session.cart.items.indexOf(itemToRemove);
     req.session.cart.items.splice(indexToRemove, 1);
     req.session.save();
 
-    res.status(200).json({ message: `دوره از سبد شما حذف شد` });
+    res.status(200).json({ message: `آیتم از سبد شما حذف شد` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
