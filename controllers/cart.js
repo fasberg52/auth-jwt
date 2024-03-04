@@ -161,39 +161,29 @@ function applyDiscount(originalPrice, discountPercentage) {
 
 async function removeCartItem(req, res) {
   try {
-    const { courseId, quizId, itemType } = req.body;
+    const { courseId, quizId, itemType } = req.query;
+
+    console.log("Received query parameters:", req.query);
+    console.log("session " + JSON.stringify(req.session.cart));
 
     if (!req.session.cart) {
       return res.status(404).json({ error: "سبد خرید یافت نشد" });
     }
+    console.log(JSON.stringify(req.session.cart));
+    const indexToRemove = req.session.cart.items.findIndex(
+      (item) =>
+        item.itemType === itemType &&
+        ((courseId && item.courseId === courseId, 10) ||
+          (quizId && item.quizId === quizId, 10))
+    );
 
-    let itemToRemove;
-
-    if (itemType) {
-      itemToRemove = req.session.cart.items.find(
-        (item) => item.itemType === itemType
-      );
-
-      if (courseId && quizId) {
-        itemToRemove =
-          req.session.cart.items.find(
-            (item) =>
-              item.itemType === itemType &&
-              (parseInt(item.courseId) === parseInt(courseId, 10) ||
-                parseInt(item.quizId) === parseInt(quizId, 10))
-          ) || itemToRemove;
-      }
+    if (indexToRemove !== -1) {
+      req.session.cart.items.splice(indexToRemove, 1);
+      req.session.save();
+      res.status(200).json({ message: `آیتم از سبد شما حذف شد` });
+    } else {
+      res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
     }
-
-    if (!itemToRemove) {
-      return res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
-    }
-
-    const indexToRemove = req.session.cart.items.indexOf(itemToRemove);
-    req.session.cart.items.splice(indexToRemove, 1);
-    req.session.save();
-
-    res.status(200).json({ message: `آیتم از سبد شما حذف شد` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

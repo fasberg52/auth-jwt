@@ -539,7 +539,10 @@ async function getAllOrders(req, res) {
       .addSelect(["user.id", "user.firstName", "user.lastName"])
       .orderBy(`order.${sortBy}`, sortOrder)
       .skip(offset)
-      .take(pageSize);
+      .take(pageSize)
+      .andWhere("order.orderStatus != :preInvoice", {
+        preInvoice: "preInvoice",
+      });
 
     if (searchId) {
       queryBuilder.andWhere("order.id = :searchId", {
@@ -571,18 +574,27 @@ async function getAllOrders(req, res) {
       .createQueryBuilder("order")
       .select("COUNT(order.orderStatus)", "count")
       .where("order.orderStatus = :orderStatus", { orderStatus: "pending" })
+      .andWhere("order.orderStatus != :preInvoice", {
+        preInvoice: "preInvoice",
+      })
       .getRawOne();
 
     const successCount = await orderRepository
       .createQueryBuilder("order")
       .select("COUNT(order.orderStatus)", "count")
       .where("order.orderStatus = :orderStatus", { orderStatus: "success" })
+      .andWhere("order.orderStatus != :preInvoice", {
+        preInvoice: "preInvoice",
+      })
       .getRawOne();
 
     const cancelledCount = await orderRepository
       .createQueryBuilder("order")
       .select("COUNT(order.orderStatus)", "count")
       .where("order.orderStatus = :orderStatus", { orderStatus: "cancelled" })
+      .andWhere("order.orderStatus != :preInvoice", {
+        preInvoice: "preInvoice",
+      })
       .getRawOne();
 
     const orders = await queryBuilder.getMany();
@@ -601,6 +613,48 @@ async function getAllOrders(req, res) {
   }
 }
 
+// async function getOrderById(req, res) {
+//   try {
+//     const orderId = req.params.id;
+//     const orderRepository = getRepository(Order);
+
+//     const order = await orderRepository
+//       .createQueryBuilder("order")
+//       .leftJoin("order.user", "user")
+//       .leftJoin("order.enrollments", "enrollments")
+//       .leftJoinAndSelect("enrollments.course", "course")
+//       .leftJoin("order.coupons", "coupon")
+//       .leftJoin("enrollments.quiz", "quiz")
+//       .select(["order"])
+//       .addSelect(["user.firstName", "user.lastName"])
+//       .addSelect([
+//         "enrollments.courseId",
+//         "course.title",
+//         "course.price",
+//         "course.imageUrl",
+//         "course.discountPrice",
+//       ])
+//       .addSelect([
+//         "enrollments.quizId",
+//         "quiz.examTitle",
+//         "quiz.examPrice",
+//         "quiz.itemType",
+//       ])
+//       .addSelect(["coupon.id", "coupon.code", "coupon.discountPercentage"]) // Update property names
+//       .where("order.id = :orderId", { orderId })
+//       .getOne();
+
+//     if (!order) {
+//       return res.status(404).json({ error: "سفارش پیدا نشد" });
+//     }
+
+//     res.status(200).json({ order });
+//   } catch (error) {
+//     console.error(`getOrderById error: ${error}`);
+//     res.status(500).json({ error: "Internal server error on getOrderById" });
+//   }
+// }
+
 async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
@@ -611,6 +665,7 @@ async function getOrderById(req, res) {
       .leftJoin("order.user", "user")
       .leftJoin("order.enrollments", "enrollments")
       .leftJoinAndSelect("enrollments.course", "course")
+      .leftJoin("order.coupons", "coupon")
       .leftJoin("enrollments.quiz", "quiz")
       .select(["order"])
       .addSelect(["user.firstName", "user.lastName"])
@@ -618,8 +673,8 @@ async function getOrderById(req, res) {
         "enrollments.courseId",
         "course.title",
         "course.price",
-        "course.imageUrl",
         "course.discountPrice",
+        "course.imageUrl",
       ])
       .addSelect([
         "enrollments.quizId",
@@ -627,11 +682,50 @@ async function getOrderById(req, res) {
         "quiz.examPrice",
         "quiz.itemType",
       ])
+      .addSelect(["coupon.id", "coupon.code", "coupon.discountPercentage"])
       .where("order.id = :orderId", { orderId })
       .getOne();
 
     if (!order) {
       return res.status(404).json({ error: "سفارش پیدا نشد" });
+    }
+
+    // Process enrollments to calculate both itemPrice and discountItemPrice
+    if (order.enrollments && order.enrollments.length > 0) {
+      order.enrollments.forEach((enrollment) => {
+        if (enrollment.course) {
+          enrollment.course.itemPrice =
+            enrollment.course.discountPrice || enrollment.course.price;
+          enrollment.course.discountItemPrice = order.coupons
+            ?.discountPercentage
+            ? applyDiscount(
+                enrollment.course.itemPrice,
+                order.coupons.discountPercentage
+              )
+            : null;
+        }
+        if (enrollment.quiz) {
+          enrollment.quiz.itemPrice = enrollment.quiz.examPrice;
+          enrollment.quiz.discountItemPrice = order.coupons?.discountPercentage
+            ? applyDiscount(
+                enrollment.quiz.itemPrice,
+                order.coupons.discountPercentage
+              )
+            : null;
+        }
+      });
+    }
+
+    // Remove unnecessary properties
+    if (order.enrollments) {
+      order.enrollments = order.enrollments.map((enrollment) => {
+        return {
+          courseId: enrollment.courseId,
+          quizId: enrollment.quizId,
+          course: enrollment.course,
+          quiz: enrollment.quiz,
+        };
+      });
     }
 
     res.status(200).json({ order });
@@ -641,6 +735,117 @@ async function getOrderById(req, res) {
   }
 }
 
+function applyDiscount(originalPrice, discountPercentage) {
+  const discountAmount = (originalPrice * discountPercentage) / 100;
+  const discountedPrice = originalPrice - discountAmount;
+  return discountedPrice;
+}
+
+async function updateOrderById(req, res) {
+  try {
+    const orderId = req.params.id;
+    const orderRepository = getRepository(Order);
+
+    const orderToUpdate = await orderRepository.findOneBy({ id: orderId });
+
+    if (!orderToUpdate) {
+      return res.status(404).json({ error: "سفارش پیدا نشد" });
+    }
+
+    if (req.body.originalTotalPrice !== undefined) {
+      orderToUpdate.originalTotalPrice = req.body.originalTotalPrice;
+    }
+    if (req.body.orderStatus !== undefined) {
+      orderToUpdate.orderStatus = req.body.orderStatus;
+    }
+    if (req.body.discountTotalPrice !== undefined) {
+      orderToUpdate.discountTotalPrice = req.body.discountTotalPrice;
+    }
+
+    if (req.body.coupons !== undefined) {
+      orderToUpdate.coupons = req.body.coupons;
+    }
+
+    const updatedOrder = await orderRepository.save(orderToUpdate);
+
+    res
+      .status(200)
+      .json({ message: "سفارش با موفقیت به‌روزرسانی شد", order: updatedOrder });
+  } catch (error) {
+    console.error(`updateOrderById error: ${error}`);
+    res.status(500).json({ error: "Internal server error on updateOrderById" });
+  }
+}
+
+// async function getAllSuccessOrdersByCourseId(req, res) {
+//   try {
+//     const { courseId } = req.params;
+//     const { sortBy = "orderDate", sortOrder = "DESC" } = req.query;
+//     const orderRepository = getRepository(Order);
+
+//     const queryBuilder = orderRepository
+//       .createQueryBuilder("order")
+//       .leftJoin("order.user", "user")
+//       .leftJoin("order.enrollments", "enrollments")
+//       .leftJoin("enrollments.course", "course")
+//       .select([
+//         "order.id",
+//         "order.orderStatus",
+//         "order.orderDate",
+//         "order.originalTotalPrice",
+//         "order.discountTotalPrice",
+//       ])
+//       .addSelect(["user.id", "user.firstName", "user.lastName"])
+//       .orderBy(`order.${sortBy}`, sortOrder)
+//       .where("order.orderStatus = :orderStatus", {
+//         orderStatus: "success",
+//       })
+//       .andWhere("course.id = :courseId", { courseId: parseInt(courseId) });
+
+//     const successOrders = await queryBuilder.getMany();
+//     const totalCount = successOrders.length;
+
+//     res.status(200).json({
+//       successOrders,
+//       totalCount,
+//     });
+//   } catch (error) {
+//     console.error(`getAllSuccessOrdersByCourseId error: ${error}`);
+//     res.status(500).json({
+//       error: "Internal server error on getAllSuccessOrdersByCourseId",
+//     });
+//   }
+// }
+async function getAllSuccessOrdersByCourseId(req, res) {
+  try {
+    const courseId = req.params.courseId;
+    const orderRepository = getRepository(Order);
+
+    const salesReport = await orderRepository
+    .createQueryBuilder("order")
+    .leftJoin("order.enrollments", "enrollments")
+    .leftJoin("enrollments.course", "course")
+    .select([
+      "order.orderDate",
+      "order.orderStatus",
+      "COUNT(order.id) as numberOfOrders",
+      "SUM(enrollments.quantity * COALESCE(course.discountItemPrice, course.price)) as totalSales",
+    ])
+    .addSelect(["course.id as courseId", "course.title", "course.price", "course.discountPrice"])
+    .where("course.id = :courseId", { courseId })
+    .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
+    .groupBy("order.orderDate, order.orderStatus, course.id, course.title, course.price, course.discountPrice")
+    .orderBy("order.orderDate", "ASC")
+    .getRawMany();
+  
+    res.status(200).json({ salesReport });
+  } catch (error) {
+    console.error(`getAllSuccessOrdersByCourseId error: ${error}`);
+    res.status(500).json({
+      error: "Internal server error on getAllSuccessOrdersByCourseId",
+    });
+  }
+}
 module.exports = {
   checkOutCart,
   createPayment,
@@ -648,4 +853,6 @@ module.exports = {
   getAllOrders,
   getOrderById,
   createOrder,
+  getAllSuccessOrdersByCourseId,
+  updateOrderById,
 };

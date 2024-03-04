@@ -157,6 +157,13 @@ async function applyCoupon(req, res) {
         .json({ error: "کد تخفیف وجود ندارد", status: 404 });
     }
 
+    const currentDate = new Date();
+    if (appliedCoupon.expireTime && appliedCoupon.expireTime < currentDate) {
+      return res
+        .status(400)
+        .json({ error: "کد تخفیف منقضی شده است", status: 400 });
+    }
+
     const orderRepository = getRepository(Order);
     const existingOrder = await orderRepository.findOneBy({ id: orderId });
 

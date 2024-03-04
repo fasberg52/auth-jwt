@@ -168,7 +168,12 @@ router.get(
   //  checkRole("admin"),
   orderController.getOrderById
 );
-
+router.patch(
+  "/order/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.updateOrderById
+);
 //Coupon Code Admin
 
 router.post(
@@ -235,6 +240,13 @@ router.get(
   jwtAuthMiddleware,
   checkRole("admin"),
   getAllOnlineClasses
+);
+
+router.get(
+  "/report/course/:courseId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getAllSuccessOrdersByCourseId
 );
 
 module.exports = router;
