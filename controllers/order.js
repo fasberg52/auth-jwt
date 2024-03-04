@@ -854,6 +854,40 @@ async function getAllSuccessOrdersByCourseId(req, res) {
     });
   }
 }
+async function getSalesByDatePeriod(req, res) {
+  try {
+    const { startDate, endDate } = req.query;
+    const orderRepository = getRepository(Order);
+
+    const queryBuilder = orderRepository
+      .createQueryBuilder("order")
+      .select([
+        "DATE(order.orderDate) as orderDate",
+        "COUNT(order.id) as totalCount",
+      ])
+      .where("order.orderStatus = :orderStatus", { orderStatus: "success" });
+
+    // Apply date range filter if startDate and endDate are provided
+    if (startDate && endDate) {
+      queryBuilder.andWhere("order.orderDate BETWEEN :startDate AND :endDate", {
+        startDate,
+        endDate,
+      });
+    }
+
+    const salesByDate = await queryBuilder
+      .groupBy("DATE(order.orderDate)")
+      .orderBy("orderDate", "ASC")
+      .getRawMany();
+
+    res.status(200).json({ salesByDate });
+  } catch (error) {
+    console.error(`getSalesByDatePeriod error: ${error}`);
+    res.status(500).json({
+      error: "Internal server error on getSalesByDatePeriod",
+    });
+  }
+}
 
 
 module.exports = {
@@ -865,4 +899,5 @@ module.exports = {
   createOrder,
   getAllSuccessOrdersByCourseId,
   updateOrderById,
+  getSalesByDatePeriod
 };
