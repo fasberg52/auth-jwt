@@ -613,48 +613,6 @@ async function getAllOrders(req, res) {
   }
 }
 
-// async function getOrderById(req, res) {
-//   try {
-//     const orderId = req.params.id;
-//     const orderRepository = getRepository(Order);
-
-//     const order = await orderRepository
-//       .createQueryBuilder("order")
-//       .leftJoin("order.user", "user")
-//       .leftJoin("order.enrollments", "enrollments")
-//       .leftJoinAndSelect("enrollments.course", "course")
-//       .leftJoin("order.coupons", "coupon")
-//       .leftJoin("enrollments.quiz", "quiz")
-//       .select(["order"])
-//       .addSelect(["user.firstName", "user.lastName"])
-//       .addSelect([
-//         "enrollments.courseId",
-//         "course.title",
-//         "course.price",
-//         "course.imageUrl",
-//         "course.discountPrice",
-//       ])
-//       .addSelect([
-//         "enrollments.quizId",
-//         "quiz.examTitle",
-//         "quiz.examPrice",
-//         "quiz.itemType",
-//       ])
-//       .addSelect(["coupon.id", "coupon.code", "coupon.discountPercentage"]) // Update property names
-//       .where("order.id = :orderId", { orderId })
-//       .getOne();
-
-//     if (!order) {
-//       return res.status(404).json({ error: "سفارش پیدا نشد" });
-//     }
-
-//     res.status(200).json({ order });
-//   } catch (error) {
-//     console.error(`getOrderById error: ${error}`);
-//     res.status(500).json({ error: "Internal server error on getOrderById" });
-//   }
-// }
-
 async function getOrderById(req, res) {
   try {
     const orderId = req.params.id;
@@ -749,7 +707,7 @@ async function updateOrderById(req, res) {
     const orderToUpdate = await orderRepository.findOneBy({ id: orderId });
 
     if (!orderToUpdate) {
-      return res.status(404).json({ error: "سفارش پیدا نشد" });
+      return res.status(404).json({ error: "سفارش پیدا نشد", status: 404 });
     }
 
     if (req.body.originalTotalPrice !== undefined) {
@@ -768,9 +726,11 @@ async function updateOrderById(req, res) {
 
     const updatedOrder = await orderRepository.save(orderToUpdate);
 
-    res
-      .status(200)
-      .json({ message: "سفارش با موفقیت به‌روزرسانی شد", order: updatedOrder });
+    res.status(200).json({
+      message: "سفارش با موفقیت به‌روزرسانی شد",
+      order: updatedOrder,
+      status: 200,
+    });
   } catch (error) {
     console.error(`updateOrderById error: ${error}`);
     res.status(500).json({ error: "Internal server error on updateOrderById" });
@@ -819,26 +779,74 @@ async function updateOrderById(req, res) {
 async function getAllSuccessOrdersByCourseId(req, res) {
   try {
     const courseId = req.params.courseId;
+    const { startDate, endDate } = req.query; 
     const orderRepository = getRepository(Order);
 
-    const salesReport = await orderRepository
-    .createQueryBuilder("order")
-    .leftJoin("order.enrollments", "enrollments")
-    .leftJoin("enrollments.course", "course")
-    .select([
-      "order.orderDate",
-      "order.orderStatus",
-      "COUNT(order.id) as numberOfOrders",
-      "SUM(enrollments.quantity * COALESCE(course.discountItemPrice, course.price)) as totalSales",
-    ])
-    .addSelect(["course.id as courseId", "course.title", "course.price", "course.discountPrice"])
-    .where("course.id = :courseId", { courseId })
-    .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
-    .groupBy("order.orderDate, order.orderStatus, course.id, course.title, course.price, course.discountPrice")
-    .orderBy("order.orderDate", "ASC")
-    .getRawMany();
-  
-    res.status(200).json({ salesReport });
+    const queryBuilder = orderRepository
+      .createQueryBuilder("order")
+      .leftJoin("order.enrollments", "enrollments")
+      .leftJoinAndSelect("enrollments.course", "course")
+      .leftJoinAndSelect("enrollments.quiz", "quiz")
+      .leftJoin("order.coupons", "coupon")
+      .select(["order"])
+      .addSelect([
+        "enrollments.courseId",
+        "course.title",
+        "course.price",
+        "course.discountPrice",
+        "course.imageUrl",
+      ])
+      .addSelect([
+        "enrollments.quizId",
+        "quiz.examTitle",
+        "quiz.examPrice",
+        "quiz.itemType",
+      ])
+      .addSelect(["coupon.id", "coupon.code", "coupon.discountPercentage"])
+      .where("course.id = :courseId", { courseId })
+      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" });
+
+    // Apply date range filter if startDate and endDate are provided
+    if (startDate && endDate) {
+      queryBuilder.andWhere("order.orderDate BETWEEN :startDate AND :endDate", {
+        startDate,
+        endDate,
+      });
+    }
+
+    const orders = await queryBuilder.orderBy("order.orderDate", "ASC").getMany();
+
+    let totalCount = 0;
+
+    orders.forEach((order) => {
+      totalCount += order.numberoforders || 0;
+      if (order.enrollments && order.enrollments.length > 0) {
+        order.enrollments.forEach((enrollment) => {
+          if (enrollment.course) {
+            enrollment.course.itemPrice =
+              enrollment.course.discountPrice || enrollment.course.price;
+            enrollment.course.discountItemPrice = order.coupons
+              ?.discountPercentage
+              ? applyDiscount(
+                  enrollment.course.itemPrice,
+                  order.coupons.discountPercentage
+                )
+              : null;
+          }
+          if (enrollment.quiz) {
+            enrollment.quiz.itemPrice = enrollment.quiz.examPrice;
+            enrollment.quiz.discountItemPrice = order.coupons?.discountPercentage
+              ? applyDiscount(
+                  enrollment.quiz.itemPrice,
+                  order.coupons.discountPercentage
+                )
+              : null;
+          }
+        });
+      }
+    });
+
+    res.status(200).json({ orders, totalCount });
   } catch (error) {
     console.error(`getAllSuccessOrdersByCourseId error: ${error}`);
     res.status(500).json({
@@ -846,6 +854,8 @@ async function getAllSuccessOrdersByCourseId(req, res) {
     });
   }
 }
+
+
 module.exports = {
   checkOutCart,
   createPayment,
