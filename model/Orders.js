@@ -32,13 +32,13 @@ const Order = new EntitySchema({
 
     paymentType: {
       type: "enum",
-      enum: ["online", "cbc", "manual"], //zarinpal, cart by cart, manual
+      enum: ["online", "offline"],
       nullable: true,
       default: "online",
     },
     gatewayPay: {
       type: "enum",
-      enum: ["zarinpal", "payping"],
+      enum: ["zarinpal", "payping", "cbc"], //zarinpal, payping, cart by cart,
       default: "zarinpal",
       nullable: true,
     },
@@ -52,6 +52,10 @@ const Order = new EntitySchema({
     },
     couponId: {
       type: "int",
+      nullable: true,
+    },
+    cardPen: {
+      type: "varchar",
       nullable: true,
     },
   },

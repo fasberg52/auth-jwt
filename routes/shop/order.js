@@ -16,6 +16,14 @@ router.post(
 );
 router.get("/payment-verify", orderController.verifyPayment);
 
+router.post(
+  "/order/cbc",
+  jwtAuthMiddleware,
+  orderController.pendingCartToCartPayment
+);
+
+
+
 module.exports = router;
 
 /**

@@ -6,6 +6,7 @@ const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
 const Quiz = require("../model/quiz");
 const axios = require("axios");
+const logger = require("../services/logger");
 const { convertToJalaliDate } = require("../services/jalaliService");
 
 async function checkOutCart(req, res) {
@@ -323,7 +324,7 @@ async function createEnrollment(
         userPhone: userPhone,
         orderId: orderId,
       });
-
+      console.log("Creating enrollment:", newEnrollment);
       return enrollmentRepository.save(newEnrollment);
     }
   } else if (cartItem.itemType === "azmoon" && cartItem.quizId) {
@@ -432,6 +433,7 @@ async function verifyPayment(req, res) {
 
       if (code == 100) {
         const refID = response.data.data.ref_id;
+        const cardPen = response.data.data.card_pen;
 
         const orderRepository = getManager().getRepository(Order);
         const phone = req.query.Phone || "UNKNOWN";
@@ -451,6 +453,7 @@ async function verifyPayment(req, res) {
         existingOrder.totalPrice = amountInTomans;
         existingOrder.orderStatus = "success";
         existingOrder.refId = refID;
+        existingOrder.cardPen = cardPen;
         const updateOrder = await orderRepository.save(existingOrder);
 
         return res.render("payment", {
@@ -779,7 +782,7 @@ async function updateOrderById(req, res) {
 async function getAllSuccessOrdersByCourseId(req, res) {
   try {
     const courseId = req.params.courseId;
-    const { startDate, endDate } = req.query; 
+    const { startDate, endDate } = req.query;
     const orderRepository = getRepository(Order);
 
     const queryBuilder = orderRepository
@@ -814,7 +817,9 @@ async function getAllSuccessOrdersByCourseId(req, res) {
       });
     }
 
-    const orders = await queryBuilder.orderBy("order.orderDate", "ASC").getMany();
+    const orders = await queryBuilder
+      .orderBy("order.orderDate", "ASC")
+      .getMany();
 
     let totalCount = 0;
 
@@ -835,7 +840,8 @@ async function getAllSuccessOrdersByCourseId(req, res) {
           }
           if (enrollment.quiz) {
             enrollment.quiz.itemPrice = enrollment.quiz.examPrice;
-            enrollment.quiz.discountItemPrice = order.coupons?.discountPercentage
+            enrollment.quiz.discountItemPrice = order.coupons
+              ?.discountPercentage
               ? applyDiscount(
                   enrollment.quiz.itemPrice,
                   order.coupons.discountPercentage
@@ -854,41 +860,151 @@ async function getAllSuccessOrdersByCourseId(req, res) {
     });
   }
 }
-async function getSalesByDatePeriod(req, res) {
+async function getSalesByDateAndCourse(req, res) {
   try {
-    const { startDate, endDate } = req.query;
+    const { courseId, startDate, endDate } = req.query;
     const orderRepository = getRepository(Order);
 
     const queryBuilder = orderRepository
       .createQueryBuilder("order")
+      .leftJoin("order.enrollments", "enrollments")
+      .leftJoinAndSelect("enrollments.course", "course")
       .select([
         "DATE(order.orderDate) as orderDate",
         "COUNT(order.id) as totalCount",
       ])
-      .where("order.orderStatus = :orderStatus", { orderStatus: "success" });
+      .where("course.id = :courseId", { courseId })
+      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" });
 
-    // Apply date range filter if startDate and endDate are provided
     if (startDate && endDate) {
-      queryBuilder.andWhere("order.orderDate BETWEEN :startDate AND :endDate", {
-        startDate,
-        endDate,
-      });
+      queryBuilder.andWhere(
+        "DATE(order.orderDate) BETWEEN :startDate AND :endDate",
+        {
+          startDate,
+          endDate,
+        }
+      );
     }
 
-    const salesByDate = await queryBuilder
+    const salesByDateAndCourse = await queryBuilder
       .groupBy("DATE(order.orderDate)")
       .orderBy("orderDate", "ASC")
       .getRawMany();
 
-    res.status(200).json({ salesByDate });
+    res.status(200).json({ salesByDateAndCourse });
   } catch (error) {
-    console.error(`getSalesByDatePeriod error: ${error}`);
+    console.error(`getSalesByDateAndCourse error: ${error}`);
     res.status(500).json({
-      error: "Internal server error on getSalesByDatePeriod",
+      error: "Internal server error on getSalesByDateAndCourse",
     });
   }
 }
 
+async function pendingCartToCartPayment(req, res) {
+  try {
+    const { orderId, cardPen, refId } = req.body;
+    const userCart = req.session.cart;
+    const cartItems = userCart.items;
+    const orderRepository = getRepository(Order);
+
+    const existingOrder = await orderRepository.findOne({
+      where: { id: orderId },
+      relations: ["enrollments"],
+    });
+
+    if (!existingOrder) {
+      return res
+        .status(404)
+        .json({ error: "این سفارش وجود ندارد", status: 404 });
+    }
+
+    if (existingOrder.orderStatus !== "preInvoice") {
+      return res
+        .status(400)
+        .json({
+          error: "وضعیت سفارش مشخص نیست",
+          status: 400,
+        });
+    }
+
+    existingOrder.orderStatus = "pending";
+    existingOrder.gatewayPay = "cbc";
+    existingOrder.paymentType = "offline";
+    existingOrder.cardPen = cardPen;
+    existingOrder.refId = refId;
+    const savedOrder = await orderRepository.save(existingOrder);
+
+    const enrollments = [];
+
+    for (const cartItem of cartItems) {
+      const enrollment = await createEnrollment(
+        cartItem,
+        cartItem.quantity,
+        existingOrder.userPhone,
+        existingOrder.id,
+        getManager()
+      );
+
+      if (enrollment) {
+        enrollments.push(enrollment);
+      }
+    }
+
+    const sumPrice =
+      existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
+    const updatedTotalPriceInRials = sumPrice * 10;
+
+    return res.status(200).json({
+      savedOrder,
+      updatedTotalPrice: updatedTotalPriceInRials,
+      enrollments,
+      status: 200,
+    });
+  } catch (error) {
+    console.error(`error in pendingCartToCartPayment : ${error}`);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function acceptedCartToCartPayment(req, res) {
+  try {
+    const { orderId } = req.body;
+    const orderRepository = getRepository(Order);
+    const exitingOrder = await orderRepository.findOneBy({
+      id: orderId,
+    });
+
+    if (!exitingOrder) {
+      res.status(404).json({ error: "این سفارش وجود ندارد", status: 404 });
+    }
+    exitingOrder.orderStatus = "success";
+    const saveOrder = await orderRepository.save(exitingOrder);
+    res.status(200).json({ saveOrder, status: 200 });
+  } catch (error) {
+    logger.error(`error in acceptedCartToCartPayment : ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function cancellCartToCartPayment(req, res) {
+  try {
+    const { orderId } = req.body;
+    const orderRepository = getRepository(Order);
+    const exitingOrder = await orderRepository.findOneBy({
+      id: orderId,
+    });
+
+    if (!exitingOrder) {
+      res.status(404).json({ error: "این سفارش وجود ندارد", status: 404 });
+    }
+    exitingOrder.orderStatus = "cancelled";
+    const saveOrder = await orderRepository.save(exitingOrder);
+    res.status(200).json({ saveOrder, status: 200 });
+  } catch (error) {
+    logger.error(`error in acceptedCartToCartPayment : ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 module.exports = {
   checkOutCart,
@@ -899,5 +1015,8 @@ module.exports = {
   createOrder,
   getAllSuccessOrdersByCourseId,
   updateOrderById,
-  getSalesByDatePeriod
+  getSalesByDateAndCourse,
+  pendingCartToCartPayment,
+  acceptedCartToCartPayment,
+  cancellCartToCartPayment,
 };

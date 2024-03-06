@@ -174,6 +174,20 @@ router.patch(
   checkRole("admin"),
   orderController.updateOrderById
 );
+router.post(
+  "/order/acceptedcart",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+
+  orderController.acceptedCartToCartPayment
+);
+router.post(
+  "/order/cancellcart",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+
+  orderController.cancellCartToCartPayment
+);
 //Coupon Code Admin
 
 router.post(
@@ -247,6 +261,12 @@ router.get(
   jwtAuthMiddleware,
   checkRole("admin"),
   orderController.getAllSuccessOrdersByCourseId
+);
+router.get(
+  "/report/course",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getSalesByDateAndCourse
 );
 
 module.exports = router;

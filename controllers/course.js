@@ -13,7 +13,25 @@ const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
+    const isFetchAll = req.query.all === "true";
 
+    if (isFetchAll) {
+      const courses = await courseRepository
+        .createQueryBuilder("course")
+        .leftJoinAndSelect("course.category", "category")
+        .leftJoin("course.filters", "filter")
+        .select([
+          "course.id",
+          "course.title",  
+        ])
+        .getMany();
+
+      return res.json({
+        courses,
+        totalCount: courses.length,
+        totalPages: 1,
+      });
+    }
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const sortBy = req.query.sortBy || "id";
