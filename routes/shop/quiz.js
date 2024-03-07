@@ -18,6 +18,7 @@ const {
   deleteExamCode,
   updateExamCode,
   getAllExamCodes,
+  getEnrolledQuizzesForUser,
 } = require("../../controllers/quiz");
 const router = express.Router();
 
@@ -36,13 +37,13 @@ router.post("/examCode", jwtAuthMiddleware, checkRole("admin"), createExamCode);
 router.get(
   "/examCodes",
   jwtAuthMiddleware,
- 
+
   getAllExamCodes
 );
 router.get(
   "/examCode/:examCodeId",
   jwtAuthMiddleware,
-  
+
   getExamCodeById
 );
 router.put(
@@ -58,4 +59,5 @@ router.delete(
   deleteExamCode
 );
 
+router.get("/my-exams", jwtAuthMiddleware, getEnrolledQuizzesForUser);
 module.exports = router;

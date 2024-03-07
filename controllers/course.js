@@ -2,11 +2,9 @@
 const Courses = require("../model/Course");
 const Filter = require("../model/Filter");
 
-const { getManager, Brackets, getRepository } = require("typeorm");
-const { convertToJalaliDate } = require("../services/jalaliService");
+const { getManager, getRepository } = require("typeorm");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
-const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 //const cacheService = require("../services/cacheService");
 
@@ -312,17 +310,10 @@ async function getCourseUserWithToken(req, res) {
     }
 
 
-    const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
-      ...course,
-      discountStart: convertToJalaliDate(course.discountStart),
-      discountExpiration: convertToJalaliDate(course.discountExpiration),
-      createdAt: convertToJalaliDate(course.createdAt),
-      lastModified: convertToJalaliDate(course.lastModified),
-      orderDate: convertToJalaliDate(course.orderDate),
-    }));
+    
 
     res.status(200).json({
-      enrolledCourses: jalaliEnrolledCourses,
+      enrolledCourses: enrolledCourses,
       totalCount,
       status: 200,
     });

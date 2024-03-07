@@ -134,7 +134,7 @@ async function editDataUser(req, res) {
 
 async function logoutPanel(req, res) {
   try {
-    const phone = req.user.phone;
+    const phone = req.params.phone;
 
     const otpRepository = getManager().getRepository(OTP);
     const existingOTP = await otpRepository.findOne({

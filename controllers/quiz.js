@@ -214,6 +214,45 @@ async function deleteExamCode(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
+
+const getEnrolledQuizzesForUser = async (req, res) => {
+  try {
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getManager().getRepository("Enrollment");
+    const quizRepository = getManager().getRepository("Quiz");
+
+    const enrolledQuizzesQuery = enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .leftJoinAndSelect("enrollment.quiz", "quiz") 
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select([
+        "quiz.id as id",
+        "quiz.examTitle as examTitle",
+        "quiz.examPrice as examPrice",
+        "quiz.start as start",
+        "quiz.end as end",
+        "quiz.expireTime as expireTime",
+        "quiz.itemType as itemType",
+      ]);
+
+    const enrolledQuizzes = await enrolledQuizzesQuery.getRawMany();
+
+    res.status(200).json({
+      enrolledQuizzes: enrolledQuizzes,
+      status: 200,
+    });
+  } catch (error) {
+    console.error(`Error in getEnrolledQuizzesForUser: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getAllExamCodes,
   updateExamCode,
@@ -229,4 +268,5 @@ module.exports = {
   answersheets,
   exams,
   exam,
+  getEnrolledQuizzesForUser
 };

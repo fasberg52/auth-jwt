@@ -35,6 +35,8 @@ const Subscribe = new EntitySchema({
         name: "userPhone",
         referencedColumnName: "phone",
       },
+      cascade: true,
+      onDelete: "CASCADE",
     },
   },
 });

@@ -23,7 +23,7 @@ const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
 
-async function setupDatabase() {
+async function setupDatabase() {   
   try {
     await createConnection({
       type: "postgres",

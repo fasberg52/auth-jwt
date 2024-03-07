@@ -919,12 +919,10 @@ async function pendingCartToCartPayment(req, res) {
     }
 
     if (existingOrder.orderStatus !== "preInvoice") {
-      return res
-        .status(400)
-        .json({
-          error: "وضعیت سفارش مشخص نیست",
-          status: 400,
-        });
+      return res.status(400).json({
+        error: "وضعیت سفارش مشخص نیست",
+        status: 400,
+      });
     }
 
     existingOrder.orderStatus = "pending";
@@ -953,6 +951,7 @@ async function pendingCartToCartPayment(req, res) {
     const sumPrice =
       existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
     const updatedTotalPriceInRials = sumPrice * 10;
+    await clearUserCart(req);
 
     return res.status(200).json({
       savedOrder,
@@ -1017,6 +1016,6 @@ module.exports = {
   updateOrderById,
   getSalesByDateAndCourse,
   pendingCartToCartPayment,
-  acceptedCartToCartPayment,
+  acceptedCartToCartPayment, 
   cancellCartToCartPayment,
 };

@@ -27,7 +27,7 @@ const router = express.Router();
 router.get("/profile", jwtAuthMiddleware, getUserDataWithToken);
 router.get("/orders", jwtAuthMiddleware, getAllOrderUser);
 router.put("/profile", jwtAuthMiddleware, editDataUser);
-router.post("/logout", jwtAuthMiddleware, logoutPanel);
+router.delete("/logout/:phone", jwtAuthMiddleware, logoutPanel);
 router.post(
   "/upload-profile",
   jwtAuthMiddleware,
