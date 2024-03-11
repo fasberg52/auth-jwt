@@ -18,10 +18,7 @@ async function getAllCourse(req, res) {
         .createQueryBuilder("course")
         .leftJoinAndSelect("course.category", "category")
         .leftJoin("course.filters", "filter")
-        .select([
-          "course.id",
-          "course.title",  
-        ])
+        .select(["course.id", "course.title"])
         .getMany();
 
       return res.json({
@@ -256,15 +253,13 @@ async function getCourseById(req, res) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
     });
-    
+
     res.status(500).json({ error });
   }
 }
 
 async function getCourseUserWithToken(req, res) {
   try {
-  
-
     const userPhone = req.user.phone;
 
     const enrollmentRepository = getManager().getRepository(Enrollment);
@@ -274,8 +269,6 @@ async function getCourseUserWithToken(req, res) {
 
     const skip = (page - 1) * pageSize;
     const take = pageSize;
-
-    
 
     const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
@@ -300,7 +293,6 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany();
-    
 
     const onlyCount = req.query.onlyCount === "true";
     if (onlyCount) {
@@ -309,16 +301,12 @@ async function getCourseUserWithToken(req, res) {
       return;
     }
 
-
-    
-
     res.status(200).json({
       enrolledCourses: enrolledCourses,
       totalCount,
       status: 200,
     });
   } catch (error) {
-    
     logger.error(`Error in getCourseUserWithToken: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }

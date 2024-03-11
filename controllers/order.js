@@ -96,117 +96,6 @@ async function createOrder(userPhone, originalTotalPrice) {
   return await orderRepository.save(newOrder);
 }
 
-// async function createPayment(req, res) {
-//   const userPhone = req.user.phone;
-//   let savedOrder;
-
-//   console.log("response received");
-//   try {
-//     await getManager().transaction(async (transactionalEntityManager) => {
-//       const userCart = req.session.cart;
-//       if (!userCart) {
-//         return res.status(404).json({ error: "Cart not found for the user" });
-//       }
-//       const orderRepository = getRepository(Order);
-//       const existingOrder = await orderRepository.findOne({
-//         where: { userPhone: userPhone, orderStatus: "preInvoice" },
-//         order: {
-//           orderDate: "DESC",
-//         },
-//       });
-
-//       if (!existingOrder) {
-//         return res
-//           .status(404)
-//           .json({ error: "Order not found with 'preInvoice' status" });
-//       }
-
-//       existingOrder.orderStatus = "pending";
-
-//       savedOrder = await orderRepository.save(existingOrder);
-
-//       const originalTotalPrice = existingOrder.originalTotalPrice;
-
-//       const cartItems = userCart.items;
-//       console.log(`cartItems >>>>> ${JSON.stringify(cartItems)}`);
-
-//       const enrollments = [];
-
-//       for (const cartItem of cartItems) {
-//         if (cartItem.courseId) {
-//           try {
-//             const courseId = cartItem.courseId;
-//             const course = await transactionalEntityManager.findOne(Courses, {
-//               where: { id: courseId },
-//             });
-
-//             if (course) {
-//               await createEnrollment(
-//                 course,
-//                 cartItem.quantity,
-//                 userPhone,
-//                 savedOrder.id,
-//                 transactionalEntityManager
-//               );
-
-//               enrollments.push({
-//                 courseId: course.id,
-//                 quantity: cartItem.quantity,
-//                 price: course.price,
-//                 discountPrice: course.discountPrice,
-//               });
-//             }
-//           } catch (error) {
-//             console.error("Error processing cart item:", error);
-//           }
-//         }
-//       }
-//       const sumPrice =
-//         existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
-//       const updatedTotalPriceInRials = sumPrice * 10;
-
-//       const callbackUrl = buildCallbackUrl(
-//         updatedTotalPriceInRials,
-//         userPhone,
-//         savedOrder.id
-//       );
-//       const requestData = buildRequestData(
-//         process.env.MERCHANT_ID,
-//         updatedTotalPriceInRials,
-//         callbackUrl,
-//         userPhone
-//       );
-
-//       const response = await sendPaymentRequest(
-//         process.env.ZARINPAL_LINK_REQUEST,
-//         requestData
-//       );
-
-//       const code = response.data.data.code;
-
-//       if (code === 100) {
-//         const paymentUrl = buildPaymentUrl(response.data.data.authority);
-
-//         return res.json({
-//           paymentUrl,
-//           updatedTotalPrice: updatedTotalPriceInRials,
-//           sessionId: req.sessionID,
-//           savedOrder,
-//           orderId: savedOrder.id,
-//           enrollments,
-//         });
-//       } else {
-//         return res
-//           .status(400)
-//           .json({ error: "درخواست پرداخت با خطا مواجه شد" });
-//       }
-//     });
-//   } catch (error) {
-//     console.error(`createPayment error: ${error}`);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// }
-
 async function createPayment(req, res) {
   const userPhone = req.user.phone;
   let savedOrder;
@@ -259,42 +148,57 @@ async function createPayment(req, res) {
 
       const sumPrice =
         existingOrder.originalTotalPrice - existingOrder.discountTotalPrice;
-      const updatedTotalPriceInRials = sumPrice * 10;
 
-      const callbackUrl = buildCallbackUrl(
-        updatedTotalPriceInRials,
-        userPhone,
-        savedOrder.id
-      );
-      const requestData = buildRequestData(
-        process.env.MERCHANT_ID,
-        updatedTotalPriceInRials,
-        callbackUrl,
-        userPhone
-      );
+      // Check if the sumPrice is greater than 0 before initiating the payment
+      if (sumPrice > 0) {
+        const updatedTotalPriceInRials = sumPrice * 10;
 
-      const response = await sendPaymentRequest(
-        process.env.ZARINPAL_LINK_REQUEST,
-        requestData
-      );
+        const callbackUrl = buildCallbackUrl(
+          updatedTotalPriceInRials,
+          userPhone,
+          savedOrder.id
+        );
+        const requestData = buildRequestData(
+          process.env.MERCHANT_ID,
+          updatedTotalPriceInRials,
+          callbackUrl,
+          userPhone
+        );
 
-      const code = response.data.data.code;
+        const response = await sendPaymentRequest(
+          process.env.ZARINPAL_LINK_REQUEST,
+          requestData
+        );
 
-      if (code === 100) {
-        const paymentUrl = buildPaymentUrl(response.data.data.authority);
+        const code = response.data.data.code;
 
+        if (code === 100) {
+          const paymentUrl = buildPaymentUrl(response.data.data.authority);
+
+          return res.json({
+            paymentUrl,
+            updatedTotalPrice: updatedTotalPriceInRials,
+            sessionId: req.sessionID,
+            savedOrder,
+            orderId: savedOrder.id,
+            enrollments,
+          });
+        } else {
+          return res
+            .status(400)
+            .json({ error: "درخواست پرداخت با خطا مواجه شد" });
+        }
+      } else {
+        existingOrder.orderStatus = "success";
+        const paymentUrl = process.env.FINANCE_URL;
+        savedOrder = await orderRepository.save(existingOrder);
         return res.json({
-          paymentUrl,
-          updatedTotalPrice: updatedTotalPriceInRials,
-          sessionId: req.sessionID,
+          message: "کد تخفیف 100 درصدی اعمال شد",
           savedOrder,
           orderId: savedOrder.id,
           enrollments,
+          paymentUrl,
         });
-      } else {
-        return res
-          .status(400)
-          .json({ error: "درخواست پرداخت با خطا مواجه شد" });
       }
     });
   } catch (error) {
@@ -1016,6 +920,6 @@ module.exports = {
   updateOrderById,
   getSalesByDateAndCourse,
   pendingCartToCartPayment,
-  acceptedCartToCartPayment, 
+  acceptedCartToCartPayment,
   cancellCartToCartPayment,
 };

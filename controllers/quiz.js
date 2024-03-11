@@ -3,6 +3,8 @@ const Quiz = require("../model/quiz");
 const { getRepository } = require("typeorm");
 const { quiz24Url } = require("../utils/axiosBaseUrl");
 const { getRounds } = require("bcryptjs");
+const Enrollment = require("../model/Enrollment");
+
 async function registerUser(req, res) {
   try {
     const userId = process.env.ADMIN_QUEZ24;
@@ -133,15 +135,44 @@ async function createExamCode(req, res) {
 
 async function getAllExamCodes(req, res) {
   try {
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getRepository(Enrollment);
+
+    const isEnrolled = await enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .innerJoin("enrollment.quiz", "quiz")
+      .innerJoin("enrollment.order", "o")
+      .innerJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .getCount();
+
     const examCodeRepository = getRepository(Quiz);
     const examCodes = await examCodeRepository.find();
 
-    res.status(200).json({ examCodes: examCodes, status: 200 });
+    if (!isEnrolled) {
+      res.json({ access: false, examCodes: examCodes, status: 200 });
+    } else {
+      res.json({ access: true, examCodes: examCodes, status: 200 });
+    }
   } catch (error) {
     logger.error(`Error in getAllExamCodes ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+// async function getAllExamCodes(req, res) {
+//   try {
+//     const examCodeRepository = getRepository(Quiz);
+//     const examCodes = await examCodeRepository.find();
+
+//     res.status(200).json({ examCodes: examCodes, status: 200 });
+//   } catch (error) {
+//     logger.error(`Error in getAllExamCodes ${error}`);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
 
 async function getExamCodeById(req, res) {
   try {
@@ -215,24 +246,22 @@ async function deleteExamCode(req, res) {
   }
 }
 
-
-
 const getEnrolledQuizzesForUser = async (req, res) => {
   try {
     const userPhone = req.user.phone;
 
-    const enrollmentRepository = getManager().getRepository("Enrollment");
-    const quizRepository = getManager().getRepository("Quiz");
+    const enrollmentRepository = getRepository(Enrollment);
 
     const enrolledQuizzesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
-      .leftJoinAndSelect("enrollment.quiz", "quiz") 
+      .leftJoinAndSelect("enrollment.quiz", "quiz")
       .leftJoin("enrollment.order", "o")
       .leftJoin("o.user", "user")
       .where("user.phone = :phone", { phone: userPhone })
       .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .select([
         "quiz.id as id",
+        "quiz.examCode as examCode",
         "quiz.examTitle as examTitle",
         "quiz.examPrice as examPrice",
         "quiz.start as start",
@@ -268,5 +297,5 @@ module.exports = {
   answersheets,
   exams,
   exam,
-  getEnrolledQuizzesForUser
+  getEnrolledQuizzesForUser,
 };
