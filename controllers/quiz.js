@@ -187,7 +187,7 @@ async function updateExamCode(req, res) {
     existingExamCode.start = start;
     existingExamCode.end = end;
     existingExamCode.expireTime = expireTime;
-    exitingCode.examType = examType;
+    existingExamCode.examType = examType;
     await examCodeRepository.save(existingExamCode);
 
     res

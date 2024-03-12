@@ -823,3 +823,9 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T09:07:42.368Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
 2024-03-12T09:08:11.514Z error: Error in getAllExamCodes ReferenceError: Cannot access 'isEnrolled' before initialization 
 2024-03-12T09:08:42.520Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T12:08:34.528Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:09:00.244Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:26:23.956Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:29:23.338Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 

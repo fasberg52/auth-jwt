@@ -6310,3 +6310,19 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T09:08:11.531Z info: GET  500 33 - 44.28ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-12T09:08:42.520Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
 2024-03-12T09:08:42.529Z info: GET  500 33 - 36.45ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:00:08.192Z info: POST  200 87 - 28.92ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:00:16.789Z info: POST  200 433 - 122.91ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:06:13.106Z info: GET  404 162 - 3.46ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:06:31.876Z info: GET  404 162 - 3.16ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:07:24.904Z info: GET  404 162 - 0.75ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:08:34.528Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:09:00.244Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:09:00.253Z info: GET  500 33 - 19.45ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:26:23.956Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:26:23.964Z info: GET  500 33 - 24.68ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:29:23.338Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:29:23.346Z info: GET  500 33 - 26.20ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:31:28.225Z info: GET  500 33 - 23.77ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
+2024-03-12T12:37:40.365Z info: GET  500 33 - 57.52ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

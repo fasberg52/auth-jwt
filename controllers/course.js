@@ -311,23 +311,25 @@ async function getCourseUserWithToken(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-async function getPartsCourseUserWithToken(req, res) {
+async function getPartsByCourseIdUserWithToken(req, res) {
   try {
     const userPhone = req.user.phone;
+    const courseId = req.params.courseId;
 
     const enrollmentRepository = getManager().getRepository(Enrollment);
 
     const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
       .leftJoin("enrollment.course", "course")
+      .leftJoin("course.parts", "part")  // Use "parts" instead of "part"
       .leftJoin("enrollment.order", "o")
       .leftJoin("o.user", "user")
-      .leftJoin("course.part", "part")
       .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("course.id = :courseId", { courseId })
       .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
       .select(["course.id as id", "course.title as title"])
       .addSelect(["o.orderDate as orderDate"])
-      .addSelect(["part.id as partId", "part.name as name"]);
+      .addSelect(["part.id as partId", "part.title as title"]);
 
     const totalCount = await enrolledCoursesQuery.getCount();
     const enrolledCourses = await enrolledCoursesQuery.getMany();
@@ -338,13 +340,15 @@ async function getPartsCourseUserWithToken(req, res) {
     });
   } catch (error) {
     logger.error(`Error in getPartsCourseUserWithToken: ${error}`);
-    res.status.json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
 module.exports = {
   getAllCourse,
   getCourseById,
   getCourseUserWithToken,
-  getPartsCourseUserWithToken,
+  getPartsByCourseIdUserWithToken,
   getAllCourseForOnline,
 };
