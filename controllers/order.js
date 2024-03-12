@@ -190,8 +190,10 @@ async function createPayment(req, res) {
         }
       } else {
         existingOrder.orderStatus = "success";
-        const paymentUrl = process.env.FINANCE_URL;
+
         savedOrder = await orderRepository.save(existingOrder);
+        await clearUserCart(req);
+        const paymentUrl = process.env.FINANCE_URL;
         return res.json({
           message: "کد تخفیف 100 درصدی اعمال شد",
           savedOrder,

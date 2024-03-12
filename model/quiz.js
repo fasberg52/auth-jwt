@@ -37,6 +37,11 @@ const Quiz = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    examType: {
+      type: "enum",
+      enum: ["test", "explain"],
+      nullable: true,
+    },
     itemType: {
       type: "enum",
       enum: Object.values(AzmoonType),

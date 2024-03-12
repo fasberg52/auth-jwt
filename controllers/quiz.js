@@ -109,7 +109,8 @@ async function exam(req, res) {
 }
 async function createExamCode(req, res) {
   try {
-    const { examCode, examTitle, examPrice, start, end, expireTime } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime, examType } =
+      req.body;
     const quizRepository = getRepository(Quiz);
     const exitingCode = await quizRepository.findOne({
       where: { examCode: examCode },
@@ -124,6 +125,7 @@ async function createExamCode(req, res) {
       start: start,
       end: end,
       expireTime: expireTime,
+      examType: examType,
     });
     await quizRepository.save(newExamCode);
     res.status(201).json({ message: "با موفقیت ساخته شد", status: 201 });
@@ -135,44 +137,15 @@ async function createExamCode(req, res) {
 
 async function getAllExamCodes(req, res) {
   try {
-    const userPhone = req.user.phone;
-
-    const enrollmentRepository = getRepository(Enrollment);
-
-    const isEnrolled = await enrollmentRepository
-      .createQueryBuilder("enrollment")
-      .innerJoin("enrollment.quiz", "quiz")
-      .innerJoin("enrollment.order", "o")
-      .innerJoin("o.user", "user")
-      .where("user.phone = :phone", { phone: userPhone })
-      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
-      .getCount();
-
     const examCodeRepository = getRepository(Quiz);
     const examCodes = await examCodeRepository.find();
 
-    if (!isEnrolled) {
-      res.json({ access: false, examCodes: examCodes, status: 200 });
-    } else {
-      res.json({ access: true, examCodes: examCodes, status: 200 });
-    }
+    res.status(200).json({ examCodes: examCodes, status: 200 });
   } catch (error) {
     logger.error(`Error in getAllExamCodes ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-// async function getAllExamCodes(req, res) {
-//   try {
-//     const examCodeRepository = getRepository(Quiz);
-//     const examCodes = await examCodeRepository.find();
-
-//     res.status(200).json({ examCodes: examCodes, status: 200 });
-//   } catch (error) {
-//     logger.error(`Error in getAllExamCodes ${error}`);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// }
 
 async function getExamCodeById(req, res) {
   try {
@@ -196,7 +169,8 @@ async function getExamCodeById(req, res) {
 async function updateExamCode(req, res) {
   try {
     const examCodeId = req.params.examCodeId;
-    const { examCode, examTitle, examPrice, start, end, expireTime } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime, examType } =
+      req.body;
     const examCodeRepository = getRepository(Quiz);
 
     const existingExamCode = await examCodeRepository.findOne({
@@ -213,6 +187,7 @@ async function updateExamCode(req, res) {
     existingExamCode.start = start;
     existingExamCode.end = end;
     existingExamCode.expireTime = expireTime;
+    exitingCode.examType = examType;
     await examCodeRepository.save(existingExamCode);
 
     res

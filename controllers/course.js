@@ -311,9 +311,40 @@ async function getCourseUserWithToken(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async function getPartsCourseUserWithToken(req, res) {
+  try {
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+
+    const enrolledCoursesQuery = enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .leftJoin("enrollment.course", "course")
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
+      .leftJoin("course.part", "part")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select(["course.id as id", "course.title as title"])
+      .addSelect(["o.orderDate as orderDate"])
+      .addSelect(["part.id as partId", "part.name as name"]);
+
+    const totalCount = await enrolledCoursesQuery.getCount();
+    const enrolledCourses = await enrolledCoursesQuery.getMany();
+    res.status(200).json({
+      enrolledCourses: enrolledCourses,
+      totalCount,
+      status: 200,
+    });
+  } catch (error) {
+    logger.error(`Error in getPartsCourseUserWithToken: ${error}`);
+    res.status.json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   getAllCourse,
   getCourseById,
   getCourseUserWithToken,
+  getPartsCourseUserWithToken,
   getAllCourseForOnline,
 };

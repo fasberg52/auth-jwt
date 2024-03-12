@@ -819,3 +819,7 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-11T07:07:37.812Z error: Error in getCourseUserWithToken: ReferenceError: id is not defined 
 2024-03-11T07:08:30.382Z error: Error in getCourseUserWithToken: ReferenceError: courseId is not defined 
 2024-03-11T07:28:30.851Z error: Error in getAllExamCodes ReferenceError: getManager is not defined 
+2024-03-12T09:05:29.324Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:07:42.368Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:08:11.514Z error: Error in getAllExamCodes ReferenceError: Cannot access 'isEnrolled' before initialization 
+2024-03-12T09:08:42.520Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
