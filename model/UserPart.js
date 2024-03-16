@@ -4,8 +4,8 @@ const UserPart = new EntitySchema({
   name: "UserPart",
   tableName: "user_parts",
   columns: {
-    userId: {
-      type: "int",
+    phone: {
+      type: "text",
       primary: true,
     },
     partId: {
@@ -30,7 +30,7 @@ const UserPart = new EntitySchema({
     user: {
       type: "many-to-one",
       target: "User",
-      joinColumn: { name: "userId", referencedColumnName: "id" },
+      joinColumn: { name: "phone", referencedColumnName: "phone" },
     },
     part: {
       type: "many-to-one",
