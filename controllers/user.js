@@ -254,7 +254,7 @@ async function readPartsUserId(req, res) {
 
     await userPartStatusRepository.save(userPartStatus);
 
-    res.status(200).json({ message: "خوانده شد" });
+    res.status(200).json({ message: "خوانده شد", status: 200 });
   } catch (error) {
     console.error("Error in updating read status:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -273,9 +273,9 @@ async function unReadPartsUserId(req, res) {
     if (userPartStatus) {
       userPartStatus.isRead = false;
       await userPartStatusRepository.save(userPartStatus);
-      res.status(200).json({ message: "!خوانده نشد" });
+      res.status(200).json({ message: "!خوانده نشد", status: 200 });
     } else {
-      res.status(404).json({ error: "وضعیت پیدا نشد" });
+      res.status(404).json({ error: "وضعیت پیدا نشد", status: 404 });
     }
   } catch (error) {
     console.error("Error in marking part as unread:", error);
@@ -308,9 +308,7 @@ async function updateTeachingMethodRating(req, res) {
       await userPartRepository.save(userPart);
     });
 
-    res
-      .status(200)
-      .json({ message: "ممنون از رای شما" });
+    res.status(200).json({ message: "ممنون از رای شما", status: 200 });
   } catch (error) {
     console.error("Error updating teaching method rating:", error);
     res.status(500).json({ error: "Internal Server Error" });
