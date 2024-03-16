@@ -16,15 +16,6 @@ const UserPart = new EntitySchema({
       type: "boolean",
       default: false,
     },
-    createdAt: {
-      type: "timestamp",
-      createDate: true,
-    },
-    updatedAt: {
-      type: "timestamp",
-      onUpdate: "CURRENT_TIMESTAMP",
-      nullable: true,
-    },
   },
   relations: {
     user: {

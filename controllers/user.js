@@ -16,8 +16,8 @@ async function getUserDataWithToken(req, res) {
   try {
     const phone = req.user.phone;
 
-    const userRepository = getManager().getRepository(User);
-    const subscribeRepository = getManager().getRepository(Subscribe);
+    const userRepository = getRepository(User);
+    const subscribeRepository = getRepository(Subscribe);
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
@@ -61,7 +61,7 @@ async function getUserDataWithToken(req, res) {
 
 async function getAllOrderUser(req, res) {
   try {
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
 
     const phone = req.user.phone;
 
@@ -99,7 +99,7 @@ async function editDataUser(req, res) {
     }
 
     const phone = decodedToken.phone;
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({
       where: { phone },
     });
@@ -137,7 +137,7 @@ async function logoutPanel(req, res) {
   try {
     const phone = req.params.phone;
 
-    const otpRepository = getManager().getRepository(OTP);
+    const otpRepository = getRepository(OTP);
     const existingOTP = await otpRepository.findOne({
       where: { phone: phone },
     });
@@ -179,7 +179,7 @@ async function createProfilePictureUpload(req, res) {
 
     const phone = decodedToken.phone;
 
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
 
     const user = await userRepository.findOne({ where: { phone: phone } });
 
@@ -198,7 +198,7 @@ async function createProfilePictureUpload(req, res) {
       subdirectory,
       originalFilename
     );
-    const uploadRepository = getManager().getRepository(Upload);
+    const uploadRepository = getRepository(Upload);
 
     const newUpload = uploadRepository.create({
       path: req.uploadFilename,
@@ -233,21 +233,23 @@ async function createProfilePictureUpload(req, res) {
 
 async function readPartsUserId(req, res) {
   try {
-    const { userId, partId, isRead } = req.body;
+    const { phone, partId, isRead } = req.body;
 
     const userPartStatusRepository = getRepository(UserPartStatus);
-    let userPartStatus = await userPartStatusRepository.findOne({
-      userId,
-      partId,
+    let userPartStatus = await userPartStatusRepository.findOneBy({
+      phone: phone,
+      partId: partId,
     });
 
     if (!userPartStatus) {
-      userPartStatus = new UserPartStatus();
-      userPartStatus.userId = userId;
-      userPartStatus.partId = partId;
+      userPartStatus = userPartStatusRepository.create({
+        phone,
+        partId,
+        isRead,
+      });
+    } else {
+      userPartStatus.isRead = isRead;
     }
-
-    userPartStatus.isRead = isRead;
 
     await userPartStatusRepository.save(userPartStatus);
 
@@ -260,11 +262,11 @@ async function readPartsUserId(req, res) {
 
 async function unReadPartsUserId(req, res) {
   try {
-    const { userId, partId } = req.body;
+    const { phone, partId } = req.body;
 
     const userPartStatusRepository = getRepository(UserPartStatus);
     let userPartStatus = await userPartStatusRepository.findOne({
-      where: { userId, partId },
+      where: { phone, partId },
     });
 
     if (userPartStatus) {
