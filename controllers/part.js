@@ -6,7 +6,6 @@ const Chapter = require("../model/Chapter");
 const logger = require("../services/logger");
 const { getVideoDurationFromApi } = require("../services/video.api");
 
-
 async function createPart(req, res) {
   try {
     const {
@@ -55,7 +54,6 @@ async function createPart(req, res) {
     });
 
     const orderIndex = partCount + 1;
-    
 
     const newPart = partRepository.create({
       courseId,
@@ -248,7 +246,7 @@ async function gatAllPartwithCourseId(req, res) {
 
     const result = await partRepository.find({
       where: { courseId },
-      select: ["videoDuration"],
+      select: ["title", "id"],
     });
 
     if (result.length === 0) {

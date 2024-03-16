@@ -6329,3 +6329,9 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T12:38:16.311Z info: GET  200 50 - 39.41ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-12T12:38:20.789Z info: GET  200 50 - 9.01ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-12T12:38:24.046Z info: GET  200 50 - 8.66ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:05:16.671Z info: POST  200 87 - 22.64ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:05:26.454Z info: POST  200 433 - 130.25ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:05:39.999Z info: Video durations retrieved for course ID 
+2024-03-16T06:05:40.002Z info: GET  200 1653 - 68.07ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:05:56.715Z info: Video durations retrieved for course ID 
+2024-03-16T06:05:56.724Z info: GET  200 1949 - 35.45ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
