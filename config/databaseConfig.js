@@ -17,13 +17,15 @@ const Coupon = require("../model/Coupon");
 const Filter = require("../model/Filter");
 const OnlineClass = require("../model/onlineCourse");
 const Subscribe = require("../model/Subscribe");
+const UserPart = require("../model/UserPart");
+
 const Quiz = require("../model/quiz");
 
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
 
-async function setupDatabase() {   
+async function setupDatabase() {
   try {
     await createConnection({
       type: "postgres",
@@ -53,6 +55,7 @@ async function setupDatabase() {
         OnlineClass,
         Subscribe,
         Quiz,
+        UserPart,
       ],
       synchronize: true,
     });

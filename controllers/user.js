@@ -6,7 +6,7 @@ const OTP = require("../model/OTP");
 const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
 const path = require("path");
-const { getManager } = require("typeorm");
+const { getRepository } = require("typeorm");
 const logger = require("../services/logger");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");

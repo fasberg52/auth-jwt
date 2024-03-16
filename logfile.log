@@ -6571,3 +6571,16 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T06:49:34.170Z info: GET  200 undefined - 33.31ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-16T06:49:34.216Z info: Video durations retrieved for course ID 
 2024-03-16T06:49:34.217Z info: GET  304 undefined - 8.21ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:54:35.291Z info: POST  500 33 - 74.61ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:54:57.355Z info: POST  500 33 - 28.52ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:55:05.240Z info: Video durations retrieved for course ID 
+2024-03-16T06:55:05.243Z info: GET  304 undefined - 13.37ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:55:05.409Z info: Video durations retrieved for course ID 
+2024-03-16T06:55:05.413Z info: GET  200 undefined - 9.25ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:55:39.610Z info: POST  500 33 - 29.79ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:55:50.932Z info: Video durations retrieved for course ID 
+2024-03-16T06:55:50.937Z info: GET  200 undefined - 85.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:55:51.229Z info: Video durations retrieved for course ID 
+2024-03-16T06:55:51.231Z info: GET  304 undefined - 7.17ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:55:51.359Z info: Video durations retrieved for course ID 
+2024-03-16T06:55:51.361Z info: GET  200 undefined - 5.64ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
