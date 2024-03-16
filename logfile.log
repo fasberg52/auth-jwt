@@ -6341,3 +6341,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T06:15:53.692Z info: GET  200 12 - 103.67ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 
 2024-03-16T06:16:00.569Z info: GET  500 33 - 10.37ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:16:25.568Z info: GET  200 520 - 34.15ms insomnia/2023.5.8 Windows_NT - win32 x64  ::1 
