@@ -270,7 +270,7 @@ async function unReadPartsUserId(req, res) {
     if (userPartStatus) {
       userPartStatus.isRead = false;
       await userPartStatusRepository.save(userPartStatus);
-      res.status(200).json({ message: "خوانده نشد" });
+      res.status(200).json({ message: "!خوانده نشد" });
     } else {
       res.status(404).json({ error: "وضعیت پیدا نشد" });
     }
