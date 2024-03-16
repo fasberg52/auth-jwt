@@ -6326,3 +6326,6 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T12:31:28.225Z info: GET  500 33 - 23.77ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
 2024-03-12T12:37:40.365Z info: GET  500 33 - 57.52ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:38:16.311Z info: GET  200 50 - 39.41ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:38:20.789Z info: GET  200 50 - 9.01ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-12T12:38:24.046Z info: GET  200 50 - 8.66ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
