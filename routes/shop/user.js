@@ -6,6 +6,9 @@ const {
   editDataUser,
   logoutPanel,
   createProfilePictureUpload,
+  readPartsUserId,
+  unReadPartsUserId,
+  updateTeachingMethodRating,
 } = require("../../controllers/user");
 
 const { validSubscribe } = require("../../middleware/ajvMiddlerware");
@@ -20,10 +23,7 @@ const {
   subscribeUser,
   sendNotif,
 } = require("../../controllers/subscribe");
-const {
-  readPartsUserId,
-  unReadPartsUserId,
-} = require("../../controllers/user");
+
 const { sendNotification } = require("web-push");
 //const { sendNotif } = require("../../utils/push");
 const router = express.Router();
@@ -50,5 +50,5 @@ router.get("/send-notification", sendNotif);
 
 router.post("/read/part", jwtAuthMiddleware, readPartsUserId);
 router.post("/unread/part", jwtAuthMiddleware, unReadPartsUserId);
-
+router.post("/rating-teching", jwtAuthMiddleware, updateTeachingMethodRating);
 module.exports = router;

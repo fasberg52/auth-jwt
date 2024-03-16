@@ -23,8 +23,6 @@ const UserPart = new EntitySchema({
     teachingRating: {
       type: "int",
       nullable: true,
-      min: 1,
-      max: 5,
     },
   },
   relations: {

@@ -7343,3 +7343,20 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T09:19:24.648Z info: GET  200 227 - 140.70ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-16T09:19:24.678Z info: GET  200 125 - 14.40ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-16T09:19:24.764Z info: GET  200 125 - 6.50ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.372Z info: POST  200 211 - 15.84ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.381Z info: POST  200 211 - 4.46ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.508Z info: GET  200 227 - 98.15ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.511Z info: GET  200 227 - 91.36ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.513Z info: GET  200 undefined - 129.65ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.534Z info: GET  200 undefined - 118.52ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.806Z info: GET  200 125 - 37.18ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:24:31.809Z info: GET  200 125 - 28.92ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T09:26:23.278Z info: POST  404 155 - 6.06ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:27:12.629Z info: POST  200 57 - 38.01ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:27:57.099Z info: POST  200 31 - 119.70ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:28:05.563Z info: POST  200 57 - 9.44ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:28:22.169Z info: POST  500 33 - 60.32ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:30:16.909Z info: POST  500 33 - 74.93ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:30:18.255Z info: POST  500 33 - 6.84ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:31:02.394Z info: POST  200 57 - 34.73ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T09:33:06.816Z info: POST  200 43 - 31.68ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

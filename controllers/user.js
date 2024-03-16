@@ -6,7 +6,7 @@ const OTP = require("../model/OTP");
 const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
 const path = require("path");
-const { getRepository } = require("typeorm");
+const { getManager, getRepository } = require("typeorm");
 const logger = require("../services/logger");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
@@ -284,15 +284,15 @@ async function unReadPartsUserId(req, res) {
 }
 
 async function updateTeachingMethodRating(req, res) {
-  const { phone, partId, courseId, teachingMethodRating } = req.body;
+  const { phone, partId, courseId, teachingRating } = req.body;
   const entityManager = getManager();
 
   try {
     await entityManager.transaction(async (transactionalEntityManager) => {
-      const userPartRepository = transactionalEntityManager.getRepository(UserPartStatus);
+      const userPartRepository =
+        transactionalEntityManager.getRepository(UserPartStatus);
 
-    
-      let userPart = await userPartRepository.findOne({
+      const userPart = await userPartRepository.findOne({
         where: { phone, partId, courseId },
       });
 
@@ -303,19 +303,19 @@ async function updateTeachingMethodRating(req, res) {
         userPart.courseId = courseId;
       }
 
-      userPart.teachingMethodRating = teachingMethodRating;
+      userPart.teachingRating = teachingRating;
 
- 
       await userPartRepository.save(userPart);
     });
 
-    res.status(200).json({ message: "Teaching method rating updated successfully" });
+    res
+      .status(200)
+      .json({ message: "ممنون از رای شما" });
   } catch (error) {
     console.error("Error updating teaching method rating:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
 
 module.exports = {
   getUserDataWithToken,
@@ -325,5 +325,5 @@ module.exports = {
   createProfilePictureUpload,
   readPartsUserId,
   unReadPartsUserId,
-  updateTeachingMethodRating
+  updateTeachingMethodRating,
 };
