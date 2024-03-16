@@ -1,4 +1,5 @@
 const User = require("../model/users");
+const UserPartStatus = require("../model/UserPart");
 const Upload = require("../model/Upload");
 const Subscribe = require("../model/Subscribe");
 const OTP = require("../model/OTP");
@@ -30,7 +31,7 @@ async function getUserDataWithToken(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        skuTest:existingUser.skuTest,
+        skuTest: existingUser.skuTest,
         createdAt: new Date(existingUser.createdAt).getTime(),
         updatedAt: existingUser.updatedAt
           ? new Date(existingUser.updatedAt).getTime()
@@ -230,8 +231,53 @@ async function createProfilePictureUpload(req, res) {
   }
 }
 
-async function readPartsUserId(req,res){
-  
+async function readPartsUserId(req, res) {
+  try {
+    const { userId, partId, isRead } = req.body;
+
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    let userPartStatus = await userPartStatusRepository.findOne({
+      userId,
+      partId,
+    });
+
+    if (!userPartStatus) {
+      userPartStatus = new UserPartStatus();
+      userPartStatus.userId = userId;
+      userPartStatus.partId = partId;
+    }
+
+    userPartStatus.isRead = isRead;
+
+    await userPartStatusRepository.save(userPartStatus);
+
+    res.status(200).json({ message: "خوانده شد" });
+  } catch (error) {
+    console.error("Error in updating read status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function unReadPartsUserId(req, res) {
+  try {
+    const { userId, partId } = req.body;
+
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    let userPartStatus = await userPartStatusRepository.findOne({
+      where: { userId, partId },
+    });
+
+    if (userPartStatus) {
+      userPartStatus.isRead = false;
+      await userPartStatusRepository.save(userPartStatus);
+      res.status(200).json({ message: "خوانده نشد" });
+    } else {
+      res.status(404).json({ error: "وضعیت پیدا نشد" });
+    }
+  } catch (error) {
+    console.error("Error in marking part as unread:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 
 module.exports = {
@@ -240,4 +286,6 @@ module.exports = {
   editDataUser,
   logoutPanel,
   createProfilePictureUpload,
+  readPartsUserId,
+  unReadPartsUserId,
 };
