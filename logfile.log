@@ -6513,3 +6513,61 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T06:47:21.241Z info: GET  304 undefined - 19.67ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
 2024-03-16T06:47:21.243Z info: GET  404 159 - 4.55ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
 2024-03-16T06:47:21.257Z info: GET  304 undefined - 9.67ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:47:43.167Z warn: No parts found for the specified course ID 
+2024-03-16T06:47:43.210Z info: GET  200 58 - 175.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:47:43.255Z info: GET  404 54 - 204.59ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:47:43.289Z info: GET  304 undefined - 40.72ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:47:43.296Z warn: No parts found for the specified course ID 
+2024-03-16T06:47:43.299Z info: GET  200 11 - 243.94ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:47:43.302Z info: GET  404 54 - 24.95ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:47:43.306Z info: GET  304 undefined - 37.97ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:47:43.308Z info: GET  304 undefined - 22.38ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:47:43.319Z info: GET  200 65 - 273.32ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:48:46.286Z info: GET  200 65 - 109.48ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:48:46.304Z info: Video durations retrieved for course ID 
+2024-03-16T06:48:46.311Z info: GET  200 undefined - 123.43ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:48:46.331Z info: Video durations retrieved for course ID 
+2024-03-16T06:48:46.333Z info: GET  200 undefined - 137.45ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:48:46.365Z info: GET  200 65 - 172.03ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:48:46.409Z info: GET  304 undefined - 11.26ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:48:46.421Z info: Video durations retrieved for course ID 
+2024-03-16T06:48:46.425Z info: GET  200 undefined - 9.32ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:48:46.443Z info: GET  304 undefined - 9.72ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:48:46.456Z info: Video durations retrieved for course ID 
+2024-03-16T06:48:46.458Z info: GET  304 undefined - 7.10ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.183Z info: GET  200 72 - 10.90ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.210Z info: GET  200 227 - 20.43ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.247Z info: GET  200 65 - 20.24ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.283Z info: GET  200 58 - 83.49ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.299Z info: GET  200 11 - 11.65ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.327Z info: POST  200 211 - 4.15ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.353Z info: GET  304 undefined - 57.43ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.413Z info: POST  200 270 - 2.27ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.428Z info: GET  200 72 - 42.36ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.485Z info: GET  304 undefined - 95.97ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.486Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:02.517Z info: POST  200 270 - 4.70ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.521Z info: GET  200 undefined - 49.53ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.536Z info: POST  200 211 - 1.58ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.538Z info: GET  304 undefined - 295.26ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.543Z info: GET  200 58 - 104.16ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.557Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:02.561Z info: GET  200 11 - 72.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.564Z info: GET  304 undefined - 10.34ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.566Z info: GET  200 undefined - 335.82ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.572Z info: GET  304 undefined - 39.53ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.582Z info: GET  200 227 - 185.05ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.590Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:02.592Z info: GET  304 undefined - 188.27ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.593Z info: GET  304 undefined - 174.42ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.598Z info: GET  304 undefined - 198.94ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.600Z info: GET  304 undefined - 207.10ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.621Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:02.622Z info: GET  304 undefined - 16.74ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.629Z info: GET  200 65 - 162.92ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:02.632Z info: GET  304 undefined - 20.56ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:02.639Z info: GET  304 undefined - 22.28ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
+2024-03-16T06:49:34.161Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:34.170Z info: GET  200 undefined - 33.31ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-16T06:49:34.216Z info: Video durations retrieved for course ID 
+2024-03-16T06:49:34.217Z info: GET  304 undefined - 8.21ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.16 
