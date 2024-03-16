@@ -295,9 +295,19 @@ async function getCourseUserWithToken(req, res) {
       .getRawMany();
 
     const onlyCount = req.query.onlyCount === "true";
+    const onlyTitle = req.query.onlyTitle === "true";
     if (onlyCount) {
       const total = totalCount;
       res.status(200).json({ total });
+      return;
+    }
+    if (onlyTitle) {
+      const titles = await enrolledCoursesQuery
+        .select("course.title", "title")
+
+        .getRawMany();
+
+      res.status(200).json({ titles });
       return;
     }
 
@@ -311,44 +321,10 @@ async function getCourseUserWithToken(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-async function getPartsByCourseIdUserWithToken(req, res) {
-  try {
-    const userPhone = req.user.phone;
-    const courseId = req.params.courseId;
-
-    const enrollmentRepository = getManager().getRepository(Enrollment);
-
-    const enrolledCoursesQuery = enrollmentRepository
-      .createQueryBuilder("enrollment")
-      .leftJoin("enrollment.course", "course")
-      .leftJoin("course.parts", "part")  // Use "parts" instead of "part"
-      .leftJoin("enrollment.order", "o")
-      .leftJoin("o.user", "user")
-      .where("user.phone = :phone", { phone: userPhone })
-      .andWhere("course.id = :courseId", { courseId })
-      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
-      .select(["course.id as id", "course.title as title"])
-      .addSelect(["o.orderDate as orderDate"])
-      .addSelect(["part.id as partId", "part.title as title"]);
-
-    const totalCount = await enrolledCoursesQuery.getCount();
-    const enrolledCourses = await enrolledCoursesQuery.getMany();
-    res.status(200).json({
-      enrolledCourses: enrolledCourses,
-      totalCount,
-      status: 200,
-    });
-  } catch (error) {
-    logger.error(`Error in getPartsCourseUserWithToken: ${error}`);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-
 
 module.exports = {
   getAllCourse,
   getCourseById,
   getCourseUserWithToken,
-  getPartsByCourseIdUserWithToken,
   getAllCourseForOnline,
 };

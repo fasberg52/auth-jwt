@@ -23,11 +23,7 @@ router.get(
   courseController.getCourseUserWithToken
 );
 
-router.get(
-  "/my-courses/:courseId/parts",
-  jwtAuthMiddleware,
-  courseController.getPartsByCourseIdUserWithToken
-);
+
 
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 

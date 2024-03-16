@@ -829,3 +829,4 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T12:29:23.338Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
 2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
 2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
+2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 

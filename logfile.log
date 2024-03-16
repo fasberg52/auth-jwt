@@ -6335,3 +6335,9 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T06:05:40.002Z info: GET  200 1653 - 68.07ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-16T06:05:56.715Z info: Video durations retrieved for course ID 
 2024-03-16T06:05:56.724Z info: GET  200 1949 - 35.45ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:14:23.854Z info: GET  401 undefined - 9.17ms Insomnia/2023.5.7 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:15:13.371Z info: GET  200 4727 - 94.84ms Insomnia/2023.5.7 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:15:48.209Z info: GET  404 171 - 3.16ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:15:53.692Z info: GET  200 12 - 103.67ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 
+2024-03-16T06:16:00.569Z info: GET  500 33 - 10.37ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
