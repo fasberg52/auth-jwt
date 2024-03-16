@@ -7577,3 +7577,7 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-16T11:16:27.914Z info: GET  200 83 - 20.56ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-16T11:22:51.724Z info: GET  500 33 - 87.33ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-16T11:23:42.087Z info: GET  200 530 - 80.75ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T11:44:37.780Z info: GET  200 110 - 26.55ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T11:46:05.101Z info: GET  200 27 - 29.12ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T11:46:24.681Z info: GET  200 27 - 26.28ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-16T11:46:39.438Z info: GET  200 29 - 30.56ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

@@ -328,8 +328,8 @@ async function getReadPartId(req, res) {
     if (!userPartStatus) {
       res.status(404).json({ error: "شماره یا جلسه وجود ندارد" });
     }
-
-    res.status(200).json({ data: userPartStatus, status: 200 });
+    const isRead = userPartStatus.isRead;
+    res.status(200).json({ isRead, status: 200 });
   } catch (error) {
     console.error("Error getAllreadPartsUserId:", error);
     res.status(500).json({ error: "Internal Server Error" });
