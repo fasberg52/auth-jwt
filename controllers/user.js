@@ -230,6 +230,10 @@ async function createProfilePictureUpload(req, res) {
   }
 }
 
+async function readPartsUserId(req,res){
+  
+}
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,

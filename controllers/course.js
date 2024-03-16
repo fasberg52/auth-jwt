@@ -304,6 +304,7 @@ async function getCourseUserWithToken(req, res) {
     if (onlyTitle) {
       const titles = await enrolledCoursesQuery
         .select("course.title", "title")
+        .addSelect("course.id", "id")
 
         .getRawMany();
 
