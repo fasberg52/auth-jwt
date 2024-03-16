@@ -236,7 +236,7 @@ async function readPartsUserId(req, res) {
     const { phone, partId, isRead, courseId } = req.body;
 
     const userPartStatusRepository = getRepository(UserPartStatus);
-    let userPartStatus = await userPartStatusRepository.findOneBy({
+    const userPartStatus = await userPartStatusRepository.findOneBy({
       phone: phone,
       partId: partId,
     });
@@ -315,6 +315,27 @@ async function updateTeachingMethodRating(req, res) {
   }
 }
 
+async function getAllreadPartsUserId(req, res) {
+  try {
+    const phone = req.user.phone;
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    const userPartStatus = await userPartStatusRepository.findOneBy({
+      phone: phone,
+      partId: partId,
+    });
+
+    if (!userPartStatus) {
+      res.status(404).json({ error: "شماره یا جلسه وجود ندارد" });
+    }
+    const readParts = await userPartStatusRepository.find();
+
+    res.status(200).json({ data: readParts });
+  } catch (error) {
+    console.error("Error getAllreadPartsUserId:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
@@ -324,4 +345,5 @@ module.exports = {
   readPartsUserId,
   unReadPartsUserId,
   updateTeachingMethodRating,
+  getAllreadPartsUserId,
 };
