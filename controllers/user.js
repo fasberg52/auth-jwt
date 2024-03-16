@@ -233,7 +233,7 @@ async function createProfilePictureUpload(req, res) {
 
 async function readPartsUserId(req, res) {
   try {
-    const { phone, partId, isRead } = req.body;
+    const { phone, partId, isRead, courseId } = req.body;
 
     const userPartStatusRepository = getRepository(UserPartStatus);
     let userPartStatus = await userPartStatusRepository.findOneBy({
@@ -246,6 +246,7 @@ async function readPartsUserId(req, res) {
         phone,
         partId,
         isRead,
+        courseId,
       });
     } else {
       userPartStatus.isRead = isRead;
@@ -282,6 +283,40 @@ async function unReadPartsUserId(req, res) {
   }
 }
 
+async function updateTeachingMethodRating(req, res) {
+  const { phone, partId, courseId, teachingMethodRating } = req.body;
+  const entityManager = getManager();
+
+  try {
+    await entityManager.transaction(async (transactionalEntityManager) => {
+      const userPartRepository = transactionalEntityManager.getRepository(UserPartStatus);
+
+    
+      let userPart = await userPartRepository.findOne({
+        where: { phone, partId, courseId },
+      });
+
+      if (!userPart) {
+        userPart = new UserPartStatus();
+        userPart.phone = phone;
+        userPart.partId = partId;
+        userPart.courseId = courseId;
+      }
+
+      userPart.teachingMethodRating = teachingMethodRating;
+
+ 
+      await userPartRepository.save(userPart);
+    });
+
+    res.status(200).json({ message: "Teaching method rating updated successfully" });
+  } catch (error) {
+    console.error("Error updating teaching method rating:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
@@ -290,4 +325,5 @@ module.exports = {
   createProfilePictureUpload,
   readPartsUserId,
   unReadPartsUserId,
+  updateTeachingMethodRating
 };

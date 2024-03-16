@@ -830,3 +830,25 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
 2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
 2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 
+2024-03-16T07:38:39.639Z error: Error retrieving parts with read status: ReferenceError: In is not defined 
+2024-03-16T07:39:09.411Z error: Error retrieving parts with read status: EntityPropertyNotFoundError: Property "userPhone" was not found in "UserPart". Make sure your query is correct. 
+2024-03-16T07:50:05.861Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:03.734Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:25.050Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T07:57:38.719Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T08:02:50.703Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:52.232Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:53.322Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:54.893Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:56.562Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:58.220Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:59.632Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:01.478Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:02.660Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:36.450Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:37.254Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:38.272Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 

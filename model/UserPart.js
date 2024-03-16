@@ -12,9 +12,19 @@ const UserPart = new EntitySchema({
       type: "int",
       primary: true,
     },
+    courseId: {
+      type: "int",
+      nullable: true,
+    },
     isRead: {
       type: "boolean",
       default: false,
+    },
+    teachingRating: {
+      type: "int",
+      nullable: true,
+      min: 1,
+      max: 5,
     },
   },
   relations: {
@@ -27,6 +37,11 @@ const UserPart = new EntitySchema({
       type: "many-to-one",
       target: "Part",
       joinColumn: { name: "partId", referencedColumnName: "id" },
+    },
+    course: {
+      type: "many-to-one",
+      target: "Course",
+      joinColumn: { name: "courseId", referencedColumnName: "id" },
     },
   },
 });
