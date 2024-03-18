@@ -344,11 +344,13 @@ async function getReadPartId(req, res) {
 }
 async function countIsRead(req, res) {
   try {
-    const { courseId, phone } = req.params;
+    const { courseId } = req.params;
+    const phone = req.user;
     const parsedCourseId = parseInt(courseId);
     const userPartRepository = getRepository(UserPartStatus);
-    
-    const totalTrueResult = await userPartRepository.createQueryBuilder("UserPart")
+
+    const totalTrueResult = await userPartRepository
+      .createQueryBuilder("UserPart")
       .select("COUNT(UserPart.isRead)", "totalTrue")
       .where("UserPart.courseId = :courseId", { courseId: parsedCourseId })
       .andWhere("UserPart.phone = :phone", { phone: phone })
@@ -358,7 +360,7 @@ async function countIsRead(req, res) {
     if (!totalTrueResult || !totalTrueResult.totalTrue) {
       return res.status(404).json({ error: "No data found" });
     }
-    
+
     const totalTrue = parseInt(totalTrueResult.totalTrue);
 
     const totalParts = await userPartRepository.count({

@@ -10,6 +10,7 @@ const {
   unReadPartsUserId,
   updateTeachingMethodRating,
   getReadPartId,
+  countIsRead,
 } = require("../../controllers/user");
 
 const { validSubscribe } = require("../../middleware/ajvMiddlerware");
@@ -52,5 +53,14 @@ router.get("/send-notification", sendNotif);
 router.post("/read/part", jwtAuthMiddleware, readPartsUserId);
 router.post("/unread/part", jwtAuthMiddleware, unReadPartsUserId);
 router.post("/rating-teching", jwtAuthMiddleware, updateTeachingMethodRating);
-router.get("/read-part/course/:courseId/part/:partId", jwtAuthMiddleware, getReadPartId);
+router.get(
+  "/read-part/course/:courseId/part/:partId",
+  jwtAuthMiddleware,
+  getReadPartId
+);
+router.get(
+  "/read-parts/course/:courseId",
+  jwtAuthMiddleware,
+  countIsRead
+);
 module.exports = router;
