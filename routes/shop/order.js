@@ -6,13 +6,23 @@ const express = require("express");
 
 const router = express.Router();
 
+router.get("/checkout/:orderId", jwtAuthMiddleware, orderController.checkOutCart);
 router.get("/checkout", jwtAuthMiddleware, orderController.checkOutCart);
+
 router.post(
   "/payment-request",
   jwtAuthMiddleware,
   orderController.createPayment
 );
 router.get("/payment-verify", orderController.verifyPayment);
+
+router.post(
+  "/order/cbc",
+  jwtAuthMiddleware,
+  orderController.pendingCartToCartPayment
+);
+
+
 
 module.exports = router;
 

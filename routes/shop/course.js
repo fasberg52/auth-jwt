@@ -1,5 +1,5 @@
 const courseController = require("../../controllers/course");
-const filterController = require("../../controllers/filter")
+const filterController = require("../../controllers/filter");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const { validToken } = require("../../middleware/ajvMiddlerware");
 
@@ -9,16 +9,21 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/allcourses", jwtAuthMiddleware, courseController.getAllCourse);
-//router.get("/search/allcourses", jwtAuthMiddleware, courseController.searchGetAllCourse);
-router.get("/query", jwtAuthMiddleware, filterController.getAllFiltersWithQuery);
+router.get("/all", jwtAuthMiddleware, courseController.getAllCourseForOnline);
 
+router.get(
+  "/query",
+  jwtAuthMiddleware,
+  filterController.getAllFiltersForCourses
+);
 
-router.post(
+router.get(
   "/my-courses",
   jwtAuthMiddleware,
-  validToken,
   courseController.getCourseUserWithToken
 );
+
+
 
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 
@@ -33,8 +38,5 @@ router.get(
   jwtAuthMiddleware,
   enrollmentController.getVideoPathAfterEnroll
 );
-
-
-
 
 module.exports = router;

@@ -1,11 +1,11 @@
 // partController.js
-const { getManager } = require("typeorm");
+const { getManager, In } = require("typeorm");
+const UserPartStatus = require("../model/UserPart");
 const Part = require("../model/Part");
 const Chapter = require("../model/Chapter");
 // const SecureLink = require("../model/secureLink");
 const logger = require("../services/logger");
 const { getVideoDurationFromApi } = require("../services/video.api");
-
 
 async function createPart(req, res) {
   try {
@@ -55,8 +55,6 @@ async function createPart(req, res) {
     });
 
     const orderIndex = partCount + 1;
-    
-    console.log(`>> orderIndex ${orderIndex}`);
 
     const newPart = partRepository.create({
       courseId,
@@ -244,30 +242,41 @@ async function deletePart(req, res) {
 async function gatAllPartwithCourseId(req, res) {
   try {
     const { courseId } = req.params;
+    const phone = req.user.phone;
 
     const partRepository = getManager().getRepository(Part);
 
-    const result = await partRepository.find({
-      where: { courseId },
-      select: ["videoDuration"],
-    });
+    const partsWithStatusQuery = await partRepository
+      .createQueryBuilder("part")
+      .leftJoin("UserPart", "up", "up.partId = part.id AND up.phone = :phone", {
+        phone,
+      })
+      .where("part.courseId = :courseId", { courseId })
+      .select([
+        "part.id",
+        "part.title",
+        "COALESCE(up.isRead, false) AS isRead",
+      ]);
+    const [partsWithStatus, totalCount] = await Promise.all([
+      partsWithStatusQuery.getRawMany(),
+      partsWithStatusQuery.getCount(),
+    ]);
 
-    if (result.length === 0) {
-      logger.warn("No parts found for the specified course ID", { courseId });
-      return res.status(404).json({ error: "پارت یافت نشد برای دوره" });
-    }
-
-    logger.info("Video durations retrieved for course ID", {
+    logger.info("Part list retrieved with read status for user", {
+      phone,
       courseId,
-      result,
+      partsWithStatus,
     });
 
-    res.json({ result, status: 200 });
+    res.json({
+      result: partsWithStatus,
+      totalCount,
+      status: 200,
+    });
   } catch (error) {
-    logger.error(`Error retrieving video durations with course ID: ${error}`);
+    logger.error(`Error retrieving parts with read status: ${error}`);
     res.status(500).json({
-      error:
-        "An error occurred while retrieving video durations with course ID.",
+      error: "An error occurred while retrieving parts with read status.",
     });
   }
 }

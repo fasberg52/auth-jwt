@@ -1,5 +1,5 @@
 const Filter = require("../model/Filter");
-const Course = require("../model/Course")
+const Course = require("../model/Course");
 const { getRepository } = require("typeorm");
 const logger = require("../services/logger");
 async function createFilter(req, res) {
@@ -176,8 +176,7 @@ async function deleteFilter(req, res) {
   }
 }
 
-
-async function getAllFiltersWithQuery(req, res) {
+async function getAllFiltersForCourses(req, res) {
   try {
     const { searchQuery } = req.query;
 
@@ -185,65 +184,62 @@ async function getAllFiltersWithQuery(req, res) {
 
     const queryBuilder = courseRepository
       .createQueryBuilder("course")
-      .leftJoinAndSelect("course.filters", "filter") 
+      .leftJoinAndSelect("course.filters", "filter")
       .select([
         "course.id",
         "course.title",
-        "course.description",
+        "course.price",
+        "course.imageUrl",
+        "course.discountPrice",
+        "course.createdAt",
         "filter.id",
         "filter.name",
         "filter.slug",
       ]);
 
+    let filterIds; 
+
     if (searchQuery) {
-      queryBuilder.andWhere([
-        "(course.title LIKE :searchQuery OR filters.slug LIKE :searchQuery)",
-        { searchQuery: `%${searchQuery}%` },
-      ]);
+      filterIds = searchQuery.split(",").map(Number);
+
+      queryBuilder.andWhere(`filter.id IN (:...filterIds)`, { filterIds });
+    } else if (req.query.searchQuery === "") {
+      const courses = [];
+      return res.status(200).json(courses);
     }
-
-
-
- 
-
     const coursesWithFilters = await queryBuilder.getMany();
 
-    res.status(200).json({ courses: coursesWithFilters });
+    const formattedCourses = coursesWithFilters
+      .filter((course) => {
+        const courseFilterIds = course.filters.map((filter) => filter.id);
+        return filterIds
+          ? filterIds.every((id) => courseFilterIds.includes(id))
+          : true;
+      })
+      .map((course) => {
+        const filters = course.filters.map((filter) => filter.id);
+        return {
+          id: course.id,
+          title: course.title,
+          imageUrl: course.imageUrl,
+          price: course.price,
+          discountPrice: course.discountPrice,
+          createdAt: course.createdAt,
+          filters: filters,
+        };
+      });
+
+    res.status(200).json({ courses: formattedCourses });
   } catch (error) {
-    logger.error(`Error in getAllFiltersWithQuery >> ${error}`);
+    logger.error(`Error in getAllFiltersForCourses >> ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-// async function getAllFiltersWithQuery(req, res) {
-//   try {
-//     const { searchQuery } = req.query;
 
-//     const courseFilterRepository = getRepository(CourseFilter); // Replace with the actual model for course_filters
-
-//     const queryBuilder = courseFilterRepository
-//       .createQueryBuilder("course_filter")
-//       .select(["course_filter.id", "course_filter.name", "course_filter.slug"])
-//       .where("course_filter.parent IS NULL"); // Assuming you have a parent column for the hierarchy
-
-//     if (searchQuery) {
-//       queryBuilder.andWhere(
-//         "(course_filter.name LIKE :searchQuery OR course_filter.slug LIKE :searchQuery)",
-//         { searchQuery: `%${searchQuery}%` }
-//       );
-//     }
-
-//     const filtersWithQuery = await queryBuilder.getMany();
-
-//     res.status(200).json({ course_filters: filtersWithQuery });
-//   } catch (error) {
-//     logger.error(`Error in getAllFiltersWithQuery >> ${error}`);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// }
 module.exports = {
   createFilter,
   getAllFilters,
   editFilter,
   deleteFilter,
-  getAllFiltersWithQuery,
+  getAllFiltersForCourses,
 };

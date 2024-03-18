@@ -1,41 +1,29 @@
 const User = require("../model/users");
+const UserPartStatus = require("../model/UserPart");
 const Upload = require("../model/Upload");
-
+const Subscribe = require("../model/Subscribe");
 const OTP = require("../model/OTP");
+const Part = require("../model/Part");
 const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
 const path = require("path");
-const { getManager } = require("typeorm");
+const { getManager, getRepository } = require("typeorm");
 const logger = require("../services/logger");
 
 const { verifyAndDecodeToken } = require("../utils/jwtUtils");
+const { subscribe } = require("diagnostics_channel");
 
 async function getUserDataWithToken(req, res) {
   try {
-    const authHeader = req.header("Authorization");
+    const phone = req.user.phone;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
-
-    const userRepository = getManager().getRepository(User);
-
+    const userRepository = getRepository(User);
+    const subscribeRepository = getRepository(Subscribe);
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
     });
 
     if (existingUser) {
-
       const user = {
         id: existingUser.id,
         firstName: existingUser.firstName,
@@ -44,6 +32,7 @@ async function getUserDataWithToken(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
+        skuTest: existingUser.skuTest,
         createdAt: new Date(existingUser.createdAt).getTime(),
         updatedAt: existingUser.updatedAt
           ? new Date(existingUser.updatedAt).getTime()
@@ -52,7 +41,16 @@ async function getUserDataWithToken(req, res) {
           ? new Date(existingUser.lastLogin).getTime()
           : null,
       };
-      res.status(200).json( user );
+
+      const existingSubscription = await subscribeRepository.findOne({
+        where: { userPhone: phone },
+      });
+
+      if (existingSubscription) {
+        user.isActive = existingSubscription.isActive;
+      }
+
+      res.status(200).json(user);
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }
@@ -64,21 +62,9 @@ async function getUserDataWithToken(req, res) {
 
 async function getAllOrderUser(req, res) {
   try {
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
 
-    const token = req.body.token;
-
-    if (!token) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
+    const phone = req.user.phone;
 
     const user = await userRepository
       .createQueryBuilder("user")
@@ -114,7 +100,7 @@ async function editDataUser(req, res) {
     }
 
     const phone = decodedToken.phone;
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({
       where: { phone },
     });
@@ -150,23 +136,9 @@ async function editDataUser(req, res) {
 
 async function logoutPanel(req, res) {
   try {
-    const authHeader = req.header("Authorization");
+    const phone = req.params.phone;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "توکن وجود ندارد" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decodedToken = verifyAndDecodeToken(token);
-
-    if (!decodedToken || !decodedToken.phone) {
-      return res.status(401).json({ error: "توکن اشتباه است" });
-    }
-
-    const phone = decodedToken.phone;
-
-    const otpRepository = getManager().getRepository(OTP);
+    const otpRepository = getRepository(OTP);
     const existingOTP = await otpRepository.findOne({
       where: { phone: phone },
     });
@@ -208,7 +180,7 @@ async function createProfilePictureUpload(req, res) {
 
     const phone = decodedToken.phone;
 
-    const userRepository = getManager().getRepository(User);
+    const userRepository = getRepository(User);
 
     const user = await userRepository.findOne({ where: { phone: phone } });
 
@@ -227,7 +199,7 @@ async function createProfilePictureUpload(req, res) {
       subdirectory,
       originalFilename
     );
-    const uploadRepository = getManager().getRepository(Upload);
+    const uploadRepository = getRepository(Upload);
 
     const newUpload = uploadRepository.create({
       path: req.uploadFilename,
@@ -242,7 +214,7 @@ async function createProfilePictureUpload(req, res) {
       message: "عکس پروفایل با موفقیت آپلود شد",
 
       saveNewUpload: {
-      //  path: filePath,
+        //  path: filePath,
         sizeFile: sizeFile,
         lastModified: saveNewUpload.lastModified,
         id: saveNewUpload.id,
@@ -260,10 +232,181 @@ async function createProfilePictureUpload(req, res) {
   }
 }
 
+async function readPartsUserId(req, res) {
+  try {
+    const { phone, partId, isRead, courseId } = req.body;
+
+    const parsedPartId = parseInt(partId);
+    const parsedCourseId = parseInt(courseId);
+
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    let userPartStatus = await userPartStatusRepository.findOneBy({
+      phone: phone,
+      partId: parsedPartId,
+    });
+
+    if (!userPartStatus) {
+      userPartStatus = userPartStatusRepository.create({
+        phone,
+        partId: parsedPartId,
+        isRead,
+        courseId: parsedCourseId,
+      });
+    } else {
+      userPartStatus.isRead = isRead;
+    }
+
+    await userPartStatusRepository.save(userPartStatus);
+
+    return res.status(200).json({ message: "خوانده شد", status: 200 });
+  } catch (error) {
+    console.error("Error in updating read status:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function unReadPartsUserId(req, res) {
+  try {
+    const { phone, partId } = req.body;
+
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    let userPartStatus = await userPartStatusRepository.findOne({
+      where: { phone, partId },
+    });
+
+    if (userPartStatus) {
+      userPartStatus.isRead = false;
+      await userPartStatusRepository.save(userPartStatus);
+      res.status(200).json({ message: "!خوانده نشد", status: 200 });
+    } else {
+      res.status(404).json({ error: "وضعیت پیدا نشد", status: 404 });
+    }
+  } catch (error) {
+    console.error("Error in marking part as unread:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function updateTeachingMethodRating(req, res) {
+  const { phone, partId, courseId, teachingRating } = req.body;
+  const entityManager = getManager();
+
+  try {
+    await entityManager.transaction(async (transactionalEntityManager) => {
+      const userPartRepository =
+        transactionalEntityManager.getRepository(UserPartStatus);
+
+      const userPart = await userPartRepository.findOne({
+        where: { phone, partId, courseId },
+      });
+
+      if (!userPart) {
+        userPart = new UserPartStatus();
+        userPart.phone = phone;
+        userPart.partId = partId;
+        userPart.courseId = courseId;
+      }
+
+      userPart.teachingRating = teachingRating;
+
+      await userPartRepository.save(userPart);
+    });
+
+    return res.status(200).json({ message: "ممنون از رای شما", status: 200 });
+  } catch (error) {
+    console.error("Error updating teaching method rating:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function getReadPartId(req, res) {
+  try {
+    const phone = req.user.phone;
+    const { partId, courseId } = req.params;
+    const parsedPartId = parseInt(partId);
+    const parsedCourseId = parseInt(courseId);
+
+    const userPartStatusRepository = getRepository(UserPartStatus);
+    const userPartStatus = await userPartStatusRepository.findOneBy({
+      phone: phone,
+      partId: parsedPartId,
+      courseId: parsedCourseId,
+    });
+
+    if (!userPartStatus) {
+      return res.status(200).json({ isRead: false, status: 200 });
+    }
+    const isRead = userPartStatus.isRead;
+    return res.status(200).json({ isRead, status: 200 });
+  } catch (error) {
+    console.error("Error getAllreadPartsUserId:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+// async function countIsRead(req, res) {
+//   try {
+//     const { courseId } = req.params;
+//     const phone = req.user;
+//     const parsedCourseId = parseInt(courseId);
+//     const userPartRepository = getRepository(UserPartStatus);
+
+//     const totalTrueResult = await userPartRepository
+//       .createQueryBuilder("UserPart")
+//       .select("COUNT(UserPart.isRead)", "totalTrue")
+//       .where("UserPart.courseId = :courseId", { courseId: parsedCourseId })
+//       .andWhere("UserPart.phone = :phone", { phone: phone })
+//       .andWhere("UserPart.isRead = :isRead", { isRead: true })
+//       .getRawOne();
+
+//     if (!totalTrueResult || !totalTrueResult.totalTrue) {
+//       return res.status(404).json({ error: "اطلاعاتی یافت نشد" });
+//     }
+
+//     const totalTrue = parseInt(totalTrueResult.totalTrue);
+
+//     const totalParts = await userPartRepository.count({
+//       courseId: parsedCourseId,
+//       phone: phone,
+//     });
+
+//     return res.json({ totalTrue, totalParts });
+//   } catch (error) {
+//     console.error("Error countIsRead:", error);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+
+async function countIsRead(req, res) {
+  try {
+    const { courseId } = req.params;
+    const phone = req.user.phone;
+    const parsedCourseId = parseInt(courseId);
+
+
+    const totalTrue = await getRepository(UserPartStatus).count({
+      where: { isRead: true, phone: phone },
+    });
+
+    const totalParts = await getRepository(Part).count({
+      where: { courseId: parsedCourseId },
+    });
+
+    return res.json({ totalTrue, totalParts });
+  } catch (error) {
+    console.error("Error countIsRead:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
   editDataUser,
   logoutPanel,
   createProfilePictureUpload,
+  readPartsUserId,
+  unReadPartsUserId,
+  updateTeachingMethodRating,
+  getReadPartId,
+  countIsRead,
 };

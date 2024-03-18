@@ -1,7 +1,7 @@
 const multer = require("multer");
 
 function handleMulterErrors(err, req, res, next) {
-  console.log(`err fail multer >>>>> ${err}`);
+  
   if (req.fileValidationError) {
     return res.status(400).json({ error: req.fileValidationError.message });
   }

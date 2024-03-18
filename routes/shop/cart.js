@@ -1,21 +1,36 @@
 const cartController = require("../../controllers/cart");
+const couponController = require("../../controllers/coupon");
 const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
-const { checkRole } = require("../../middleware/checkAccess");
-
 const express = require("express");
 
 const router = express.Router();
-router.post("/cart", jwtAuthMiddleware, cartController.createCartItem);
+router.post(
+  "/cart",
+  jwtAuthMiddleware,
+
+  cartController.createCartItem
+);
 router.delete(
-  "/cart/:cartItemId",
+  "/cart",
   jwtAuthMiddleware,
   cartController.removeCartItem
 );
-router.get("/cart", jwtAuthMiddleware, cartController.getUserCart);
-router.post(
-  "/cart/:cartId/apply-coupon",
+router.get(
+  "/cart",
   jwtAuthMiddleware,
-  cartController.applyCoupon
+
+  cartController.getUserCart
+);
+router.post(
+  "/cart/apply-coupon",
+  jwtAuthMiddleware,
+  couponController.applyCoupon
+);
+
+router.delete(
+  "/cart/delete-apply-coupon/:orderId",
+  jwtAuthMiddleware,
+  couponController.deleteAppliedCoupon
 );
 
 // router.post(

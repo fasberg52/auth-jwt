@@ -16,10 +16,7 @@ async function createChapter(req, res) {
 
     const chapterCount = parseInt(result.count);
 
-    console.log(`>> chapterCount ${chapterCount}`);
-    // Step 2: Set the orderIndex for the new chapter to the current chapterCount
     const orderIndex = chapterCount;
-    console.log(`>> orderIndex ${orderIndex}`);
 
     const newChapter = chapterRepository.create({
       courseId,

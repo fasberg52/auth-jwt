@@ -167,7 +167,6 @@ async function loginWithOTP(req, res) {
       await sendOTP(phone);
     } else {
       await sendOTP(phone);
-      console.log("user not found");
 
       res.json({
         message: "کاربری یافت نشد",
@@ -176,7 +175,8 @@ async function loginWithOTP(req, res) {
       });
     }
   } catch (error) {
-    console.log(error);
+    logger.error(`Error loginWithOTP: ${error}`)
+   
     res
       .status(500)
       .json({ error: "An error occurred while logging in with OTP." });

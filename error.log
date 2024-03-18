@@ -673,3 +673,182 @@ QueryFailedError: column course.bannerurl does not exist
 2024-01-24T09:26:24.185Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
 2024-01-24T09:26:39.275Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
 2024-01-24T09:26:43.635Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T17:31:39.423Z error: Error in createFilter >> TypeError: children.map is not a function 
+2024-01-24T19:04:51.498Z error: Error in getAllFiltersWithQuery >> EntityPropertyNotFoundError: Property "0" was not found in "Course". Make sure your query is correct. 
+2024-01-24T21:01:32.339Z error: Error in getAllFiltersForCourses >> QueryFailedError: function group_concat(integer) does not exist 
+2024-01-24T21:03:15.506Z error: Error in getAllFiltersForCourses >> TypeError: searchQuery.split is not a function 
+2024-01-24T21:05:22.580Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near ":" 
+2024-01-24T21:05:38.709Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near ":" 
+2024-01-24T21:06:13.745Z error: Error in getAllFiltersForCourses >> ReferenceError: filterIds is not defined 
+2024-01-24T21:06:44.591Z error: Error in getAllFiltersForCourses >> ReferenceError: filterIds is not defined 
+2024-01-24T21:10:10.196Z error: Error in getAllFiltersForCourses >> QueryFailedError: invalid input syntax for type integer: "NaN" 
+2024-01-24T21:10:31.855Z error: Error in getAllFiltersForCourses >> QueryFailedError: invalid input syntax for type integer: "NaN" 
+2024-01-25T08:48:52.506Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:48:55.279Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:50:11.302Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:51:15.841Z error: Error in getAllFiltersForCourses >> QueryFailedError: syntax error at or near "ARRAY" 
+2024-01-25T08:51:49.933Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-25T08:51:53.533Z error: Error in getAllFiltersForCourses >> QueryFailedError: column "filter.id" must appear in the GROUP BY clause or be used in an aggregate function 
+2024-01-27T10:06:18.902Z error: Error in getAllFiltersForCourses >> QueryFailedError: column course.image does not exist 
+2024-01-28T10:19:26.228Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:19:58.468Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:20:39.826Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:20:53.317Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-28T10:21:13.292Z error: Error in getCourseUserWithToken: ReferenceError: Cannot access 'enrolledCourses' before initialization 
+2024-01-31T11:53:05.768Z error: Error in getCourseUserWithToken: TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T08:44:22.487Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:44:51.276Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:48:39.073Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "[object Object]" was found. 
+2024-02-14T08:49:09.679Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "[object Object]" was found. 
+2024-02-14T08:49:54.819Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:51:31.971Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:52:31.563Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T08:52:45.604Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:14:37.749Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:15:59.547Z error: Error in deleteUsers ReferenceError: User is not defined 
+2024-02-14T09:16:18.570Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:19:40.740Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:22:42.041Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:27:32.280Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:28:47.976Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:31:26.868Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "EntitySchema" was found. 
+2024-02-14T09:31:48.756Z error: Error in deleteUsers CannotDetermineEntityError: Cannot remove, given value must be instance of entity class, instead object literal is given. Or you must specify an entity target to method call. 
+2024-02-14T09:33:30.715Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:36:51.310Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:37:39.830Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:43:19.127Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:43:48.747Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:45:34.870Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:45:54.678Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:46:11.206Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:47:38.747Z error: Error in deleteUsers EntityMetadataNotFoundError: No metadata for "undefined" was found. 
+2024-02-14T09:49:37.417Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:49:53.525Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:50:49.169Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:52:18.902Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:53:56.524Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:54:44.603Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T09:55:17.849Z error: Error in deleteUsers TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'EntityMetadata'
+    |     property 'ownColumns' -> object with constructor 'Array'
+    |     index 0 -> object with constructor 'ColumnMetadata'
+    --- property 'entityMetadata' closes the circle 
+2024-02-14T10:29:36.953Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:05:48.479Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:05:54.361Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:06:00.148Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:06:06.380Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:06:19.374Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:18:17.311Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:20:11.080Z error: Error in deleteUsers TypeError: Cannot read properties of null (reading 'phone') 
+2024-02-14T11:20:32.737Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:28:39.214Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:39:30.210Z error: error in delUser async function delUser(req, res) {
+  try {
+    const phone = req.body.phone;
+
+    const userRepository = getManager().getRepository(User);
+    const del = await userRepository.findOne({ where: { phone: phone } });
+
+    if (del) {
+      await userRepository.remove(del);
+      res.status(200).json({ message: "کاربر پاک شد" });
+    } else {
+      res.status(404).json({ error: "کاربر ای پیدا نشد" });
+    }
+  } catch {
+    logger.error(`error in delUser ${delUser}`);
+    res.status(500).json("EROOOOOOOOOOR");
+  }
+} 
+2024-02-14T11:40:15.256Z error: error in delUser async function delUser(req, res) {
+  try {
+    const phone = req.body.phone;
+
+    const userRepository = getManager().getRepository(User);
+    const del = await userRepository.findOne({ where: { phone: phone } });
+
+    if (del) {
+      await userRepository.remove(del);
+      res.status(200).json({ message: "کاربر پاک شد" });
+    } else {
+      res.status(404).json({ error: "کاربر ای پیدا نشد" });
+    }
+  } catch {
+    logger.error(`error in delUser ${delUser}`);
+    res.status(500).json({ error: "EROOOOOOOOOOR" });
+  }
+} 
+2024-02-14T11:40:49.888Z error: error in delUser TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:42:19.952Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-14T11:42:38.217Z error: Error in deleteUsers TypeError: Cannot read properties of undefined (reading 'tableName') 
+2024-02-17T06:14:01.371Z error: Error in registerUser quiz24 ReferenceError: quiz24 is not defined 
+2024-02-17T06:17:11.201Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:50.919Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:53.470Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:19:56.883Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:20:27.779Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:21:28.958Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:21:57.693Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:22:34.946Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:23:14.364Z error: Error in registerUser quiz24 RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: undefined 
+2024-02-17T06:24:22.320Z error: Error in registerUser quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T06:24:30.844Z error: Error in registerUser quiz24 TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'ClientRequest'
+    |     property 'socket' -> object with constructor 'TLSSocket'
+    --- property '_httpMessage' closes the circle 
+2024-02-17T08:05:23.393Z error: Error in examResult quiz24 AxiosError: timeout of 1000ms exceeded 
+2024-02-17T08:06:17.674Z error: Error in examResult quiz24 AxiosError: timeout of 1000ms exceeded 
+2024-02-17T08:43:13.178Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T08:44:03.392Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-17T08:44:30.278Z error: Error in examResult quiz24 Error: Client network socket disconnected before secure TLS connection was established 
+2024-02-18T11:06:47.317Z error: Error in ExamCode EntityMetadataNotFoundError: No metadata for "Quiz" was found. 
+2024-02-18T11:26:44.329Z error: Error in updateExamCode Error: You must provide selection conditions in order to find a single row. 
+2024-02-18T11:29:20.349Z error: Error in deleteExamCode Error: You must provide selection conditions in order to find a single row. 
+2024-03-03T07:30:51.770Z error: Error in ExamCode QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN" 
+2024-03-03T07:31:10.615Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
+2024-03-03T07:31:23.897Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
+2024-03-06T07:42:58.091Z error: error in cartTocartPayment : ReferenceError: cartItems is not defined 
+2024-03-06T07:45:24.242Z error: error in cartTocartPayment : ReferenceError: userPhone is not defined 
+2024-03-06T07:46:36.030Z error: error in cartTocartPayment : ReferenceError: Cannot access 'savedOrder' before initialization 
+2024-03-06T07:46:53.514Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-06T07:47:28.919Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-06T07:49:06.150Z error: error in cartTocartPayment : QueryFailedError: duplicate key value violates unique constraint "PK_7c0f752f9fb68bf6ed7367ab00f" 
+2024-03-06T07:49:44.924Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-11T07:06:58.085Z error: Error in getCourseUserWithToken: QueryFailedError: syntax error at or near ":" 
+2024-03-11T07:07:37.812Z error: Error in getCourseUserWithToken: ReferenceError: id is not defined 
+2024-03-11T07:08:30.382Z error: Error in getCourseUserWithToken: ReferenceError: courseId is not defined 
+2024-03-11T07:28:30.851Z error: Error in getAllExamCodes ReferenceError: getManager is not defined 
+2024-03-12T09:05:29.324Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:07:42.368Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:08:11.514Z error: Error in getAllExamCodes ReferenceError: Cannot access 'isEnrolled' before initialization 
+2024-03-12T09:08:42.520Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T12:08:34.528Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:09:00.244Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:26:23.956Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:29:23.338Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
+2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 
+2024-03-16T07:38:39.639Z error: Error retrieving parts with read status: ReferenceError: In is not defined 
+2024-03-16T07:39:09.411Z error: Error retrieving parts with read status: EntityPropertyNotFoundError: Property "userPhone" was not found in "UserPart". Make sure your query is correct. 
+2024-03-16T07:50:05.861Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:03.734Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:25.050Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T07:57:38.719Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T08:02:50.703Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:52.232Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:53.322Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:54.893Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:56.562Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:58.220Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:59.632Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:01.478Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:02.660Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:36.450Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:37.254Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:38.272Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 

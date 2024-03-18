@@ -11,7 +11,7 @@ const userRouter = require("../routes/shop/user");
 const excelRouter = require("../routes/admin/excel");
 const categoryRouter = require("../routes/shop/category");
 const swaggerUi = require("swagger-ui-express");
-
+const quizRouter = require("../routes/shop/quiz");
 const swaggerSpec = require("../utils/swagger");
 
 async function routerConfig(app) {
@@ -30,6 +30,7 @@ async function routerConfig(app) {
   app.use("/", userRouter);
   app.use("/category", categoryRouter);
   app.use("/excel", excelRouter);
+  app.use("/quiz", quizRouter);
 }
 
 module.exports = {

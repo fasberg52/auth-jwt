@@ -1,5 +1,8 @@
 // Course Entity
 const { EntitySchema, Timestamp } = require("typeorm");
+const CourseType = {
+  COURSE: "course",
+};
 
 const Course = new EntitySchema({
   name: "Course",
@@ -60,6 +63,15 @@ const Course = new EntitySchema({
       nullable: true,
       default: "rgba(196,0,136,0.711922268907563)",
     },
+    eventId: {
+      type: "varchar",
+      nullable: true,
+    },
+    itemType: {
+      type: "enum",
+      enum: Object.values(CourseType),
+      default: CourseType.COURSE,
+    },
   },
   relations: {
     filters: {
@@ -100,6 +112,11 @@ const Course = new EntitySchema({
       type: "one-to-many",
       target: "Enrollment",
       inverseSide: "course",
+    },
+    onlineClass: {
+      type: "one-to-many",
+      target: "OnlineClass",
+      mappedBy: "course",
     },
   },
 });

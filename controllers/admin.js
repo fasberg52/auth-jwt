@@ -1,12 +1,13 @@
-const Users = require("../model/users");
+const { getManager, getRepository } = require("typeorm");
+const User = require("../model/users");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
-const Cart = require("../model/Cart")
-const { getManager } = require("typeorm");
+const Cart = require("../model/Cart");
+const Subscribe = require("../model/Subscribe")
+const { quiz24Url } = require("../utils/axiosBaseUrl");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
 const { convertToJalaliDate } = require("../services/jalaliService");
-const User = require("../model/users");
 
 async function createUser(req, res) {
   try {
@@ -39,15 +40,14 @@ async function createUser(req, res) {
       .status(201)
       .json({ message: "کاربر جدید ایجاد شد", savedUser, status: 201 });
   } catch (error) {
-    logger.error;
-    console.log(error);
+    logger.error(`Error in createUser ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
 async function getUsers(req, res) {
   try {
-    const userRepository = getManager().getRepository(Users);
+    const userRepository = getManager().getRepository(User);
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
 
@@ -77,6 +77,7 @@ async function getUsers(req, res) {
         "user.phone",
         "user.roles",
         "user.grade",
+        "user.lastLogin",
       ])
       .skip((page - 1) * pageSize)
       .take(pageSize)
@@ -120,7 +121,8 @@ async function getUsers(req, res) {
       usersCount: usersCount.count,
     });
   } catch (error) {
-    console.log(error);
+    logger.error(`Error in getUser ${error}`);
+
     res
       .status(500)
       .json({ error: "An error occurred while getting the users." });
@@ -129,7 +131,7 @@ async function getUsers(req, res) {
 
 async function getUserByPhone(req, res) {
   try {
-    const userRepository = getManager().getRepository(Users);
+    const userRepository = getManager().getRepository(User);
     const phoneNumber = req.params.phone;
 
     const existingUser = await userRepository.findOne({
@@ -137,7 +139,7 @@ async function getUserByPhone(req, res) {
     });
 
     if (existingUser) {
-      const userWithJalaliDates = {
+      const information = {
         id: existingUser.id,
         firstName: existingUser.firstName,
         lastName: existingUser.lastName,
@@ -145,18 +147,16 @@ async function getUserByPhone(req, res) {
         role: existingUser.roles,
         imageUrl: existingUser.imageUrl,
         grade: existingUser.grade,
-        createdAt: moment(existingUser.createdAt).format("jYYYY/jMMMM/jDD"),
-        updatedAt: moment(existingUser.updatedAt).format("jYYYY/jMMMM/jDD"),
-        lastLogin: existingUser.lastLogin
-          ? moment(existingUser.lastLogin).format("jYYYY/jMMMM/jDD")
-          : null,
+        createdAt: existingUser.createdAt,
+        updatedAt: existingUser.updatedAt,
       };
 
-      res.json(userWithJalaliDates);
+      res.json(information);
     } else {
       res.status(404).json({ error: "کاربری با این شماره پیدا نشد" });
     }
   } catch (error) {
+    logger.error(`Error in getUserByPhone ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -165,7 +165,7 @@ async function updateUsers(req, res) {
   try {
     const { firstName, lastName, phone, password, roles, imageUrl, grade } =
       req.body;
-    const userRepository = getManager().getRepository(Users);
+    const userRepository = getManager().getRepository(User);
 
     const existingUser = await userRepository.findOne({
       where: { phone: phone },
@@ -189,47 +189,125 @@ async function updateUsers(req, res) {
         .json({ message: "تغییرات انجام شد", savedUser, status: 200 });
     }
   } catch (error) {
+    logger.error(`error in updateUser ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function delUser(req, res) {
+  try {
+    const phone = req.body.phone;
+
+    const userRepository = getManager().getRepository(User);
+    const del = await userRepository.findOne({ where: { phone: phone } });
+
+    if (del) {
+      await userRepository.remove(del);
+      res.status(200).json({ message: "کاربر پاک شد" });
+    } else {
+      res.status(404).json({ error: "کاربر ای پیدا نشد" });
+    }
+  } catch (error) {
+    logger.error(`error in delUser ${error}`);
+    res.status(500).json({ error: "EROOOOOOOOOOR" });
   }
 }
 
 async function deleteUsers(req, res) {
   try {
     const phone = req.params.phone;
+    const userId = process.env.ADMIN_QUEZ24;
+    const userName = phone;
+    const requestBody = { userName, userId };
+    const userRepository = getManager().getRepository(User);
 
-    await getManager().transaction(async (transactionalEntityManager) => {
-      const user = await transactionalEntityManager.findOne(Users, {
-        where: { phone: phone },
-      });
+    console.log(`phone >> ${phone}`);
 
-      if (!user) {
-        return res.status(404).json({ error: "کاربر پیدا نشد" });
-      }
-      await transactionalEntityManager
+    const deleteUser = await userRepository.findOne({
+      where: { phone: phone },
+    });
+
+    if (deleteUser) {
+      await quiz24Url.post("/deleteStudent", requestBody);
+
+      await getManager()
         .createQueryBuilder()
         .update(Cart)
         .set({ user: null })
         .where("user.phone = :phone", { phone: phone })
         .execute();
 
-      await transactionalEntityManager
+      await getManager()
         .createQueryBuilder()
         .update(Order)
         .set({ user: null })
         .where("user.phone = :phone", { phone: phone })
         .execute();
 
-      await transactionalEntityManager.remove(Users, user);
+        await getManager()
+        .createQueryBuilder()
+        .delete()
+        .from(Subscribe)
+        .where("userPhone = :phone", { phone: phone })
+        .execute();
 
+      await userRepository.delete({ phone: phone });
       return res.json({ message: "کاربر با موفقیت پاک شد" });
-    });
+    } else {
+      return res.status(404).json({ error: "کاربری پیدا نشد" });
+    }
   } catch (error) {
     console.log(error);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while deleting the user." });
   }
 }
+
+// async function deleteUsers(req, res) {
+//   try {
+//     const phone = req.params.phone;
+
+//     console.log(`phone >> ${phone}`);
+//     await getManager().transaction(async (transactionalEntityManager) => {
+//       const user = await transactionalEntityManager.findOne(User, {
+//         where: { phone: phone },
+//       });
+
+//       console.log(`user >> ${JSON.stringify(user)}`);
+
+//       if (!user) {
+//         return res.status(404).json({ error: "کاربر پیدا نشد" });
+//       }
+
+//       const cart = await transactionalEntityManager
+//         .createQueryBuilder()
+//         .update(Cart)
+//         .set({ user: null })
+//         .where("user.phone = :phone", { phone: phone })
+//         .execute();
+
+//       console.log(`cart >> ${JSON.stringify(cart)}`);
+
+//       const order = await transactionalEntityManager
+//         .createQueryBuilder()
+//         .update(Order)
+//         .set({ user: null })
+//         .where("user.phone = :phone", { phone: phone })
+//         .execute();
+
+//       console.log(`order >> ${JSON.stringify(order)}`);
+
+//       await transactionalEntityManager.remove(User, user);
+//       return res.json({ message: "کاربر با موفقیت پاک شد" });
+//     });
+//   } catch (error) {
+//     logger.error(`Error in deleteUsers ${error}`);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while deleting the user." });
+//   }
+// }
 
 module.exports = {
   getUsers,
@@ -237,4 +315,5 @@ module.exports = {
   updateUsers,
   deleteUsers,
   createUser,
+  delUser,
 };

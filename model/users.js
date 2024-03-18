@@ -49,6 +49,10 @@ const User = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
+    skuTest: {
+      type: "int",
+      nullable: true,
+    },
   },
   relations: {
     uploads: {
@@ -63,7 +67,12 @@ const User = new EntitySchema({
       target: "Order",
       inverseSide: "user",
     },
+    subscribe: {
+      type: "one-to-many",
+      target: "Subscribe",
+      inverseSide: "user",
+    },
   },
 });
 
-module.exports = User;
+module.exports =  User ;

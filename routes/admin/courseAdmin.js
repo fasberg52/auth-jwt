@@ -5,7 +5,6 @@ const { jwtAuthMiddleware } = require("../../middleware/jwtMiddleware");
 const ajvMiddlerware = require("../../middleware/ajvMiddlerware");
 const { checkRole } = require("../../middleware/checkAccess");
 const { upload } = require("../../utils/multerUtils");
-
 const router = express.Router();
 
 router.post(
@@ -82,7 +81,11 @@ router.get(
   partController.getAllPartsWithChapterId
 );
 
-router.get("/:courseId/course-content",jwtAuthMiddleware, partController.getAllChaptersAndParts);
+router.get(
+  "/:courseId/course-content",
+  jwtAuthMiddleware,
+  partController.getAllChaptersAndParts
+);
 
 router.get("/part/:partId/video-path", partController.getVideoPathWithPartId);
 

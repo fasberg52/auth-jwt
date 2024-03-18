@@ -18,21 +18,27 @@ const Order = new EntitySchema({
     },
     orderStatus: {
       type: "enum",
-      enum: ["pending", "cancelled", "success"],
+      enum: ["pending", "cancelled", "success", "preInvoice"],
       nullable: true,
     },
-    totalPrice: {
+    originalTotalPrice: {
       type: "int",
+      nullable: true,
     },
+    discountTotalPrice: {
+      type: "int",
+      nullable: true,
+    },
+
     paymentType: {
       type: "enum",
-      enum: ["online", "cbc", "hand"], //zarinpal, cart by cart, hand
+      enum: ["online", "offline"],
       nullable: true,
       default: "online",
     },
     gatewayPay: {
       type: "enum",
-      enum: ["zarinpal", "payping"],
+      enum: ["zarinpal", "payping", "cbc"], //zarinpal, payping, cart by cart,
       default: "zarinpal",
       nullable: true,
     },
@@ -42,6 +48,14 @@ const Order = new EntitySchema({
     },
     userPhone: {
       type: "int",
+      nullable: true,
+    },
+    couponId: {
+      type: "int",
+      nullable: true,
+    },
+    cardPen: {
+      type: "varchar",
       nullable: true,
     },
   },
@@ -56,6 +70,11 @@ const Order = new EntitySchema({
       type: "one-to-many",
       target: "Enrollment",
       inverseSide: "order",
+    },
+    coupons: {
+      type: "many-to-one",
+      target: "Coupon",
+      joinColumn: { name: "couponId", referencedColumnName: "id" },
     },
   },
 });

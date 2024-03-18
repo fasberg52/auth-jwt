@@ -19,6 +19,7 @@ async function addCourse(req, res) {
       discountStart,
       discountExpiration,
       filters,
+      eventId,
     } = req.body;
 
     if (discountPrice && discountPrice >= price) {
@@ -51,6 +52,7 @@ async function addCourse(req, res) {
       discountPrice,
       discountStart,
       discountExpiration,
+      eventId,
     });
 
     if (filters && filters.length > 0) {
@@ -60,7 +62,7 @@ async function addCourse(req, res) {
     }
 
     const result = await courseRepository.save(newCourse);
-    console.log(`result >>> ${result}`);
+    
 
     return res
       .status(201)
@@ -85,6 +87,7 @@ async function editCourse(req, res) {
       discountStart,
       discountExpiration,
       filters,
+      eventId,
     } = req.body;
 
     const courseRepository = getManager().getRepository(Courses);
@@ -105,6 +108,7 @@ async function editCourse(req, res) {
       existingCourse.discountPrice = discountPrice;
       existingCourse.discountStart = discountStart;
       existingCourse.discountExpiration = discountExpiration;
+      existingCourse.eventId = eventId;
 
       if (categoryId !== undefined && categoryId !== null) {
         const category = await getManager()
@@ -132,7 +136,7 @@ async function editCourse(req, res) {
       res.status(404).json({ error: "دوره ای پیدا نشد" });
     }
   } catch (error) {
-    console.log(`Error editCourse: ${error}`);
+    logger.error(`Error editCourse: ${error}`)
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
@@ -165,7 +169,7 @@ async function getAdminCourseById(req, res) {
       .leftJoin("course.category", "category")
       .leftJoin("course.chapters", "chapter")
       .leftJoin("chapter.parts", "part")
-      .leftJoin("course.filters","filter")
+      .leftJoin("course.filters", "filter")
       .select([
         "course.id",
         "course.title",
@@ -179,6 +183,7 @@ async function getAdminCourseById(req, res) {
         "course.videoUrl",
         "course.createdAt",
         "course.lastModified",
+        "course.eventId"
       ])
       .addSelect(["category.id", "category.name"])
       .addSelect(["filter.id"])
@@ -206,7 +211,6 @@ async function getAdminCourseById(req, res) {
 
       // delete existingCourse.filters;
 
-
       // existingCourse.filters = filterIds;
 
       res.json(existingCourse);
@@ -217,7 +221,7 @@ async function getAdminCourseById(req, res) {
   } catch (error) {
     logger.error(`Error in getAdminCourseById  ${error}`);
 
-    console.log(`>>>>${error}`);
+    
     res
       .status(500)
       .json({ error: "An error occurred while retrieving the course." });

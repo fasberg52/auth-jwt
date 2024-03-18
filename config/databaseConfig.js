@@ -15,6 +15,12 @@ const Tags = require("../model/Tags");
 const SecureLink = require("../model/secureLink");
 const Coupon = require("../model/Coupon");
 const Filter = require("../model/Filter");
+const OnlineClass = require("../model/onlineCourse");
+const Subscribe = require("../model/Subscribe");
+const UserPart = require("../model/UserPart");
+
+const Quiz = require("../model/quiz");
+
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
 const dotenv = require("dotenv");
@@ -28,6 +34,7 @@ async function setupDatabase() {
       username: process.env.USERNAME_PG_DB,
       password: process.env.PASSWORD_PG_DB,
       database: process.env.DATABASE_PG_DB,
+      logging: false,
       entities: [
         Users,
         OTP,
@@ -45,6 +52,10 @@ async function setupDatabase() {
         SecureLink,
         Coupon,
         Filter,
+        OnlineClass,
+        Subscribe,
+        Quiz,
+        UserPart,
       ],
       synchronize: true,
     });
@@ -55,12 +66,12 @@ async function setupDatabase() {
     throw error;
   }
 }
+
 async function configureSession(app) {
   app.use(
     session({
       store: new PgSession({
         conObject: {
-          // Use your PostgreSQL connection settings here
           user: process.env.USERNAME_PG_DB,
           host: process.env.DATABASE_URL,
           database: process.env.DATABASE_PG_DB,
@@ -71,21 +82,30 @@ async function configureSession(app) {
       }),
       secret: process.env.SESSION_SECRET,
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: {
         secure: false,
         maxAge: 24 * 60 * 60 * 1000,
       },
     })
   );
-  // app.use(
-  //   session({
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   })
-  // );
+
+  app.use((req, res, next) => {
+    //console.log(`Session created. Session ID: ${req.sessionID}`);
+    next();
+  });
 }
+
+//   app.use(
+//     session({
+//       secret: process.env.SESSION_SECRET,
+//       resave: false,
+//       saveUninitialized: false,
+//       cookie: { secure: false },
+//     })
+//   );
+// }
+
 module.exports = {
   setupDatabase,
   configureSession,
