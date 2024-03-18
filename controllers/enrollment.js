@@ -83,7 +83,6 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
         .json({ error: "شما در این دوره ثبت نام نکرده اید" });
     }
 
-
     const result = await partRepository
       .createQueryBuilder("part")
       .select([
@@ -106,7 +105,38 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
   }
 }
 
+async function getVideoPathWithOutEnrollWithPartId(req, res) {
+  try {
+    const { courseId, partId } = req.params;
+
+    const partRepository = getManager().getRepository(Part);
+
+    const part = await partRepository
+      .createQueryBuilder("part")
+      .select([
+        "part.videoPath as videoPath",
+        "part.videoType as videoType",
+        "part.noteUrl as noteUrl",
+        "part.isFree as isFree",
+      ])
+      .where("part.courseId = :courseId", { courseId })
+      .andWhere("part.id = :partId", { partId })
+      .andWhere("part.isFree = :isFree", { isFree: true })
+      .getRawOne();
+
+    if (!part) {
+      return res.status(404).json({ error: "آدرس ویدئو پیدا نشد" });
+    }
+
+    res.status(200).json({ part });
+  } catch (error) {
+    console.error(`Error in getVideoPathWithOutEnrollWithPartId: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getVideoPathAfterEnrollWithPartId,
   getVideoPathAfterEnroll,
+  getVideoPathWithOutEnrollWithPartId,
 };

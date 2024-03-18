@@ -23,8 +23,6 @@ router.get(
   courseController.getCourseUserWithToken
 );
 
-
-
 router.get("/:courseId", jwtAuthMiddleware, courseController.getCourseById);
 
 router.get("/play/:secureLink", secureLink.createSecureLink);
@@ -33,6 +31,13 @@ router.get(
   jwtAuthMiddleware,
   enrollmentController.getVideoPathAfterEnrollWithPartId
 );
+
+router.get(
+  "/courseId/:courseId/part/:partId/access-enroll",
+  jwtAuthMiddleware,
+  enrollmentController.getVideoPathWithOutEnrollWithPartId
+);
+
 router.get(
   "/:courseId/access-enroll",
   jwtAuthMiddleware,

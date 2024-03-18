@@ -381,17 +381,18 @@ async function countIsRead(req, res) {
     const { courseId } = req.params;
     const phone = req.user.phone;
     const parsedCourseId = parseInt(courseId);
-
-
+    if (isNaN(parsedCourseId)) {
+      return res.status(400).json({ error: "Invalid courseId" });
+    }
     const totalTrue = await getRepository(UserPartStatus).count({
-      where: { isRead: true, phone: phone },
+      where: { isRead: true, phone: phone, courseId: parsedCourseId },
     });
 
     const totalParts = await getRepository(Part).count({
       where: { courseId: parsedCourseId },
     });
 
-    return res.json({ totalTrue, totalParts });
+    return res.json({ totalTrue, totalParts, status: 200 });
   } catch (error) {
     console.error("Error countIsRead:", error);
     return res.status(500).json({ error: "Internal Server Error" });
