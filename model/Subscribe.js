@@ -29,12 +29,14 @@ const Subscribe = new EntitySchema({
   },
   relations: {
     user: {
-      type: "many-to-many",
+      type: "many-to-one",
       target: "User",
       joinColumn: {
         name: "userPhone",
         referencedColumnName: "phone",
       },
+      cascade: true,
+      onDelete: "CASCADE",
     },
   },
 });

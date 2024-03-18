@@ -805,3 +805,50 @@ QueryFailedError: column course.bannerurl does not exist
 2024-02-18T11:06:47.317Z error: Error in ExamCode EntityMetadataNotFoundError: No metadata for "Quiz" was found. 
 2024-02-18T11:26:44.329Z error: Error in updateExamCode Error: You must provide selection conditions in order to find a single row. 
 2024-02-18T11:29:20.349Z error: Error in deleteExamCode Error: You must provide selection conditions in order to find a single row. 
+2024-03-03T07:30:51.770Z error: Error in ExamCode QueryFailedError: invalid input syntax for type timestamp: "0NaN-NaN-NaNTNaN:NaN:NaN.NaN+NaN:NaN" 
+2024-03-03T07:31:10.615Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
+2024-03-03T07:31:23.897Z error: Error in ExamCode QueryFailedError: invalid input syntax for type integer: "2022-12-31 00:00:00" 
+2024-03-06T07:42:58.091Z error: error in cartTocartPayment : ReferenceError: cartItems is not defined 
+2024-03-06T07:45:24.242Z error: error in cartTocartPayment : ReferenceError: userPhone is not defined 
+2024-03-06T07:46:36.030Z error: error in cartTocartPayment : ReferenceError: Cannot access 'savedOrder' before initialization 
+2024-03-06T07:46:53.514Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-06T07:47:28.919Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-06T07:49:06.150Z error: error in cartTocartPayment : QueryFailedError: duplicate key value violates unique constraint "PK_7c0f752f9fb68bf6ed7367ab00f" 
+2024-03-06T07:49:44.924Z error: error in cartTocartPayment : TypeError: Cannot read properties of undefined (reading 'getRepository') 
+2024-03-11T07:06:58.085Z error: Error in getCourseUserWithToken: QueryFailedError: syntax error at or near ":" 
+2024-03-11T07:07:37.812Z error: Error in getCourseUserWithToken: ReferenceError: id is not defined 
+2024-03-11T07:08:30.382Z error: Error in getCourseUserWithToken: ReferenceError: courseId is not defined 
+2024-03-11T07:28:30.851Z error: Error in getAllExamCodes ReferenceError: getManager is not defined 
+2024-03-12T09:05:29.324Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:07:42.368Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T09:08:11.514Z error: Error in getAllExamCodes ReferenceError: Cannot access 'isEnrolled' before initialization 
+2024-03-12T09:08:42.520Z error: Error in getAllExamCodes TypeError: Cannot read properties of undefined (reading 'id') 
+2024-03-12T12:08:34.528Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:09:00.244Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:26:23.956Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:29:23.338Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:31:28.217Z error: Error in getPartsCourseUserWithToken: TypeORMError: Relation with property path part in entity was not found. 
+2024-03-12T12:37:40.358Z error: Error in getPartsCourseUserWithToken: QueryFailedError: column part.name does not exist 
+2024-03-16T06:16:00.567Z error: Error in getCourseUserWithToken: ReferenceError: query is not defined 
+2024-03-16T07:38:39.639Z error: Error retrieving parts with read status: ReferenceError: In is not defined 
+2024-03-16T07:39:09.411Z error: Error retrieving parts with read status: EntityPropertyNotFoundError: Property "userPhone" was not found in "UserPart". Make sure your query is correct. 
+2024-03-16T07:50:05.861Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:03.734Z error: Error retrieving parts with read status: QueryFailedError: relation "UserPartStatus" does not exist 
+2024-03-16T07:56:25.050Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T07:57:38.719Z error: Error retrieving parts with read status: QueryFailedError: function ifnull(boolean, boolean) does not exist 
+2024-03-16T08:02:50.703Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:52.232Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:53.322Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:54.893Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:56.562Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:02:58.220Z error: Error in getCourseById for courseId part
+ 
+[object Object]
+2024-03-16T08:02:59.632Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:01.478Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:02.660Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:36.450Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:37.254Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 
+2024-03-16T08:03:38.272Z error: Error retrieving parts with read status: ReferenceError: modifiedResponse is not defined 

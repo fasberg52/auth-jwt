@@ -2,18 +2,31 @@
 const Courses = require("../model/Course");
 const Filter = require("../model/Filter");
 
-const { getManager, Brackets, getRepository } = require("typeorm");
-const { convertToJalaliDate } = require("../services/jalaliService");
+const { getManager, getRepository } = require("typeorm");
 const Enrollment = require("../model/Enrollment");
 const logger = require("../services/logger");
-const { verifyAndDecodeToken } = require("../utils/jwtUtils");
 
 //const cacheService = require("../services/cacheService");
 
 async function getAllCourse(req, res) {
   try {
     const courseRepository = getManager().getRepository(Courses);
+    const isFetchAll = req.query.all === "true";
 
+    if (isFetchAll) {
+      const courses = await courseRepository
+        .createQueryBuilder("course")
+        .leftJoinAndSelect("course.category", "category")
+        .leftJoin("course.filters", "filter")
+        .select(["course.id", "course.title"])
+        .getMany();
+
+      return res.json({
+        courses,
+        totalCount: courses.length,
+        totalPages: 1,
+      });
+    }
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const sortBy = req.query.sortBy || "id";
@@ -73,19 +86,6 @@ async function getAllCourse(req, res) {
   }
 }
 
-// async function getCourseById(req, res) {
-//   const cacheKey = "getCourseById";
-//   try {
-//     // const cachedData = await cacheService.get(cacheKey);
-//     // console.log(`cacheKey >>> ${JSON.stringify(cachedData)}`);
-//     // if (cachedData !== undefined) {
-//     //   console.log("Data found in cache. Returning cached data.");
-//     //   const { existingCourse } = cachedData;
-//     //   console.log(cacheKey);
-//     //   // If data is found in the cache, return it
-//     //   return res.json({ existingCourse });
-//     // } else {
-//     console.log("Data NOT found in cache. Returning cached data.");
 
 //     const userPhone = req.user.phone;
 //     const enrollmentRepository = getManager().getRepository(Enrollment);
@@ -228,7 +228,6 @@ async function getCourseById(req, res) {
       }
 
       if (!isEnrolled) {
-        logger.info(`getCourseById successful for courseId ${courseId}`);
         res.json({ access: false, ...existingCourse });
       } else {
         res.json({ access: true, ...existingCourse });
@@ -241,15 +240,13 @@ async function getCourseById(req, res) {
     logger.error(`Error in getCourseById for courseId ${req.params.courseId}`, {
       error,
     });
-    
+
     res.status(500).json({ error });
   }
 }
 
 async function getCourseUserWithToken(req, res) {
   try {
-  
-
     const userPhone = req.user.phone;
 
     const enrollmentRepository = getManager().getRepository(Enrollment);
@@ -259,8 +256,6 @@ async function getCourseUserWithToken(req, res) {
 
     const skip = (page - 1) * pageSize;
     const take = pageSize;
-
-    
 
     const enrolledCoursesQuery = enrollmentRepository
       .createQueryBuilder("enrollment")
@@ -285,36 +280,36 @@ async function getCourseUserWithToken(req, res) {
       .skip(skip)
       .take(take)
       .getRawMany();
-    
 
     const onlyCount = req.query.onlyCount === "true";
+    const onlyTitle = req.query.onlyTitle === "true";
     if (onlyCount) {
       const total = totalCount;
       res.status(200).json({ total });
       return;
     }
+    if (onlyTitle) {
+      const titles = await enrolledCoursesQuery
+        .select("course.title", "title")
+        .addSelect("course.id", "id")
 
+        .getRawMany();
 
-    const jalaliEnrolledCourses = enrolledCourses.map((course) => ({
-      ...course,
-      discountStart: convertToJalaliDate(course.discountStart),
-      discountExpiration: convertToJalaliDate(course.discountExpiration),
-      createdAt: convertToJalaliDate(course.createdAt),
-      lastModified: convertToJalaliDate(course.lastModified),
-      orderDate: convertToJalaliDate(course.orderDate),
-    }));
+      res.status(200).json({ titles });
+      return;
+    }
 
     res.status(200).json({
-      enrolledCourses: jalaliEnrolledCourses,
+      enrolledCourses: enrolledCourses,
       totalCount,
       status: 200,
     });
   } catch (error) {
-    
     logger.error(`Error in getCourseUserWithToken: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 module.exports = {
   getAllCourse,
   getCourseById,

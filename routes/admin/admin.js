@@ -168,7 +168,26 @@ router.get(
   //  checkRole("admin"),
   orderController.getOrderById
 );
+router.patch(
+  "/order/:id",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.updateOrderById
+);
+router.post(
+  "/order/acceptedcart",
+  jwtAuthMiddleware,
+  checkRole("admin"),
 
+  orderController.acceptedCartToCartPayment
+);
+router.post(
+  "/order/cancellcart",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+
+  orderController.cancellCartToCartPayment
+);
 //Coupon Code Admin
 
 router.post(
@@ -176,6 +195,18 @@ router.post(
   jwtAuthMiddleware,
   checkRole("admin"),
   couponController.createCoupon
+);
+router.put(
+  "/coupon/:couponId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  couponController.editCoupon
+);
+router.delete(
+  "/coupon/:couponId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  couponController.deleteCoupon
 );
 router.get(
   "/coupon/:couponId",
@@ -185,9 +216,9 @@ router.get(
 );
 
 router.get(
-  "/coupon",
+  "/coupons",
   jwtAuthMiddleware,
-  //checkRole("admin"),
+  checkRole("admin"),
   couponController.getAllCoupons
 );
 
@@ -223,6 +254,19 @@ router.get(
   jwtAuthMiddleware,
   checkRole("admin"),
   getAllOnlineClasses
+);
+
+router.get(
+  "/report/course/:courseId",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getAllSuccessOrdersByCourseId
+);
+router.get(
+  "/report/course",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  orderController.getSalesByDateAndCourse
 );
 
 module.exports = router;

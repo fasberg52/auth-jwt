@@ -3,6 +3,7 @@ const User = require("../model/users");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
 const Cart = require("../model/Cart");
+const Subscribe = require("../model/Subscribe")
 const { quiz24Url } = require("../utils/axiosBaseUrl");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
@@ -241,6 +242,13 @@ async function deleteUsers(req, res) {
         .update(Order)
         .set({ user: null })
         .where("user.phone = :phone", { phone: phone })
+        .execute();
+
+        await getManager()
+        .createQueryBuilder()
+        .delete()
+        .from(Subscribe)
+        .where("userPhone = :phone", { phone: phone })
         .execute();
 
       await userRepository.delete({ phone: phone });

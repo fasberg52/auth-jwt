@@ -4,80 +4,54 @@ const { getManager, getConnection } = require("typeorm");
 const Cart = require("../model/Cart");
 const CartItems = require("../model/CartItems");
 const Courses = require("../model/Course");
+const Quiz = require("../model/quiz");
 const Enrollment = require("../model/Enrollment");
 const Coupon = require("../model/Coupon");
+const { serialize } = require("cookie");
 
 async function createCartItem(req, res) {
   try {
-    const { courseId } = req.body;
+    const { courseId, quizId, itemType } = req.body;
     const userPhone = req.user.phone;
     const defaultQuantity = 1;
 
-    const connection = getConnection();
-    const enrollmentRepository = connection.getRepository(Enrollment);
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
-    const courseRepository = connection.getRepository(Courses);
+    let userCart = req.session.cart || { items: [] };
 
-    const isEnrolled = await enrollmentRepository
-      .createQueryBuilder("enrollment")
-      .innerJoin("enrollment.course", "course")
-      .innerJoin("enrollment.order", "order")
-      .innerJoin("order.user", "user")
-      .where("course.id = :courseId", { courseId })
-      .andWhere("user.phone = :phone", { phone: userPhone })
-      .andWhere("order.orderStatus = :orderStatus", { orderStatus: "success" })
-      .getCount();
-
-    if (isEnrolled) {
-      return res.status(400).json({
-        error: "شما قبلا ثبت نام کرده اید",
-        status: 400,
-      });
-    }
-
-    let userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
-    });
-
-    if (!userCart) {
-      userCart = cartRepository.create({
-        user: userPhone,
-      });
-      await cartRepository.save(userCart);
-    }
-
-    const course = await courseRepository.findOne({
-      where: { id: courseId },
-    });
-
-    if (!course) {
-      return res.status(400).json({ error: "دوره پیدا نشد" });
-    }
-
-    const existingCartItem = await cartItemsRepository
-      .createQueryBuilder("cartItem")
-      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-      .andWhere("cartItem.courseId = :courseId", { courseId: courseId })
-      .getOne();
+    const existingCartItem = userCart.items.find(
+      (item) =>
+        (courseId === undefined || item.courseId === courseId) &&
+        (quizId === undefined || item.quizId === quizId) &&
+        item.itemType === itemType
+    );
 
     if (existingCartItem) {
       return res.status(400).json({
-        error: "این دوره قبلاً به سبد خرید اضافه شده است",
+        error: "این آیتم قبلاً به سبد خرید اضافه شده است",
         status: 400,
       });
     } else {
-      const newCartItem = cartItemsRepository.create({
-        cart: userCart,
-        courseId: courseId,
+      const newCartItem = {
+        courseId: courseId || null,
+        quizId: quizId || null,
+        itemType: itemType,
         quantity: defaultQuantity,
-      });
-      await cartItemsRepository.save(newCartItem);
+      };
 
-      return res.status(201).json({
-        message: "آیتم با موفقیت اضافه شد",
-        newCartItem,
-        status: 201,
+      userCart.items.push(newCartItem);
+      req.session.cart = userCart;
+
+      // Save the session manually
+      req.session.save((err) => {
+        if (err) {
+          console.error("Error saving session:", err);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+
+        return res.status(201).json({
+          message: "آیتم با موفقیت اضافه شد",
+          newCartItem,
+          status: 201,
+        });
       });
     }
   } catch (error) {
@@ -86,18 +60,15 @@ async function createCartItem(req, res) {
   }
 }
 
-
 async function getUserCart(req, res) {
   try {
-    const userPhone = req.user.phone;
     const connection = getConnection();
-    const cartRepository = connection.getRepository(Cart);
-    const cartItemsRepository = connection.getRepository(CartItems);
     const courseRepository = connection.getRepository(Courses);
+    const quizRepository = connection.getRepository(Quiz); // Add this line
 
-    const userCart = await cartRepository.findOne({
-      where: { user: { phone: userPhone } },
-    });
+    const userCart = req.session.cart || { items: [] };
+
+    const appliedCoupon = req.session.appliedCoupon;
 
     if (!userCart) {
       return res.status(200).json({
@@ -108,14 +79,9 @@ async function getUserCart(req, res) {
       });
     }
 
-    const cartItems = await cartItemsRepository
-      .createQueryBuilder("cartItem")
-      .where("cartItem.cartId = :cartId", { cartId: userCart.id })
-      .getMany();
-
     let totalCartPrice = 0;
 
-    const cartDataPromises = cartItems.map(async (cartItem) => {
+    const cartDataPromises = userCart.items.map(async (cartItem) => {
       if (cartItem.courseId) {
         try {
           const course = await courseRepository.findOne({
@@ -123,8 +89,12 @@ async function getUserCart(req, res) {
           });
 
           if (course) {
-            const discountedPrice = course.discountPrice || course.price;
-            const itemPrice = discountedPrice * cartItem.quantity;
+            const discountedPrice = course.discountPrice;
+
+            const itemPrice =
+              discountedPrice !== null
+                ? discountedPrice * cartItem.quantity
+                : course.price * cartItem.quantity;
 
             totalCartPrice += itemPrice;
 
@@ -140,7 +110,32 @@ async function getUserCart(req, res) {
             };
           }
         } catch (error) {
-          console.error("Error processing cart item:", error);
+          console.error("Error processing course item:", error);
+        }
+      } else if (cartItem.quizId) {
+        try {
+          const quiz = await quizRepository.findOne({
+            where: { id: cartItem.quizId },
+          });
+
+          if (quiz) {
+            const itemPrice = quiz.examPrice * cartItem.quantity;
+
+            totalCartPrice += itemPrice;
+
+            return {
+              cartItemId: cartItem.id,
+              quizId: quiz.id,
+              imageUrl: null,
+              quantity: cartItem.quantity,
+              price: quiz.examPrice,
+              discountPrice: null,
+              title: quiz.examTitle,
+              itemPrice,
+            };
+          }
+        } catch (error) {
+          console.error("Error processing quiz item:", error);
         }
       }
     });
@@ -149,7 +144,7 @@ async function getUserCart(req, res) {
 
     let totalCartPriceCoupon = totalCartPrice;
 
-    res
+    return res
       .status(200)
       .json({ cartData, totalCartPrice, totalCartPriceCoupon, status: 200 });
   } catch (error) {
@@ -158,32 +153,39 @@ async function getUserCart(req, res) {
   }
 }
 
+function applyDiscount(originalPrice, discountPercentage) {
+  const discountAmount = (discountPercentage / 100) * originalPrice;
+  const discountedPrice = originalPrice - discountAmount;
+  return discountedPrice;
+}
+
 async function removeCartItem(req, res) {
   try {
-    const { cartItemId } = req.params;
+    const { courseId, quizId, itemType } = req.query;
 
-    const connection = getConnection();
-    const cartItemsRepository = connection.getRepository(CartItems);
+    console.log("Received query parameters:", req.query);
+    console.log("session " + JSON.stringify(req.session.cart));
 
-    const cartItemToRemove = await cartItemsRepository
-      .createQueryBuilder("cartItem")
-      .leftJoinAndSelect("cartItem.course", "course") // Assuming a relation named "course" exists in CartItems entity
-      .where("cartItem.id = :cartItemId", { cartItemId })
-      .getOne();
-
-    if (!cartItemToRemove) {
-      return res.status(404).json({ error: "آیتم های سبدخرید پیدا نشد" });
+    if (!req.session.cart) {
+      return res.status(404).json({ error: "سبد خرید یافت نشد" });
     }
+    console.log(JSON.stringify(req.session.cart));
+    const indexToRemove = req.session.cart.items.findIndex(
+      (item) =>
+        item.itemType === itemType &&
+        ((courseId && item.courseId === courseId, 10) ||
+          (quizId && item.quizId === quizId, 10))
+    );
 
-    const courseName = cartItemToRemove.course
-      ? cartItemToRemove.course.title
-      : "آیتم";
-
-    await cartItemsRepository.remove(cartItemToRemove);
-
-    res.status(200).json({ message: `${courseName} از سبد خرید شما حذف شد` });
+    if (indexToRemove !== -1) {
+      req.session.cart.items.splice(indexToRemove, 1);
+      req.session.save();
+      res.status(200).json({ message: `آیتم از سبد شما حذف شد` });
+    } else {
+      res.status(404).json({ error: "آیتم های سبد خرید پیدا نشد" });
+    }
   } catch (error) {
-    // console.error(error);
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

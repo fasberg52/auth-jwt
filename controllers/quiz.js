@@ -3,6 +3,8 @@ const Quiz = require("../model/quiz");
 const { getRepository } = require("typeorm");
 const { quiz24Url } = require("../utils/axiosBaseUrl");
 const { getRounds } = require("bcryptjs");
+const Enrollment = require("../model/Enrollment");
+
 async function registerUser(req, res) {
   try {
     const userId = process.env.ADMIN_QUEZ24;
@@ -107,7 +109,8 @@ async function exam(req, res) {
 }
 async function createExamCode(req, res) {
   try {
-    const { examCode } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime, examType } =
+      req.body;
     const quizRepository = getRepository(Quiz);
     const exitingCode = await quizRepository.findOne({
       where: { examCode: examCode },
@@ -117,6 +120,12 @@ async function createExamCode(req, res) {
     }
     const newExamCode = quizRepository.create({
       examCode: examCode,
+      examTitle: examTitle,
+      examPrice: examPrice,
+      start: start,
+      end: end,
+      expireTime: expireTime,
+      examType: examType,
     });
     await quizRepository.save(newExamCode);
     res.status(201).json({ message: "با موفقیت ساخته شد", status: 201 });
@@ -160,7 +169,8 @@ async function getExamCodeById(req, res) {
 async function updateExamCode(req, res) {
   try {
     const examCodeId = req.params.examCodeId;
-    const { examCode } = req.body;
+    const { examCode, examTitle, examPrice, start, end, expireTime, examType } =
+      req.body;
     const examCodeRepository = getRepository(Quiz);
 
     const existingExamCode = await examCodeRepository.findOne({
@@ -172,7 +182,12 @@ async function updateExamCode(req, res) {
     }
 
     existingExamCode.examCode = examCode;
-
+    existingExamCode.examTitle = examTitle;
+    existingExamCode.examPrice = examPrice;
+    existingExamCode.start = start;
+    existingExamCode.end = end;
+    existingExamCode.expireTime = expireTime;
+    existingExamCode.examType = examType;
     await examCodeRepository.save(existingExamCode);
 
     res
@@ -205,6 +220,43 @@ async function deleteExamCode(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+const getEnrolledQuizzesForUser = async (req, res) => {
+  try {
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getRepository(Enrollment);
+
+    const enrolledQuizzesQuery = enrollmentRepository
+      .createQueryBuilder("enrollment")
+      .leftJoinAndSelect("enrollment.quiz", "quiz")
+      .leftJoin("enrollment.order", "o")
+      .leftJoin("o.user", "user")
+      .where("user.phone = :phone", { phone: userPhone })
+      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .select([
+        "quiz.id as id",
+        "quiz.examCode as examCode",
+        "quiz.examTitle as examTitle",
+        "quiz.examPrice as examPrice",
+        "quiz.start as start",
+        "quiz.end as end",
+        "quiz.expireTime as expireTime",
+        "quiz.itemType as itemType",
+      ]);
+
+    const enrolledQuizzes = await enrolledQuizzesQuery.getRawMany();
+
+    res.status(200).json({
+      enrolledQuizzes: enrolledQuizzes,
+      status: 200,
+    });
+  } catch (error) {
+    console.error(`Error in getEnrolledQuizzesForUser: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getAllExamCodes,
   updateExamCode,
@@ -220,4 +272,5 @@ module.exports = {
   answersheets,
   exams,
   exam,
+  getEnrolledQuizzesForUser,
 };

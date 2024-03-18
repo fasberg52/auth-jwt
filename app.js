@@ -1,5 +1,5 @@
-//app.js
 const express = require("express");
+require("reflect-metadata");
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");
@@ -10,7 +10,8 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
 const dotenv = require("dotenv").config();
-const { sendNotifications } = require("./utils/notifications");
+
+const fs = require("fs");
 const app = express();
 
 app.disable("x-powered-by");
@@ -18,40 +19,44 @@ app.disable("x-powered-by");
 async function main() {
   try {
     await setupDatabase();
-    configureSession(app);
-    app.set("trust proxy", 1);
 
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "views"));
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(cookieParser());
 
     app.use(bodyParser.urlencoded({ extended: false }));
-    //app.use(bodyParser.json());
     app.use(express.json());
-    app.use("/app/uploads", express.static("uploads"));
-    app.use("/public", express.static("public"));
-    app.use(loggerMiddleware);
+
     app.use(
       cors({
-        // origin: "*",
         origin: [
           "https://baclass.iran.liara.run",
           "https://beta.balcass.online",
-          "http://192.168.1.113",
-          "http://192.168.1.113:3630",
+          "http://192.168.100.17:3630",
           "http://localhost:3630",
           "http://localhost:4173",
           "http://192.168.1.195:4173",
           "https://event.alocom.co",
+          "https://baclassonline.liara.run",
+          "http://baclassonline.ir",
+          "https://baclassonline.ir",
+          "https://storageclass.storage.iran.liara.space"
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       })
     );
 
+    configureSession(app);
+
+    app.use(cookieParser());
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use("/app/uploads", express.static("uploads"));
+    app.use("/public", express.static("public"));
+    app.use(loggerMiddleware);
+
     app.use(compression());
+
     routerConfig(app);
 
     app.listen(process.env.PORT, () => {
@@ -61,4 +66,5 @@ async function main() {
     console.error("Error setting up the application:", error);
   }
 }
+
 main();

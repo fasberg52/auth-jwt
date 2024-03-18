@@ -48,7 +48,7 @@ async function subscribeUser(req, res) {
     await subscribeRepository.save(newSubscription);
 
     console.log(newSubscription);
-    res.status(201).json({ message: "با موفقیت انجام شد", status: 201 });
+    res.status(201).json({ message: "اعلان فعال شد", status: 201 });
   } catch (error) {
     console.error("Error subscribing user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -70,17 +70,17 @@ async function unsubscribeUser(req, res) {
 
     const subscribeRepository = getRepository(Subscribe);
 
-    const existingSubscription = await subscribeRepository.findOne({
+    const userSubscriptions = await subscribeRepository.findOne({
       where: { userPhone: userPhone },
     });
 
-    if (!existingSubscription) {
+    if (userSubscriptions.length === 0) {
       return res.status(400).json({ message: "سابسکرایب یافت نشد" });
     }
 
-    await subscribeRepository.remove(existingSubscription);
+    await subscribeRepository.remove(userSubscriptions);
 
-    res.status(200).json({ message: "با موفقیت لغو شد" });
+    res.status(200).json({ message: "اعلان غیر فعال شد", status: 200 });
   } catch (error) {
     console.error("Error unsubscribing user:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -99,8 +99,6 @@ async function sendNotif() {
 
     const windowEnd = new Date(currentTimestamp);
     windowEnd.setSeconds(currentTimestamp.getSeconds() + 30);
-
-   
 
     const currentClass = await getRepository(OnlineClass)
       .createQueryBuilder("onlineClass")

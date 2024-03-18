@@ -11,10 +11,11 @@ const Coupon = new EntitySchema({
       generated: true,
     },
     code: {
-      type: "text",
+      type: "varchar",
       unique: true,
+      nullable: true,
     },
-    discountPersentage: {
+    discountPercentage: {
       type: "int",
       nullable: true,
     },
@@ -26,13 +27,12 @@ const Coupon = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
- 
   },
   relations: {
-    carts: {
-      type: "many-to-one",
-      target: "Cart",
-      joinColumn: true,
+    orders: {
+      type: "one-to-many",
+      target: "Order",
+      inverseSide: "coupons",
     },
   },
 });

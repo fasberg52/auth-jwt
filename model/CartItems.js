@@ -17,7 +17,7 @@ const CartItems = new EntitySchema({
       type: "int",
     },
     courseId: {
-      // Add this field to store the course ID
+     
       type: "int",
     },
   },
@@ -25,7 +25,7 @@ const CartItems = new EntitySchema({
     cart: {
       target: "Cart",
       type: "many-to-one",
-      inverseSide: "cartItems", // Adjusted this line
+      inverseSide: "cartItems",
       joinColumn: { name: "cartId", referencedColumnName: "id" },
     },
     course: {

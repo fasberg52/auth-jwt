@@ -1,10 +1,10 @@
 const Coupon = require("../model/Coupon");
 const logger = require("../services/logger");
-const { getManager, Like } = require("typeorm");
-
+const { getManager, Like, getRepository } = require("typeorm");
+const Order = require("../model/Orders");
 async function createCoupon(req, res) {
   try {
-    const { code, discountPersentage, expireTime } = req.body;
+    const { code, discountPercentage, expireTime } = req.body;
     const couponRepository = getManager().getRepository(Coupon);
     const exitingCode = await couponRepository.findOne({
       where: { code: code },
@@ -29,7 +29,7 @@ async function createCoupon(req, res) {
 
     const newCoupon = couponRepository.create({
       code,
-      discountPersentage,
+      discountPercentage,
       createdAt,
       expireTime,
     });
@@ -80,25 +80,171 @@ async function getAllCoupons(req, res) {
   }
 }
 
-async function editCoupon(req, res) {}
+async function editCoupon(req, res) {
+  try {
+    const { couponId } = req.params;
+    const { code, discountPercentage, expireTime } = req.body;
 
-async function deleteCoupon(req, res) {}
+    const couponRepository = getManager().getRepository(Coupon);
+    const existingCoupon = await couponRepository.findOne({
+      where: { id: couponId },
+    });
 
-async function applyCoupon(req, res) {
-  const { coupon } = req.body;
+    if (!existingCoupon) {
+      return res.status(404).json({ error: "کد تخفیف وجود ندارد!" });
+    }
 
-  if (!coupon) {
-    res.status(400).json({ error: "کد تخفیف را وارد کنید" });
-  }
+    existingCoupon.code = code || existingCoupon.code;
+    existingCoupon.discountPercentage =
+      discountPercentage || existingCoupon.discountPercentage;
+    existingCoupon.expireTime = expireTime || existingCoupon.expireTime;
 
-  const couponRepository = getManager().getRepository(Coupon);
-  const appliedCoupon = await couponRepository.findOne({
-    where: { code: coupon },
-  });
+    await couponRepository.save(existingCoupon);
 
-  if (!appliedCoupon) {
-    return res.status(404).json({ error: "کد تخفیف وجود ندارد" });
+    res.status(200).json({
+      message: "کد تخفیف ویرایش شد",
+      updatedCoupon: existingCoupon,
+      status: 200,
+    });
+  } catch (error) {
+    logger.error(`Error in editCoupon ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
-module.exports = { applyCoupon, createCoupon, getByIdCoupon, getAllCoupons };
+async function deleteCoupon(req, res) {
+  try {
+    const { couponId } = req.params;
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const existingCoupon = await couponRepository.findOne({
+      where: { id: couponId },
+    });
+
+    if (!existingCoupon) {
+      return res
+        .status(404)
+        .json({ error: "کد تخفیف وجود ندارد!", status: 404 });
+    }
+
+    await couponRepository.remove(existingCoupon);
+
+    res.status(200).json({ message: "کد تخفیف حذف شد", status: 200 });
+  } catch (error) {
+    logger.error(`Error in deleteCoupon ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function applyCoupon(req, res) {
+  try {
+    const { coupon, orderId } = req.body;
+
+    if (!coupon || !orderId) {
+      return res
+        .status(400)
+        .json({ error: "کد تخفیف و شناسه سفارش را وارد کنید", status: 400 });
+    }
+
+    const couponRepository = getManager().getRepository(Coupon);
+    const appliedCoupon = await couponRepository.findOne({
+      where: { code: coupon },
+    });
+
+    if (!appliedCoupon) {
+      return res
+        .status(404)
+        .json({ error: "کد تخفیف وجود ندارد", status: 404 });
+    }
+
+    const currentDate = new Date();
+    if (appliedCoupon.expireTime && appliedCoupon.expireTime < currentDate) {
+      return res
+        .status(400)
+        .json({ error: "کد تخفیف منقضی شده است", status: 400 });
+    }
+
+    const orderRepository = getRepository(Order);
+    const existingOrder = await orderRepository.findOneBy({ id: orderId });
+
+    if (!existingOrder) {
+      return res
+        .status(404)
+        .json({ error: "سفارش با شناسه داده شده یافت نشد", status: 404 });
+    }
+
+    existingOrder.couponId = appliedCoupon.id;
+    existingOrder.discountTotalPrice = calculateDiscountedTotalPrice(
+      existingOrder.originalTotalPrice,
+      appliedCoupon.discountPercentage
+    );
+
+    const updatedOrder = await orderRepository.save(existingOrder);
+
+    req.session.appliedCoupon = {
+      coupon: appliedCoupon,
+      orderId: orderId,
+    };
+
+    console.log(req.session.appliedCoupon);
+
+    return res
+      .status(200)
+      .json({ message: "کد تخفیف با موفقیت اعمال شد", status: 200 });
+  } catch (error) {
+    console.error(`Error in applyCoupon: ${error}`);
+    res.status(500).json("Internal Server Error");
+  }
+}
+
+function calculateDiscountedTotalPrice(originalTotalPrice, discountPercentage) {
+  if (!isNaN(discountPercentage)) {
+    const discountAmount = (discountPercentage / 100) * originalTotalPrice;
+    return discountAmount;
+  } else {
+    console.error(`Invalid discount percentage: ${discountPercentage}`);
+    return originalTotalPrice;
+  }
+}
+
+async function deleteAppliedCoupon(req, res) {
+  try {
+    const userPhone = req.user.phone;
+    const orderId = req.params.orderId;
+    const orderRepository = getRepository(Order);
+    const existingOrder = await orderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!existingOrder) {
+      return res.status(404).json({ error: "این سفارش وجود ندارد" });
+    }
+
+    existingOrder.couponId = null;
+    existingOrder.discountTotalPrice = null;
+
+    await orderRepository.save(existingOrder);
+
+    delete req.session.appliedCoupon;
+
+    return res.status(200).json({
+      message: "کد تخفیف با موفقیت حذف شد",
+      user: userPhone,
+      orderId,
+      status: 200,
+    });
+  } catch (error) {
+    console.error(`Error in deleteAppliedCoupon: ${error}`);
+    res.status(500).json("Internal Server Error");
+  }
+}
+
+module.exports = {
+  deleteAppliedCoupon,
+  applyCoupon,
+  createCoupon,
+  getByIdCoupon,
+  getAllCoupons,
+  editCoupon,
+  deleteCoupon,
+};
