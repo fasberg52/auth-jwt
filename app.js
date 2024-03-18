@@ -1,11 +1,11 @@
 const express = require("express");
-require("reflect-metadata")
+require("reflect-metadata");
 const { setupDatabase, configureSession } = require("./config/databaseConfig");
 const { routerConfig } = require("./config/routerConfig");
 const cors = require("cors");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
-const passport = require("passport");  
+const passport = require("passport");
 const path = require("path");
 const bodyParser = require("body-parser");
 const { loggerMiddleware } = require("./middleware/loggerMiddleware");
@@ -37,6 +37,9 @@ async function main() {
           "http://192.168.1.195:4173",
           "https://event.alocom.co",
           "https://baclassonline.liara.run",
+          "http://baclassonline.ir",
+          "https://baclassonline.ir",
+          "https://storageclass.storage.iran.liara.space"
         ],
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,

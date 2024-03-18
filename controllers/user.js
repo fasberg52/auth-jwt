@@ -235,18 +235,21 @@ async function readPartsUserId(req, res) {
   try {
     const { phone, partId, isRead, courseId } = req.body;
 
+    const parsedPartId = parseInt(partId);
+    const parsedCourseId = parseInt(courseId);
+
     const userPartStatusRepository = getRepository(UserPartStatus);
-    const userPartStatus = await userPartStatusRepository.findOneBy({
+    let userPartStatus = await userPartStatusRepository.findOneBy({
       phone: phone,
-      partId: partId,
+      partId: parsedPartId,
     });
 
     if (!userPartStatus) {
       userPartStatus = userPartStatusRepository.create({
         phone,
-        partId,
+        partId: parsedPartId,
         isRead,
-        courseId,
+        courseId: parsedCourseId,
       });
     } else {
       userPartStatus.isRead = isRead;
@@ -254,10 +257,10 @@ async function readPartsUserId(req, res) {
 
     await userPartStatusRepository.save(userPartStatus);
 
-    res.status(200).json({ message: "خوانده شد", status: 200 });
+    return res.status(200).json({ message: "خوانده شد", status: 200 });
   } catch (error) {
     console.error("Error in updating read status:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -308,34 +311,67 @@ async function updateTeachingMethodRating(req, res) {
       await userPartRepository.save(userPart);
     });
 
-    res.status(200).json({ message: "ممنون از رای شما", status: 200 });
+    return res.status(200).json({ message: "ممنون از رای شما", status: 200 });
   } catch (error) {
     console.error("Error updating teaching method rating:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
 async function getReadPartId(req, res) {
   try {
     const phone = req.user.phone;
-    const { partId } = req.params;
+    const { partId, courseId } = req.params;
+    const parsedPartId = parseInt(partId);
+    const parsedCourseId = parseInt(courseId);
+
     const userPartStatusRepository = getRepository(UserPartStatus);
     const userPartStatus = await userPartStatusRepository.findOneBy({
       phone: phone,
-      partId: partId,
+      partId: parsedPartId,
+      courseId: parsedCourseId,
     });
 
     if (!userPartStatus) {
-      res.status(404).json({ error: "شماره یا جلسه وجود ندارد" });
+      return res.status(200).json({ isRead: false, status: 200 });
     }
     const isRead = userPartStatus.isRead;
-    res.status(200).json({ isRead, status: 200 });
+    return res.status(200).json({ isRead, status: 200 });
   } catch (error) {
     console.error("Error getAllreadPartsUserId:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+async function countIsRead(req, res) {
+  try {
+    const { courseId, phone } = req.params;
+    const parsedCourseId = parseInt(courseId);
+    const userPartRepository = getRepository(UserPartStatus);
+    
+    const totalTrueResult = await userPartRepository.createQueryBuilder("UserPart")
+      .select("COUNT(UserPart.isRead)", "totalTrue")
+      .where("UserPart.courseId = :courseId", { courseId: parsedCourseId })
+      .andWhere("UserPart.phone = :phone", { phone: phone })
+      .andWhere("UserPart.isRead = :isRead", { isRead: true })
+      .getRawOne();
 
+    if (!totalTrueResult || !totalTrueResult.totalTrue) {
+      return res.status(404).json({ error: "No data found" });
+    }
+    
+    const totalTrue = parseInt(totalTrueResult.totalTrue);
+
+    const totalParts = await userPartRepository.count({
+      courseId: parsedCourseId,
+      phone: phone,
+    });
+
+    return res.json({ totalTrue, totalParts });
+  } catch (error) {
+    console.error("Error countIsRead:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
@@ -346,4 +382,5 @@ module.exports = {
   unReadPartsUserId,
   updateTeachingMethodRating,
   getReadPartId,
+  countIsRead,
 };

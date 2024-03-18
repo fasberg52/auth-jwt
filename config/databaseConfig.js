@@ -91,7 +91,7 @@ async function configureSession(app) {
   );
 
   app.use((req, res, next) => {
-    console.log(`Session created. Session ID: ${req.sessionID}`);
+    //console.log(`Session created. Session ID: ${req.sessionID}`);
     next();
   });
 }
