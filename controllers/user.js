@@ -3,6 +3,7 @@ const UserPartStatus = require("../model/UserPart");
 const Upload = require("../model/Upload");
 const Subscribe = require("../model/Subscribe");
 const OTP = require("../model/OTP");
+const Part = require("../model/Part");
 const { createSubdirectory } = require("../utils/multerUtils");
 const fs = require("fs");
 const path = require("path");
@@ -342,30 +343,52 @@ async function getReadPartId(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+// async function countIsRead(req, res) {
+//   try {
+//     const { courseId } = req.params;
+//     const phone = req.user;
+//     const parsedCourseId = parseInt(courseId);
+//     const userPartRepository = getRepository(UserPartStatus);
+
+//     const totalTrueResult = await userPartRepository
+//       .createQueryBuilder("UserPart")
+//       .select("COUNT(UserPart.isRead)", "totalTrue")
+//       .where("UserPart.courseId = :courseId", { courseId: parsedCourseId })
+//       .andWhere("UserPart.phone = :phone", { phone: phone })
+//       .andWhere("UserPart.isRead = :isRead", { isRead: true })
+//       .getRawOne();
+
+//     if (!totalTrueResult || !totalTrueResult.totalTrue) {
+//       return res.status(404).json({ error: "اطلاعاتی یافت نشد" });
+//     }
+
+//     const totalTrue = parseInt(totalTrueResult.totalTrue);
+
+//     const totalParts = await userPartRepository.count({
+//       courseId: parsedCourseId,
+//       phone: phone,
+//     });
+
+//     return res.json({ totalTrue, totalParts });
+//   } catch (error) {
+//     console.error("Error countIsRead:", error);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+
 async function countIsRead(req, res) {
   try {
     const { courseId } = req.params;
-    const phone = req.user;
+    const phone = req.user.phone;
     const parsedCourseId = parseInt(courseId);
-    const userPartRepository = getRepository(UserPartStatus);
 
-    const totalTrueResult = await userPartRepository
-      .createQueryBuilder("UserPart")
-      .select("COUNT(UserPart.isRead)", "totalTrue")
-      .where("UserPart.courseId = :courseId", { courseId: parsedCourseId })
-      .andWhere("UserPart.phone = :phone", { phone: phone })
-      .andWhere("UserPart.isRead = :isRead", { isRead: true })
-      .getRawOne();
 
-    if (!totalTrueResult || !totalTrueResult.totalTrue) {
-      return res.status(404).json({ error: "No data found" });
-    }
+    const totalTrue = await getRepository(UserPartStatus).count({
+      where: { isRead: true, phone: phone },
+    });
 
-    const totalTrue = parseInt(totalTrueResult.totalTrue);
-
-    const totalParts = await userPartRepository.count({
-      courseId: parsedCourseId,
-      phone: phone,
+    const totalParts = await getRepository(Part).count({
+      where: { courseId: parsedCourseId },
     });
 
     return res.json({ totalTrue, totalParts });
@@ -374,6 +397,7 @@ async function countIsRead(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 module.exports = {
   getUserDataWithToken,
   getAllOrderUser,
