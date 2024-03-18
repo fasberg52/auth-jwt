@@ -7637,3 +7637,5 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-18T11:55:43.267Z info: GET  404 47 - 27.24ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-18T11:55:47.704Z info: GET  404 47 - 5.31ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-18T11:56:04.219Z info: GET  200 88 - 8.41ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T12:47:19.345Z info: Part list retrieved with read status for user 
+2024-03-18T12:47:19.353Z info: GET  200 2883 - 138.58ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

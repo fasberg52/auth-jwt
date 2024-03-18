@@ -252,11 +252,8 @@ async function gatAllPartwithCourseId(req, res) {
         phone,
       })
       .where("part.courseId = :courseId", { courseId })
-      .select([
-        "part.id",
-        "part.title",
-        "COALESCE(up.isRead, false) AS isRead",
-      ]);
+      .select(["part.id", "part.title", "COALESCE(up.isRead, false) AS isRead"])
+      .orderBy("part.id", "ASC");
     const [partsWithStatus, totalCount] = await Promise.all([
       partsWithStatusQuery.getRawMany(),
       partsWithStatusQuery.getCount(),
