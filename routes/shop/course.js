@@ -33,7 +33,7 @@ router.get(
 );
 
 router.get(
-  "/courseId/:courseId/part/:partId/access-enroll",
+  "/courseId/:courseId/part/:partId/free",
   jwtAuthMiddleware,
   enrollmentController.getVideoPathWithOutEnrollWithPartId
 );

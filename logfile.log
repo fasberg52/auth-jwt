@@ -7626,3 +7626,14 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-18T10:38:54.413Z info: GET  200 31 - 31.13ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-18T11:26:15.183Z info: GET  200 44 - 94.64ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-18T11:27:15.849Z info: GET  200 44 - 30.43ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:52:34.106Z info: POST  200 87 - 73.16ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:52:40.354Z info: POST  200 433 - 133.88ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:53:40.861Z info: GET  200 71 - 648.57ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:54:13.595Z info: GET  200 71 - 67.06ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:54:16.464Z info: GET  200 71 - 8.62ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:54:20.138Z info: GET  200 71 - 5.36ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:54:23.737Z info: GET  404 47 - 5.87ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:54:26.634Z info: GET  200 71 - 6.29ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:55:43.267Z info: GET  404 47 - 27.24ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:55:47.704Z info: GET  404 47 - 5.31ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-18T11:56:04.219Z info: GET  200 88 - 8.41ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

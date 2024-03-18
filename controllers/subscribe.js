@@ -124,7 +124,7 @@ async function sendNotif() {
       title: currentClass.title,
       body: `${currentClass.course.title} در حال برگزاری است`,
       icon: currentClass.course.imageUrl,
-      badge: `https://baclassdevelop.liara.run/app/uploads/2024/02/192.png`,
+      badge: `https://api.baclassonline.ir/app/uploads/2024/02/192.png`,
     };
 
     for (const subscription of subscriptions) {
