@@ -3,7 +3,7 @@ const User = require("../model/users");
 const Order = require("../model/Orders");
 const Enrollment = require("../model/Enrollment");
 const Cart = require("../model/Cart");
-const Subscribe = require("../model/Subscribe")
+const Subscribe = require("../model/Subscribe");
 const { quiz24Url } = require("../utils/axiosBaseUrl");
 const logger = require("../services/logger");
 const moment = require("jalali-moment");
@@ -244,7 +244,7 @@ async function deleteUsers(req, res) {
         .where("user.phone = :phone", { phone: phone })
         .execute();
 
-        await getManager()
+      await getManager()
         .createQueryBuilder()
         .delete()
         .from(Subscribe)
@@ -266,9 +266,18 @@ async function deleteUsers(req, res) {
 
 async function addOrderUser(req, res) {
   try {
-    const { orderStatus, userPhone, courseId } = req.body;
+    const { orderStatus, userPhone, courseIds } = req.body;
 
-    // Create a new order record in the database
+    if (!orderStatus || !userPhone || !Array.isArray(courseIds) || courseIds.length === 0) {
+      return res.status(400).json({ error: "Bad Request: Missing required fields" });
+    }
+
+    const userRepository = getManager().getRepository(User);
+    const user = await userRepository.findOne({ phone: userPhone });
+    if (!user) {
+      return res.status(404).json({ error: "کاربر پیدا نشد" });
+    }
+
     const orderRepository = getManager().getRepository(Order);
     const newOrder = await orderRepository.create({
       orderStatus: orderStatus,
@@ -276,27 +285,35 @@ async function addOrderUser(req, res) {
     });
     const savedOrder = await orderRepository.save(newOrder);
 
-    // Retrieve the newly created order's ID
     const orderId = savedOrder.id;
 
-    // Store the order ID and course ID in the enrollment table
     const enrollmentRepository = getManager().getRepository(Enrollment);
-    const newEnrollment = await enrollmentRepository.create({
-      orderId: orderId,
-      courseId: courseId,
-    });
-    const savedEnrollment = await enrollmentRepository.save(newEnrollment);
+    const enrollments = [];
+    for (const courseId of courseIds) {
+      const course = await courseRepository.findOne(courseId);
+      if (!course) {
+        return res.status(404).json({ error: `دوره با آیدی ${courseId} پیدا نشد!` });
+      }
+      
+      const newEnrollment = await enrollmentRepository.create({
+        orderId: orderId,
+        courseId: courseId,
+      });
+      const savedEnrollment = await enrollmentRepository.save(newEnrollment);
+      enrollments.push(savedEnrollment);
+    }
 
     res.status(200).json({
-      message: "Order and enrollment created successfully",
       orderId: orderId,
-      enrollmentId: savedEnrollment.id,
+      enrollmentIds: enrollments.map((enrollment) => enrollment.id),
+      status: 200,
     });
   } catch (error) {
     console.error(`Error in addOrderUser: ${error}`);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
 module.exports = {
   getUsers,
@@ -305,5 +322,5 @@ module.exports = {
   deleteUsers,
   createUser,
   delUser,
-  addOrderUser
+  addOrderUser,
 };

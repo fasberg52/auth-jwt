@@ -7791,3 +7791,13 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-24T07:33:03.095Z info: GET  200 41 - 182.05ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-24T07:33:03.096Z info: GET  200 13 - 210.50ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
 2024-03-24T07:58:38.997Z info: DELETE  200 69 - 123.56ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T08:27:10.105Z info: POST  200 88 - 46.09ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:27:31.617Z info: POST  200 88 - 69.03ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:28:08.048Z info: POST  200 47 - 42.29ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:28:45.286Z info: POST  200 47 - 67.33ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:29:18.181Z info: GET  200 605 - 67.34ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:30:00.311Z info: POST  200 47 - 10.58ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:32:26.216Z info: POST  500 33 - 36.79ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:33:19.896Z info: POST  200 96 - 67.63ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:33:41.474Z info: POST  200 96 - 62.43ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T08:34:57.875Z info: POST  200 54 - 42.72ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 

@@ -21,7 +21,7 @@ const {
   getAllOnlineClasses,
 } = require("../../controllers/onlineClass");
 
-const { addUserEnroll } = require("../../controllers/enrollment");
+const { addOrderUser } = require("../../controllers/admin");
 
 router.post(
   "/user",
@@ -275,7 +275,7 @@ router.post(
   "/enroll-user",
   jwtAuthMiddleware,
   checkRole("admin"),
-  addUserEnroll
+  addOrderUser
 );
 module.exports = router;
 

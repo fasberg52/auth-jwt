@@ -67,7 +67,9 @@ async function getVideoPathAfterEnrollWithPartId(req, res) {
       .innerJoinAndSelect("order.user", "user")
       .where("enrollment.courseId = :courseId", { courseId })
       .andWhere("user.phone = :phone", { phone: userPhone })
-      .andWhere("order.orderStatus = 'success'")
+      .andWhere("order.orderStatus IN (:statuses)", {
+        statuses: ["success", "free"],
+      })
       //.orderBy("order.createdAt", "DESC")
       .getOne();
 
