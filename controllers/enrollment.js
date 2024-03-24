@@ -155,9 +155,37 @@ async function addUserEnroll(req, res) {
   }
 }
 
+async function cancelEnrollment(req, res) {
+  try {
+    const courseId = req.params.courseId;
+    const userPhone = req.user.phone;
+
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+
+    const enrollment = await enrollmentRepository.findOne({
+      where: {
+        courseId: courseId,
+        phone: userPhone,
+      },
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({ error: "Enrollment not found" });
+    }
+
+    await enrollmentRepository.remove(enrollment);
+
+    res.status(200).json({ message: "Enrollment canceled successfully" });
+  } catch (error) {
+    console.error(`Error in cancelEnrollment: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getVideoPathAfterEnrollWithPartId,
   getVideoPathAfterEnroll,
   getVideoPathWithOutEnrollWithPartId,
   addUserEnroll,
+  cancelEnrollment,
 };
