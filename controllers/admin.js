@@ -264,50 +264,39 @@ async function deleteUsers(req, res) {
   }
 }
 
-// async function deleteUsers(req, res) {
-//   try {
-//     const phone = req.params.phone;
+async function addOrderUser(req, res) {
+  try {
+    const { orderStatus, userPhone, courseId } = req.body;
 
-//     console.log(`phone >> ${phone}`);
-//     await getManager().transaction(async (transactionalEntityManager) => {
-//       const user = await transactionalEntityManager.findOne(User, {
-//         where: { phone: phone },
-//       });
+    // Create a new order record in the database
+    const orderRepository = getManager().getRepository(Order);
+    const newOrder = await orderRepository.create({
+      orderStatus: orderStatus,
+      userPhone: userPhone,
+    });
+    const savedOrder = await orderRepository.save(newOrder);
 
-//       console.log(`user >> ${JSON.stringify(user)}`);
+    // Retrieve the newly created order's ID
+    const orderId = savedOrder.id;
 
-//       if (!user) {
-//         return res.status(404).json({ error: "کاربر پیدا نشد" });
-//       }
+    // Store the order ID and course ID in the enrollment table
+    const enrollmentRepository = getManager().getRepository(Enrollment);
+    const newEnrollment = await enrollmentRepository.create({
+      orderId: orderId,
+      courseId: courseId,
+    });
+    const savedEnrollment = await enrollmentRepository.save(newEnrollment);
 
-//       const cart = await transactionalEntityManager
-//         .createQueryBuilder()
-//         .update(Cart)
-//         .set({ user: null })
-//         .where("user.phone = :phone", { phone: phone })
-//         .execute();
-
-//       console.log(`cart >> ${JSON.stringify(cart)}`);
-
-//       const order = await transactionalEntityManager
-//         .createQueryBuilder()
-//         .update(Order)
-//         .set({ user: null })
-//         .where("user.phone = :phone", { phone: phone })
-//         .execute();
-
-//       console.log(`order >> ${JSON.stringify(order)}`);
-
-//       await transactionalEntityManager.remove(User, user);
-//       return res.json({ message: "کاربر با موفقیت پاک شد" });
-//     });
-//   } catch (error) {
-//     logger.error(`Error in deleteUsers ${error}`);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while deleting the user." });
-//   }
-// }
+    res.status(200).json({
+      message: "Order and enrollment created successfully",
+      orderId: orderId,
+      enrollmentId: savedEnrollment.id,
+    });
+  } catch (error) {
+    console.error(`Error in addOrderUser: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 module.exports = {
   getUsers,
@@ -316,4 +305,5 @@ module.exports = {
   deleteUsers,
   createUser,
   delUser,
+  addOrderUser
 };

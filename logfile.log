@@ -7639,3 +7639,155 @@ QueryFailedError: column course.bannerurl does not exist
 2024-03-18T11:56:04.219Z info: GET  200 88 - 8.41ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
 2024-03-18T12:47:19.345Z info: Part list retrieved with read status for user 
 2024-03-18T12:47:19.353Z info: GET  200 2883 - 138.58ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:45:02.557Z info: POST  200 87 - 23.84ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:45:08.642Z info: POST  200 433 - 132.88ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:45:49.674Z info: POST  500 33 - 93.68ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:50:28.773Z info: POST  200 141 - 60.44ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:51:25.831Z info: GET  200 2617 - 74.13ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:51:57.377Z info: POST  200 141 - 67.42ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T06:52:06.355Z info: GET  200 2617 - 12.34ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T07:05:15.903Z info: GET  200 2756 - 80.18ms insomnia/2023.5.8 Windows_NT - win32 x64  ::ffff:127.0.0.1 
+2024-03-24T07:09:18.639Z info: POST  200 276 - 8.16ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:18.658Z info: POST  200 276 - 4.61ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:18.712Z info: GET  401 undefined - 97.85ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:23.744Z info: GET  401 undefined - 5.76ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:23.798Z info: GET  401 undefined - 56.32ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:40.200Z info: POST  200 87 - 104.57ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.056Z info: POST  200 438 - 195.70ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.193Z info: GET  200 72 - 5.12ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.198Z info: GET  404 168 - 3.05ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.223Z info: GET  200 227 - 10.23ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.276Z info: GET  200 72 - 4.10ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.328Z info: POST  200 211 - 1.46ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.331Z info: GET  200 227 - 7.94ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:55.340Z info: POST  200 211 - 2.67ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.554Z info: GET  404 44 - 48.98ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.567Z info: GET  200 13 - 7.32ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.582Z info: GET  200 11 - 7.14ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.658Z info: Part list retrieved with read status for user 
+2024-03-24T07:09:56.659Z info: GET  200 41 - 147.96ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.669Z info: GET  404 44 - 144.14ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.684Z info: Part list retrieved with read status for user 
+2024-03-24T07:09:56.686Z info: GET  200 41 - 156.86ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.691Z info: GET  200 13 - 175.23ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:56.695Z info: GET  200 11 - 173.72ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:09:59.794Z info: POST  201 51 - 21.17ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.193Z info: GET  200 2 - 99.24ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.232Z info: GET  200 2 - 129.29ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.281Z info: GET  200 undefined - 175.07ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.307Z info: GET  200 undefined - 194.88ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.311Z info: GET  200 698 - 195.55ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:11:21.323Z info: GET  200 698 - 214.71ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.801Z info: GET  200 11 - 115.84ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.815Z info: GET  200 11 - 7.20ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.831Z info: Part list retrieved with read status for user 
+2024-03-24T07:14:41.832Z info: GET  200 41 - 126.25ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.863Z info: GET  404 44 - 191.81ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.871Z info: GET  200 13 - 178.25ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.874Z info: GET  404 44 - 171.57ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.919Z info: Part list retrieved with read status for user 
+2024-03-24T07:14:41.948Z info: GET  200 41 - 271.00ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:41.984Z info: GET  200 13 - 156.94ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:57.626Z info: POST  200 211 - 1.51ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:57.630Z info: POST  200 211 - 1.50ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.026Z info: POST  200 211 - 3.43ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.033Z info: POST  200 211 - 2.77ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.241Z info: GET  404 168 - 1.39ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.342Z info: GET  200 227 - 111.00ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.366Z info: GET  200 72 - 136.77ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.378Z info: GET  200 227 - 139.34ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:58.395Z info: GET  200 72 - 159.79ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.187Z info: Part list retrieved with read status for user 
+2024-03-24T07:14:59.189Z info: GET  200 41 - 19.56ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.194Z info: GET  404 44 - 26.36ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.202Z info: GET  200 13 - 29.47ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.206Z info: GET  404 44 - 6.98ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.220Z info: Part list retrieved with read status for user 
+2024-03-24T07:14:59.222Z info: GET  200 41 - 8.30ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.237Z info: GET  200 11 - 7.69ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.238Z info: GET  200 13 - 12.39ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:14:59.334Z info: GET  200 11 - 150.78ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:46.492Z info: GET  200 50 - 85.16ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:46.493Z info: GET  200 50 - 81.92ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.747Z info: GET  404 44 - 46.66ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.767Z info: GET  200 11 - 7.07ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.842Z info: GET  200 13 - 119.16ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.864Z info: GET  200 13 - 6.35ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.879Z info: GET  200 11 - 162.32ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.893Z info: GET  404 44 - 164.13ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.896Z info: Part list retrieved with read status for user 
+2024-03-24T07:19:49.897Z info: GET  200 41 - 184.47ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:49.913Z info: Part list retrieved with read status for user 
+2024-03-24T07:19:49.914Z info: GET  200 41 - 178.10ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:51.482Z info: GET  404 44 - 34.35ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:19:52.643Z info: GET  404 44 - 23.14ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.815Z info: GET  404 168 - 1.89ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.895Z info: POST  200 211 - 1.82ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.896Z info: GET  200 72 - 14.02ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.900Z info: POST  200 211 - 1.83ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.912Z info: GET  200 227 - 10.43ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.964Z info: GET  200 227 - 79.42ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:02.969Z info: GET  200 72 - 80.01ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.019Z info: GET  404 44 - 47.41ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.023Z info: GET  200 13 - 37.19ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.063Z info: GET  200 11 - 6.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.064Z info: GET  200 13 - 12.09ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.116Z info: GET  200 11 - 121.98ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.131Z info: Part list retrieved with read status for user 
+2024-03-24T07:20:04.132Z info: GET  200 41 - 151.90ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.135Z info: GET  404 44 - 137.52ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:20:04.138Z info: Part list retrieved with read status for user 
+2024-03-24T07:20:04.139Z info: GET  200 41 - 139.00ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.295Z info: GET  404 168 - 7.14ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.349Z info: POST  200 211 - 5.94ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.372Z info: GET  200 72 - 16.53ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.376Z info: POST  200 211 - 1.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.391Z info: GET  200 227 - 12.85ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.445Z info: GET  200 227 - 86.83ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:06.447Z info: GET  200 72 - 83.37ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.480Z info: GET  404 44 - 34.57ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.486Z info: GET  200 13 - 31.29ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.499Z info: GET  200 13 - 8.40ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.560Z info: GET  200 11 - 102.59ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.573Z info: GET  404 44 - 113.55ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.593Z info: Part list retrieved with read status for user 
+2024-03-24T07:23:07.595Z info: GET  200 41 - 145.87ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.596Z info: Part list retrieved with read status for user 
+2024-03-24T07:23:07.597Z info: GET  200 41 - 132.17ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:23:07.602Z info: GET  200 11 - 10.83ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:23.018Z info: GET  200 50 - 80.83ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:23.020Z info: GET  200 50 - 79.74ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.463Z info: GET  200 2 - 3.03ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.488Z info: GET  200 698 - 20.82ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.496Z info: GET  200 undefined - 31.72ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.558Z info: GET  200 2 - 85.08ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.580Z info: GET  200 undefined - 101.29ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:26.581Z info: GET  200 698 - 100.59ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:31.289Z info: GET  200 607 - 8.61ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:31.292Z info: GET  200 607 - 13.95ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:34.631Z info: POST  201 148 - 65.23ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:34.681Z info: GET  200 72 - 2.48ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:34.807Z info: GET  200 72 - 2.96ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.680Z info: GET  404 44 - 9.60ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.685Z info: Part list retrieved with read status for user 
+2024-03-24T07:30:37.686Z info: GET  200 41 - 7.75ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.711Z info: GET  200 13 - 9.35ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.721Z info: GET  200 11 - 8.39ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.723Z info: GET  404 44 - 7.73ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.748Z info: Part list retrieved with read status for user 
+2024-03-24T07:30:37.749Z info: GET  200 41 - 4.27ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.885Z info: GET  200 11 - 6.72ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:30:37.887Z info: GET  200 13 - 9.78ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:32:45.279Z info: GET  200 50 - 85.67ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:32:45.289Z info: GET  200 50 - 89.76ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:02.899Z info: GET  404 44 - 17.81ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.001Z info: GET  200 13 - 7.46ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.061Z info: GET  404 44 - 146.05ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.062Z info: GET  200 11 - 173.33ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.065Z info: GET  200 11 - 8.76ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.080Z info: Part list retrieved with read status for user 
+2024-03-24T07:33:03.081Z info: GET  200 41 - 197.22ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.094Z info: Part list retrieved with read status for user 
+2024-03-24T07:33:03.095Z info: GET  200 41 - 182.05ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:33:03.096Z info: GET  200 13 - 210.50ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 
+2024-03-24T07:58:38.997Z info: DELETE  200 69 - 123.56ms Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Windows_NT - win32 x64  ::ffff:192.168.100.17 

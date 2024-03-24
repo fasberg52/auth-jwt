@@ -264,7 +264,9 @@ async function getCourseUserWithToken(req, res) {
       .leftJoin("enrollment.order", "o")
       .leftJoin("o.user", "user")
       .where("user.phone = :phone", { phone: userPhone })
-      .andWhere("o.orderStatus = :orderStatus", { orderStatus: "success" })
+      .andWhere("o.orderStatus IN (:...statuses)", {
+        statuses: ["success", "free"],
+      })
       .select([
         "course.id as id",
         "course.title as title",
@@ -292,7 +294,6 @@ async function getCourseUserWithToken(req, res) {
       const titles = await enrolledCoursesQuery
         .select("course.title", "title")
         .addSelect("course.id", "id")
-
         .getRawMany();
 
       res.status(200).json({ titles });
@@ -309,6 +310,7 @@ async function getCourseUserWithToken(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
 module.exports = {
   getAllCourse,

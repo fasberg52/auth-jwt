@@ -18,7 +18,7 @@ const Order = new EntitySchema({
     },
     orderStatus: {
       type: "enum",
-      enum: ["pending", "cancelled", "success", "preInvoice"],
+      enum: ["pending", "cancelled", "success", "preInvoice","free"],
       nullable: true,
     },
     originalTotalPrice: {
