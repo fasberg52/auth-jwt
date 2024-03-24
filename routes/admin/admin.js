@@ -279,9 +279,8 @@ router.post(
   addOrderUser
 );
 
-
 router.delete(
-  "/cancel-enroll",
+  "/cancel-enroll/:courseId",
   jwtAuthMiddleware,
   checkRole("admin"),
   cancelEnrollment
