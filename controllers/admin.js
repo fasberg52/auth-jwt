@@ -269,13 +269,13 @@ async function addOrderUser(req, res) {
     const { orderStatus, userPhone, courseIds } = req.body;
 
     if (!orderStatus || !userPhone || !Array.isArray(courseIds) || courseIds.length === 0) {
-      return res.status(400).json({ error: "Bad Request: Missing required fields" });
+      return res.status(400).json({ error: "Bad Request: Missing required fields", status:400 });
     }
 
     const userRepository = getManager().getRepository(User);
     const user = await userRepository.findOne({ phone: userPhone });
     if (!user) {
-      return res.status(404).json({ error: "کاربر پیدا نشد" });
+      return res.status(404).json({ error: "کاربر پیدا نشد", status:404 });
     }
 
     const orderRepository = getManager().getRepository(Order);
