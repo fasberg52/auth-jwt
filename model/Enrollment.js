@@ -27,6 +27,10 @@ const Enrollment = new EntitySchema({
       type: "int",
       nullable: true,
     },
+    phone: {
+      type: "text",
+      nullable: true,
+    },
   },
   relations: {
     order: {
