@@ -22,6 +22,7 @@ const {
 } = require("../../controllers/onlineClass");
 
 const { addOrderUser } = require("../../controllers/admin");
+const { cancelEnrollment } = require("../../controllers/enrollment");
 
 router.post(
   "/user",
@@ -276,6 +277,14 @@ router.post(
   jwtAuthMiddleware,
   checkRole("admin"),
   addOrderUser
+);
+
+
+router.delete(
+  "/cancel-enroll",
+  jwtAuthMiddleware,
+  checkRole("admin"),
+  cancelEnrollment
 );
 module.exports = router;
 
