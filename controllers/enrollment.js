@@ -135,8 +135,27 @@ async function getVideoPathWithOutEnrollWithPartId(req, res) {
   }
 }
 
+async function addUserEnroll(req, res) {
+  try {
+    const { courseId, phone } = req.body;
+    const enrollmentRepository = getRepository(Enrollment);
+    const createEnroll = enrollmentRepository.create({
+      courseId: courseId,
+      phone: phone,
+    });
+    const saveEnroll = await enrollmentRepository.save(createEnroll);
+    res
+      .status(200)
+      .json({ message: "ساخته شد", data: saveEnroll, status: 200 });
+  } catch (error) {
+    console.error(`Error in addUserEnroll: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   getVideoPathAfterEnrollWithPartId,
   getVideoPathAfterEnroll,
   getVideoPathWithOutEnrollWithPartId,
+  addUserEnroll,
 };
